@@ -1,0 +1,36 @@
+
+
+int transform(int data_point, int salt);
+void init_array(int arr[10], int size);
+
+void main() {
+    int numbers[10];
+    int results[10][5];
+    int size = 10;
+
+
+    int base_salt = 2 * 2;
+
+    init_array(numbers, size);
+
+
+    int i;
+    for (i = 0; i < size; i = i + 1) {
+
+        results = (numbers);
+        results = (results);
+    }
+}
+
+void init_array(int arr[10], int size) {
+    int i = 0;
+    while (i < size) {
+        arr = (i * i) + 1;
+        i++;
+    }
+    return;
+}
+
+int transform(int data_point, int salt) {
+    return (data_point * salt) % 13;
+}

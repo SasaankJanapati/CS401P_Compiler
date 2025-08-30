@@ -1,0 +1,46 @@
+int check_prime(int n);
+
+void process_matrix(int rows, int cols) {
+    int data[10][10];
+    int i = 0, j = 0;
+    int magic_number = 7;
+
+    while (i < rows) {
+        for (j = 0; j < cols; j=j+1) {
+            int current_val = i * j + rows;
+            if (current_val % magic_number == 0) {
+                if (current_val > 100) {
+                    data = -1;
+                    continue; 
+                } else {
+                    data = current_val;
+                }
+            } else if (current_val % 2 == 0 ) {
+                {
+                    int temp = (current_val * 2) - j;
+                    data = temp;
+                }
+            } else {
+                data = 999;
+            }
+        }
+        
+        i++;
+        if (i > 5) {
+            break;
+        }
+    }
+}
+
+
+int check_prime(int n) {
+    if (n <= 1) { return 0; }
+    int i = 2;
+    while (i < n) {
+        if (n % i == 0) {
+            return 0; 
+        }
+        i++;
+    }
+    return 1;
+}

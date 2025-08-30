@@ -1,0 +1,6 @@
+int x = 10;
+float y = 20.5;
+char z = 'a';
+
+x = x + 5;
+y = y * 2.0;
