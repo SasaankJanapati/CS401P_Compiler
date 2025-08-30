@@ -1,0 +1,4 @@
+y.*
+lex.yy.c
+parser
+parser_output.txt
