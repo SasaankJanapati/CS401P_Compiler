@@ -2,7 +2,3 @@ y.*
 lex.yy.c
 parser
 parser_output.txt
-TODO
-/* in loop j++ can be used as ASSGN -> TERM missing
-/* add array,function thing in term 
-/* add boolexpr returning if possible
