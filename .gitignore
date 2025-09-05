@@ -2,3 +2,5 @@ y.*
 lex.yy.c
 parser
 parser_output.txt
+symbol_table.txt
+miss.txt
