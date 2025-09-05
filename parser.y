@@ -4,31 +4,187 @@
 #include <string.h>
 
 extern FILE* yyin;
-int yydebug=0;
+extern int yylineno; // To report line numbers in errors
+int yydebug = 0;
 
-// Node structure for the parse tree
+// Forward declarations
+void yyerror(const char* s);
+int yylex();
+
+// --- Data Structures for Parse Tree ---
+
 typedef struct Node {
     char* type;
     char* value;
+    char* data_type; // For type checking
     int num_children;
     struct Node** children;
 } Node;
 
-// Function to create a new node
+Node* create_node(char* type, char* value);
+void add_child(Node* parent, Node* child);
+void print_tree(Node* node, int level);
+void write_tree_to_file(Node* node, FILE* file, int level);
+Node* root = NULL;
+
+// --- Data Structures for Symbol Table ---
+
+#define TABLE_SIZE 100
+
+typedef struct Symbol {
+    char* name;
+    char* type;
+    int scope;
+    int line_declared;
+} Symbol;
+
+typedef struct SymbolTable {
+    Symbol* symbols[TABLE_SIZE];
+    int count;
+    int scope;
+    struct SymbolTable* parent;
+} SymbolTable;
+
+SymbolTable* current_table;
+SymbolTable* all_tables[TABLE_SIZE * 10]; // To store all scopes for final printing
+int table_count = 0;
+
+// --- Helper Functions for Strict Type Checking ---
+
+char* current_function_return_type; // Holds the expected return type of the current function
+int has_return_statement; // Flag to track if a return was found in the current function
+
+// Forward declaration for helper
+void insert_symbol(char* name, char* type);
+
+// Traverses a PARAM_LIST node and adds its parameters to the current scope.
+void add_params_to_scope(Node* param_list_node) {
+    if (param_list_node == NULL || strcmp(param_list_node->type, "PARAM_LIST") != 0) {
+        return;
+    }
+
+    for (int i = 0; i < param_list_node->num_children; i++) {
+        Node* child = param_list_node->children[i];
+        if (strcmp(child->type, "PARAM") == 0 || strcmp(child->type, "PARAM_ARRAY") == 0) {
+            char* param_type = child->children[0]->value;
+            char* param_name = child->value;
+            insert_symbol(param_name, param_type);
+        } else if (strcmp(child->type, "PARAM_LIST") == 0) {
+            add_params_to_scope(child);
+        }
+    }
+}
+
+
+// Returns 1 if types are compatible for assignment (rval to lval).
+// Allows int -> float (widening), but not float -> int (narrowing).
+int are_types_compatible(char* lval_type, char* rval_type) {
+    if (strcmp(lval_type, "undefined") == 0 || strcmp(rval_type, "undefined") == 0) return 1; // Avoid cascading errors
+    if (strcmp(lval_type, rval_type) == 0) return 1;
+    if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "int") == 0) return 1; // Widening is OK
+    return 0;
+}
+
+// Returns 1 if the type is numeric (int or float)
+int is_numeric(char* type) {
+    if (type == NULL) return 0;
+    return strcmp(type, "int") == 0 || strcmp(type, "float") == 0;
+}
+
+// Returns the resulting type after numeric promotion (e.g., int + float = float)
+char* get_promoted_type(char* type1, char* type2) {
+    if (!is_numeric(type1) || !is_numeric(type2)) return "undefined";
+    if (strcmp(type1, "float") == 0 || strcmp(type2, "float") == 0) return "float";
+    return "int";
+}
+
+// --- Symbol Table Functions ---
+
+void print_table_to_file(SymbolTable* table, FILE* file) {
+    if (!table || !file) return;
+    fprintf(file, "--- Scope: %d (Parent Scope: %d) ---\n", table->scope, table->parent ? table->parent->scope : -1);
+    fprintf(file, "%-20s | %-15s | %s\n", "Name", "Type", "Line Declared");
+    fprintf(file, "-----------------------------------------------------\n");
+    for (int i = 0; i < table->count; i++) {
+        Symbol* s = table->symbols[i];
+        fprintf(file, "%-20s | %-15s | %d\n", s->name, s->type, s->line_declared);
+    }
+    fprintf(file, "\n");
+}
+
+
+void init_symbol_table() {
+    current_table = (SymbolTable*)malloc(sizeof(SymbolTable));
+    current_table->count = 0;
+    current_table->scope = 0;
+    current_table->parent = NULL;
+    all_tables[table_count++] = current_table; // Add global scope to the list
+}
+
+void enter_scope() {
+    SymbolTable* new_table = (SymbolTable*)malloc(sizeof(SymbolTable));
+    new_table->count = 0;
+    new_table->scope = (current_table->scope) + 1;
+    new_table->parent = current_table;
+    current_table = new_table;
+    all_tables[table_count++] = current_table; // Store for later printing
+}
+
+void exit_scope() {
+    if (current_table->parent != NULL) {
+        current_table = current_table->parent;
+        // We don't free the table so we can print it at the end
+    }
+}
+
+// Insert a symbol into the current scope's table
+void insert_symbol(char* name, char* type) {
+    // Check for re-declaration in the same scope
+    for (int i = 0; i < current_table->count; i++) {
+        if (strcmp(current_table->symbols[i]->name, name) == 0) {
+            fprintf(stderr, "Error at line %d: Redeclaration of '%s'\n", yylineno, name);
+            return;
+        }
+    }
+
+    if (current_table->count < TABLE_SIZE) {
+        Symbol* symbol = (Symbol*)malloc(sizeof(Symbol));
+        symbol->name = strdup(name);
+        symbol->type = strdup(type);
+        symbol->scope = current_table->scope;
+        symbol->line_declared = yylineno;
+        current_table->symbols[current_table->count++] = symbol;
+    } else {
+        fprintf(stderr, "Error: Symbol table overflow in current scope.\n");
+    }
+}
+
+// Look for a symbol in the current scope and all parent scopes
+Symbol* lookup_symbol(char* name) {
+    SymbolTable* table = current_table;
+    while (table != NULL) {
+        for (int i = 0; i < table->count; i++) {
+            if (strcmp(table->symbols[i]->name, name) == 0) {
+                return table->symbols[i];
+            }
+        }
+        table = table->parent;
+    }
+    return NULL; // Not found
+}
+
+// --- Parse Tree Node Functions ---
+
 Node* create_node(char* type, char* value) {
     Node* node = (Node*)malloc(sizeof(Node));
     node->type = strdup(type);
-    if (value != NULL) {
-        node->value = strdup(value);
-    } else {
-        node->value = NULL;
-    }
+    node->value = (value != NULL) ? strdup(value) : NULL;
+    node->data_type = strdup("undefined"); // Default data type
     node->num_children = 0;
     node->children = NULL;
     return node;
 }
 
-// Function to add a child to a node
 void add_child(Node* parent, Node* child) {
     if (child == NULL) return;
     parent->num_children++;
@@ -36,41 +192,7 @@ void add_child(Node* parent, Node* child) {
     parent->children[parent->num_children - 1] = child;
 }
 
-// Function to print the parse tree
-void print_tree(Node* node, int level) {
-    if (node == NULL) return;
-    for (int i = 0; i < level; i++) {
-        printf("  ");
-    }
-    printf("%s", node->type);
-    if (node->value != NULL) {
-        printf(" (%s)", node->value);
-    }
-    printf("\n");
-    for (int i = 0; i < node->num_children; i++) {
-        print_tree(node->children[i], level + 1);
-    }
-}
-
-void write_tree_to_file(Node* node, FILE* file, int level) {
-    if (node == NULL || file == NULL) return;
-    for (int i = 0; i < level; i++) {
-        fprintf(file, "  ");
-    }
-    fprintf(file, "%s", node->type);
-    if (node->value != NULL) {
-        fprintf(file, " (%s)", node->value);
-    }
-    fprintf(file, "\n");
-    for (int i = 0; i < node->num_children; i++) {
-        write_tree_to_file(node->children[i], file, level + 1);
-    }
-}
-
-int yylex();
-void yyerror(const char* s);
-Node* root = NULL;
-
+char* current_decl_type; // Global variable to hold the type during a declaration
 %}
 
 %union {
@@ -79,9 +201,9 @@ Node* root = NULL;
 }
 
 /* Tokens */
-%token <str_val> IDEN NUM
-%token <str_val> INT FLOAT CHAR VOID
-%token <str_val> IF ELSE WHILE FOR RETURN BREAK CONTINUE TR FL
+%token <str_val> IDEN NUM STR CHR
+%token <str_val> INT FLOAT CHAR VOID STRING
+%token <str_val> IF ELSE WHILE FOR DO RETURN BREAK CONTINUE TR FL
 %token <str_val> PASN MASN DASN SASN
 %token <str_val> OR AND EQ NE LE GE LT GT
 %token <str_val> INC DEC
@@ -93,12 +215,14 @@ Node* root = NULL;
 %left '+' '-'
 %left '*' '/' '%'
 %right '=' PASN MASN DASN SASN
+%right '?' ':'
 %right UMINUS INC DEC
 
 /* Node Types */
-%type <node> S STMNTS A ASNEXPR BOOLEXPR EXPR TERM TYPE
-%type <node> FUNCDECL PARAMLIST PARAM DECLSTATEMENT DECLLIST DECL INITLIST INDEX
-%type <node> ASSGN FUNC_CALL ARGLIST M NN
+%type <node> S STMNTS A ASNEXPR BOOLEXPR EXPR TERM TYPE LVAL
+%type <node> FUNCDECL FUNC_HEADER PARAMLIST PARAM DECLSTATEMENT DECLLIST DECL INITLIST INDEX
+%type <node> ASSGN FUNC_CALL ARGLIST
+%type <node> M NN
 
 %%
 
@@ -238,21 +362,73 @@ int main(int argc, char **argv) {
         }
         yyin = file;
     }
+    
+    yylineno = 1; // Initialize line number
+    current_function_return_type = NULL; // Initialize
+    has_return_statement = 0;
+    init_symbol_table(); // Initialize the global symbol table
     yyparse();
+
     if (root != NULL) {
-        printf("\nParse Tree:\n");
+        printf("\n--- Parse Tree ---\n");
         print_tree(root, 0);
-        // write about tree to parser_output.txt
+        
         FILE *output_file = fopen("parser_output.txt", "w");
         if (output_file) {
-            fprintf(output_file, "Parse Tree:\n");
+            fprintf(output_file, "--- Parse Tree ---\n");
             write_tree_to_file(root, output_file, 0);
             fclose(output_file);
+            printf("\nParse tree also written to parser_output.txt\n");
         }
     }
+
+    // Print all symbol tables to a file
+    FILE* sym_file = fopen("symbol_table.txt", "w");
+    if (sym_file) {
+        printf("\nWriting symbol table to symbol_table.txt...\n");
+        for (int i = 0; i < table_count; i++) {
+            print_table_to_file(all_tables[i], sym_file);
+        }
+        fclose(sym_file);
+    }
+
+
     return 0;
 }
 
 void yyerror(const char* s) {
-    fprintf(stderr, "Parse error: %s\n", s);
+    fprintf(stderr, "Parse error at line %d: %s\n", yylineno, s);
 }
+
+// --- Tree Printing Functions ---
+
+void print_tree(Node* node, int level) {
+    if (node == NULL) return;
+    for (int i = 0; i < level; i++) {
+        printf("  ");
+    }
+    printf("%s", node->type);
+    if (node->value != NULL) {
+        printf(" (%s)", node->value);
+    }
+    printf(" [type: %s]\n", node->data_type);
+    for (int i = 0; i < node->num_children; i++) {
+        print_tree(node->children[i], level + 1);
+    }
+}
+
+void write_tree_to_file(Node* node, FILE* file, int level) {
+    if (node == NULL || file == NULL) return;
+    for (int i = 0; i < level; i++) {
+        fprintf(file, "  ");
+    }
+    fprintf(file, "%s", node->type);
+    if (node->value != NULL) {
+        fprintf(file, " (%s)", node->value);
+    }
+    fprintf(file, " [type: %s]\n", node->data_type);
+    for (int i = 0; i < node->num_children; i++) {
+        write_tree_to_file(node->children[i], file, level + 1);
+    }
+}
+
