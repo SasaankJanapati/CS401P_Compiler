@@ -1,0 +1,14 @@
+
+
+void initialize_matrix(int matrix[10][10], int size) {
+    int i = 0;
+    while (i < size) {
+        int j = 0;
+        for (j = 0; j < size; j = j + 1) {
+            matrix[i][j] = i * size + j + 1;
+        }
+        i = i + 1;
+    }
+}
+
+
