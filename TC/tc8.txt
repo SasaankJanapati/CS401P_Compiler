@@ -1,0 +1,25 @@
+int get_value() {
+    int x = 10;
+}
+
+void set_value(int val) {
+    int local = val;
+    return local; 
+}
+
+void main() {
+    int an_int;
+    float a_float = 10.5;
+    int my_array[5];
+
+    an_int = a_float;
+
+    an_int = a_float % 2;
+
+    an_int = z + 1;
+
+    int a_float = 5;
+
+    my_array[2.5] = 100;
+}
+

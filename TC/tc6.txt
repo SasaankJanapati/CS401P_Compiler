@@ -18,5 +18,4 @@ void test_precedence() {
     int x, y, z;
     
     
-    
 }

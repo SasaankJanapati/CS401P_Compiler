@@ -1,6 +1,7 @@
 int x = 10;
 float y = 20.5;
-char z = 'a';
+float z;
 
 x = x + 5;
 y = y * 2.0;
+z = x + y;
