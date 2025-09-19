@@ -2,25 +2,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
+#include <stdbool.h>
 
 extern FILE* yyin;
-extern int yylineno; // To report line numbers in errors
+extern int yylineno; 
 int yydebug = 0;
 
 // Forward declarations
 void yyerror(const char* s);
 int yylex();
 
+
+
 // --- Data Structures for Parse Tree ---
 
 typedef struct Node {
     char* type;
     char* value;
-    char* data_type; // For type checking
+    char* data_type; 
     int num_children;
     struct Node** children;
+    struct SymbolTable* scope_table; // Points to the symbol table for this node's scope
 } Node;
 
+void generate_assembly(struct Node* node, struct SymbolTable* scope);
 Node* create_node(char* type, char* value);
 void add_child(Node* parent, Node* child);
 void print_tree(Node* node, int level);
@@ -34,8 +40,12 @@ Node* root = NULL;
 typedef struct Symbol {
     char* name;
     char* type;
+    char* kind;           // e.g., "variable", "function", "class", "member_var"
+    char* access_spec;    // "public", "private", "protected", or "default"
+    char* class_name;     // Name of the class if it's a member
     int scope;
     int line_declared;
+    int address;          // For code generation (e.g., local variable index)
 } Symbol;
 
 typedef struct SymbolTable {
@@ -46,70 +56,111 @@ typedef struct SymbolTable {
 } SymbolTable;
 
 SymbolTable* current_table;
-SymbolTable* all_tables[TABLE_SIZE * 10]; // To store all scopes for final printing
+SymbolTable* all_tables[TABLE_SIZE * 10];
 int table_count = 0;
+int local_address_counter = 0; // For assigning local variable addresses
 
-// --- Helper Functions for Strict Type Checking ---
+// --- Data Structures for Class Metadata ---
 
-char* current_function_return_type; // Holds the expected return type of the current function
-int has_return_statement; // Flag to track if a return was found in the current function
+typedef struct FieldInfo {
+    char* name;
+    char* type;
+    char* access_spec;
+} FieldInfo;
 
-// Forward declaration for helper
-void insert_symbol(char* name, char* type);
+typedef struct MethodInfo {
+    char* name;
+    char* return_type;
+    char* access_spec;
+} MethodInfo;
 
-// Traverses a PARAM_LIST node and adds its parameters to the current scope.
-void add_params_to_scope(Node* param_list_node) {
-    if (param_list_node == NULL || strcmp(param_list_node->type, "PARAM_LIST") != 0) {
-        return;
+typedef struct ClassInfo {
+    char* name;
+    FieldInfo fields[TABLE_SIZE];
+    int field_count;
+    MethodInfo methods[TABLE_SIZE];
+    int method_count;
+} ClassInfo;
+
+ClassInfo* class_metadata_pool[TABLE_SIZE];
+int class_pool_count = 0;
+ClassInfo* current_class_info = NULL; // Pointer to the class currently being parsed
+
+
+// --- Helper Functions for Type Checking & Symbol Management ---
+
+char* current_function_return_type;
+int has_return_statement;
+char* current_class_name = NULL;
+char* current_access_spec = "private"; // Default for classes
+
+// Forward declaration
+void insert_symbol(char* name, char* type, char* kind);
+Symbol* lookup_symbol_codegen(char* name, SymbolTable* scope);
+
+
+// Helper function to recursively build a nested type string for multi-dimensional arrays
+char* build_array_type(const char* base_type, Node* index_node) {
+    if (index_node == NULL) {
+        return strdup(base_type);
     }
+    char* inner_type;
+    // Recursively call for the rest of the dimensions
+    if (index_node->num_children == 2) { // case: '[' EXPR ']' INDEX
+        inner_type = build_array_type(base_type, index_node->children[1]);
+    } else { // base case: '[' EXPR ']'
+        inner_type = strdup(base_type);
+    }
+    char* final_type = malloc(strlen(inner_type) + 10);
+    sprintf(final_type, "array(%s)", inner_type);
+    free(inner_type);
+    return final_type;
+}
 
-    for (int i = 0; i < param_list_node->num_children; i++) {
-        Node* child = param_list_node->children[i];
-        if (strcmp(child->type, "PARAM") == 0 || strcmp(child->type, "PARAM_ARRAY") == 0) {
-            char* param_type = child->children[0]->value;
-            char* param_name = child->value;
-            insert_symbol(param_name, param_type);
-        } else if (strcmp(child->type, "PARAM_LIST") == 0) {
-            add_params_to_scope(child);
+
+void check_init_list_types(Node* list_node, const char* base_type) {
+    if (list_node == NULL) return;
+    for (int i = 0; i < list_node->num_children; i++) {
+        Node* expr_node = list_node->children[i];
+        if (strcmp(expr_node->data_type, base_type) != 0) {
+            fprintf(stderr, "Error at line %d: Incompatible type in array initializer. Expected '%s' but got '%s'.\n", yylineno, base_type, expr_node->data_type);
         }
     }
 }
 
-
-// Returns 1 if types are compatible for assignment (rval to lval).
-// Allows int -> float (widening), but not float -> int (narrowing).
 int are_types_compatible(char* lval_type, char* rval_type) {
-    if (strcmp(lval_type, "undefined") == 0 || strcmp(rval_type, "undefined") == 0) return 1; // Avoid cascading errors
+    if (strcmp(lval_type, "undefined") == 0 || strcmp(rval_type, "undefined") == 0) return 1;
     if (strcmp(lval_type, rval_type) == 0) return 1;
-    if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "int") == 0) return 1; // Widening is OK
+    if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "int") == 0) return 1;
+    // Added for char and string
+    if (strcmp(lval_type, "char") == 0 && strcmp(rval_type, "char") == 0) return 1;
+    if (strcmp(lval_type, "string") == 0 && strcmp(rval_type, "string") == 0) return 1;
     return 0;
 }
 
-// Returns 1 if the type is numeric (int or float)
 int is_numeric(char* type) {
     if (type == NULL) return 0;
     return strcmp(type, "int") == 0 || strcmp(type, "float") == 0;
 }
 
-// Returns the resulting type after numeric promotion (e.g., int + float = float)
 char* get_promoted_type(char* type1, char* type2) {
     if (!is_numeric(type1) || !is_numeric(type2)) return "undefined";
     if (strcmp(type1, "float") == 0 || strcmp(type2, "float") == 0) return "float";
     return "int";
 }
 
+
 // --- Symbol Table Functions ---
 
 void print_table_to_file(SymbolTable* table, FILE* file) {
     if (!table || !file) return;
-    fprintf(file, "--- Scope: %d (Parent Scope: %d) ---\n", table->scope, table->parent ? table->parent->scope : -1);
-    fprintf(file, "%-20s | %-15s | %s\n", "Name", "Type", "Line Declared");
-    fprintf(file, "-----------------------------------------------------\n");
+    fprintf(file, "\n--- Scope: %d (Parent Scope: %d) ---\n", table->scope, table->parent ? table->parent->scope : -1);
+    fprintf(file, "%-20s | %-15s | %-12s | %-12s | %-15s | %s\n", "Name", "Type", "Kind", "Access", "Class", "Line Declared");
+    fprintf(file, "------------------------------------------------------------------------------------------------------\n");
     for (int i = 0; i < table->count; i++) {
         Symbol* s = table->symbols[i];
-        fprintf(file, "%-20s | %-15s | %d\n", s->name, s->type, s->line_declared);
+        fprintf(file, "%-20s | %-15s | %-12s | %-12s | %-15s | %d\n", s->name, s->type, s->kind, s->access_spec, s->class_name ? s->class_name : "N/A", s->line_declared);
     }
-    fprintf(file, "\n");
 }
 
 
@@ -118,7 +169,7 @@ void init_symbol_table() {
     current_table->count = 0;
     current_table->scope = 0;
     current_table->parent = NULL;
-    all_tables[table_count++] = current_table; // Add global scope to the list
+    all_tables[table_count++] = current_table;
 }
 
 void enter_scope() {
@@ -127,19 +178,20 @@ void enter_scope() {
     new_table->scope = (current_table->scope) + 1;
     new_table->parent = current_table;
     current_table = new_table;
-    all_tables[table_count++] = current_table; // Store for later printing
+    all_tables[table_count++] = current_table;
+    // Reset local address counter only when entering a function-level scope
+    if (new_table->parent->scope == 0 || current_function_return_type != NULL) { 
+        local_address_counter = 0;
+    }
 }
 
 void exit_scope() {
     if (current_table->parent != NULL) {
         current_table = current_table->parent;
-        // We don't free the table so we can print it at the end
     }
 }
 
-// Insert a symbol into the current scope's table
-void insert_symbol(char* name, char* type) {
-    // Check for re-declaration in the same scope
+void insert_symbol(char* name, char* type, char* kind) {
     for (int i = 0; i < current_table->count; i++) {
         if (strcmp(current_table->symbols[i]->name, name) == 0) {
             fprintf(stderr, "Error at line %d: Redeclaration of '%s'\n", yylineno, name);
@@ -151,15 +203,34 @@ void insert_symbol(char* name, char* type) {
         Symbol* symbol = (Symbol*)malloc(sizeof(Symbol));
         symbol->name = strdup(name);
         symbol->type = strdup(type);
+        symbol->kind = strdup(kind);
         symbol->scope = current_table->scope;
         symbol->line_declared = yylineno;
+        symbol->access_spec = strdup(current_access_spec);
+        symbol->class_name = current_class_name ? strdup(current_class_name) : NULL;
+        symbol->address = (strcmp(kind, "variable") == 0 || strcmp(kind, "member_var") == 0) ? local_address_counter++ : -1;
         current_table->symbols[current_table->count++] = symbol;
+
+        // If inside a class, add to metadata
+        if (current_class_info) {
+            if (strcmp(kind, "member_var") == 0) {
+                FieldInfo* field = &current_class_info->fields[current_class_info->field_count++];
+                field->name = strdup(name);
+                field->type = strdup(type);
+                field->access_spec = strdup(current_access_spec);
+            } else if (strcmp(kind, "member_func") == 0) {
+                MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
+                method->name = strdup(name);
+                method->return_type = strdup(type);
+                method->access_spec = strdup(current_access_spec);
+            }
+        }
     } else {
-        fprintf(stderr, "Error: Symbol table overflow in current scope.\n");
+        fprintf(stderr, "Error: Symbol table overflow.\n");
     }
 }
 
-// Look for a symbol in the current scope and all parent scopes
+// Original lookup for use during parsing
 Symbol* lookup_symbol(char* name) {
     SymbolTable* table = current_table;
     while (table != NULL) {
@@ -170,7 +241,7 @@ Symbol* lookup_symbol(char* name) {
         }
         table = table->parent;
     }
-    return NULL; // Not found
+    return NULL;
 }
 
 // --- Parse Tree Node Functions ---
@@ -179,9 +250,10 @@ Node* create_node(char* type, char* value) {
     Node* node = (Node*)malloc(sizeof(Node));
     node->type = strdup(type);
     node->value = (value != NULL) ? strdup(value) : NULL;
-    node->data_type = strdup("undefined"); // Default data type
+    node->data_type = strdup("undefined");
     node->num_children = 0;
     node->children = NULL;
+    node->scope_table = NULL; // Initialize scope table pointer
     return node;
 }
 
@@ -192,7 +264,7 @@ void add_child(Node* parent, Node* child) {
     parent->children[parent->num_children - 1] = child;
 }
 
-char* current_decl_type; // Global variable to hold the type during a declaration
+char* current_decl_type; 
 %}
 
 %union {
@@ -207,6 +279,7 @@ char* current_decl_type; // Global variable to hold the type during a declaratio
 %token <str_val> PASN MASN DASN SASN
 %token <str_val> OR AND EQ NE LE GE LT GT
 %token <str_val> INC DEC
+%token <str_val> CLASS PUBLIC PRIVATE PROTECTED ABSTRACT
 %token MEOF
 
 /* Precedence and Associativity */
@@ -220,9 +293,13 @@ char* current_decl_type; // Global variable to hold the type during a declaratio
 
 /* Node Types */
 %type <node> S STMNTS A ASNEXPR BOOLEXPR EXPR TERM TYPE LVAL
-%type <node> FUNCDECL FUNC_HEADER PARAMLIST PARAM DECLSTATEMENT DECLLIST DECL INITLIST INDEX
+%type <node> FUNCDECL PARAMLIST PARAM DECLSTATEMENT DECLLIST DECL INITLIST INDEX
 %type <node> ASSGN FUNC_CALL ARGLIST
 %type <node> M NN
+%type <node> CLASSDECL CLASSBODY CLASSMEMBER ACCESS CONSTRUCTOR DESTRUCTOR
+%type <node> OPT_INHERIT INHERITLIST MODIFIER_DECL
+%type <node> ABSTRACTCLASS ABSTRACTBODY ABSTRACTMEMBER ABSTRACTFUNC
+%type <node> OPT_ASNEXPR OPT_BOOLEXPR OPT_EXPR
 
 %%
 
@@ -656,83 +733,180 @@ ABSTRACTFUNC: TYPE IDEN '(' PARAMLIST ')' ';' {
 M:  { $$ = NULL; }
 NN: { $$ = NULL; }
 
+
 %%
 
-int main(int argc, char **argv) {
-    if (argc > 1) {
-        FILE *file = fopen(argv[1], "r");
-        if (!file) {
-            perror(argv[1]);
-            return 1;
+// --- Code Generation ---
+
+FILE* asm_file;
+int label_count = 0;
+int code_gen_depth = 0; 
+char* string_pool[256];
+int string_pool_count = 0;
+
+void generate_code_for_expr(Node* node, SymbolTable* scope); // Forward declare
+
+// --- Codegen Helper Functions ---
+int calculate_total_locals(SymbolTable* func_scope) {
+    int max_addr = -1;
+    for (int i = 0; i < table_count; i++) {
+        SymbolTable* current = all_tables[i];
+        bool is_descendant = false;
+        SymbolTable* temp = current;
+        while(temp != NULL) {
+            if (temp == func_scope) {
+                is_descendant = true;
+                break;
+            }
+            temp = temp->parent;
         }
-        yyin = file;
+
+        if(is_descendant) {
+             for (int j = 0; j < current->count; j++) {
+                Symbol* s = current->symbols[j];
+                if ((strcmp(s->kind, "variable") == 0) && s->address > max_addr) {
+                    max_addr = s->address;
+                }
+            }
+        }
+    }
+    return max_addr + 1;
+}
+
+int calculate_max_stack_depth(Node* node) {
+    if (!node) return 0;
+
+    int max_child_depth = 0;
+    for (int i = 0; i < node->num_children; i++) {
+        int child_depth = calculate_max_stack_depth(node->children[i]);
+        if (child_depth > max_child_depth) {
+            max_child_depth = child_depth;
+        }
+    }
+
+    if (strcmp(node->type, "BIN_OP") == 0) {
+        int left_depth = calculate_max_stack_depth(node->children[0]);
+        int right_depth = calculate_max_stack_depth(node->children[1]);
+        return (left_depth > right_depth + 1) ? left_depth : right_depth + 1;
+    }
+    if (strcmp(node->type, "FUNC_CALL") == 0) {
+        int max_arg_depth = 0;
+        Node* arg_list = node->children[0];
+        for (int i = 0; i < arg_list->num_children; i++) {
+             int arg_depth = calculate_max_stack_depth(arg_list->children[i]) + i;
+             if(arg_depth > max_arg_depth) max_arg_depth = arg_depth;
+        }
+        return max_arg_depth;
+    }
+    if (strcmp(node->type, "NUM") == 0 || strcmp(node->type, "IDEN") == 0 || strcmp(node->type, "STRING_LIT") == 0 || strcmp(node->type, "CHAR_LIT") == 0) {
+        return 1;
     }
     
-    yylineno = 1; // Initialize line number
-    current_function_return_type = NULL; // Initialize
-    has_return_statement = 0;
-    init_symbol_table(); // Initialize the global symbol table
-    yyparse();
+    return max_child_depth;
+}
 
-    if (root != NULL) {
-        printf("\n--- Parse Tree ---\n");
-        print_tree(root, 0);
-        
-        FILE *output_file = fopen("parser_output.txt", "w");
-        if (output_file) {
-            fprintf(output_file, "--- Parse Tree ---\n");
-            write_tree_to_file(root, output_file, 0);
-            fclose(output_file);
-            printf("\nParse tree also written to parser_output.txt\n");
+
+void debug_print(const char* format, ...) {
+    for(int i = 0; i < code_gen_depth; ++i) fprintf(stderr, "  ");
+    va_list args;
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    va_end(args);
+    fprintf(stderr, "\n");
+}
+
+void emit(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    vfprintf(asm_file, format, args);
+    va_end(args);
+    fprintf(asm_file, "\n");
+}
+
+int new_label() {
+    return label_count++;
+}
+
+// Function to add a string literal to the pool and get its label index
+int get_string_label_index(char* literal) {
+    char* content = strdup(literal + 1);
+    content[strlen(content) - 1] = '\0'; // Remove quotes
+
+    for (int i = 0; i < string_pool_count; i++) {
+        if (strcmp(string_pool[i], content) == 0) {
+            free(content);
+            return i;
         }
     }
+    if (string_pool_count < 256) {
+        string_pool[string_pool_count] = content;
+        return string_pool_count++;
+    }
+    free(content);
+    fprintf(stderr, "Error: String pool overflow.\n");
+    return -1;
+}
 
-    // Print all symbol tables to a file
-    FILE* sym_file = fopen("symbol_table.txt", "w");
-    if (sym_file) {
-        printf("\nWriting symbol table to symbol_table.txt...\n");
-        for (int i = 0; i < table_count; i++) {
-            print_table_to_file(all_tables[i], sym_file);
+
+// New lookup function for code generation that uses the provided scope
+Symbol* lookup_symbol_codegen(char* name, SymbolTable* scope) {
+    SymbolTable* table = scope;
+    while (table != NULL) {
+        for (int i = 0; i < table->count; i++) {
+            if (strcmp(table->symbols[i]->name, name) == 0) {
+                return table->symbols[i];
+            }
         }
-        fclose(sym_file);
+        table = table->parent;
     }
-
-
-    return 0;
+    return NULL;
 }
 
-void yyerror(const char* s) {
-    fprintf(stderr, "Parse error at line %d: %s\n", yylineno, s);
-}
+void generate_code_for_boolean_expr(Node* node, int true_label, int false_label, SymbolTable* scope) {
+    if (!node) return;
+    debug_print("Gen BOOL EXPR for: %s (%s)", node->type, node->value ? node->value : "");
+    code_gen_depth++;
 
-// --- Tree Printing Functions ---
-
-void print_tree(Node* node, int level) {
-    if (node == NULL) return;
-    for (int i = 0; i < level; i++) {
-        printf("  ");
+    if (strcmp(node->type, "REL_OP") == 0) {
+        generate_code_for_expr(node->children[0], scope);
+        generate_code_for_expr(node->children[1], scope);
+        if (strcmp(node->value, "<") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_LT");
+        else if (strcmp(node->value, "<") == 0) emit("ICMP_LT");
+        else if (strcmp(node->value, "<=") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_LE");
+        else if (strcmp(node->value, "<=") == 0) emit("ICMP_LE");
+        else if (strcmp(node->value, "!=") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_NEQ");
+        else if (strcmp(node->value, "!=") == 0) emit("ICMP_NEQ");
+        else if (strcmp(node->value, ">=") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_GE");
+        else if (strcmp(node->value, ">=") == 0) emit("ICMP_GE");
+        else if (strcmp(node->value, "==") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_EQ");
+        else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
+        else if (strcmp(node->value, ">") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_GT");
+        else if (strcmp(node->value, ">") == 0) emit("ICMP_GT");
+        else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
+        emit("JNZ L%d", true_label);
+        emit("JMP L%d", false_label);
+    } else if (strcmp(node->type, "BOOL_CONST") == 0) {
+        if (strcmp(node->value, "true") == 0) {
+            emit("JMP L%d", true_label);
+        } else {
+            emit("JMP L%d", false_label);
+        }
+    } else if (strcmp(node->type, "BOOL_OP") == 0) {
+        if (strcmp(node->value, "&&") == 0) {
+            int next_cond_label = new_label();
+            generate_code_for_boolean_expr(node->children[0], next_cond_label, false_label, scope);
+            emit("L%d:", next_cond_label);
+            generate_code_for_boolean_expr(node->children[1], true_label, false_label, scope);
+        } else if (strcmp(node->value, "||") == 0) {
+            int next_cond_label = new_label();
+            generate_code_for_boolean_expr(node->children[0], true_label, next_cond_label, scope);
+            emit("L%d:", next_cond_label);
+            generate_code_for_boolean_expr(node->children[1], true_label, false_label, scope);
+        }
+    } else { 
+        generate_code_for_expr(node, scope);
+        emit("JNZ L%d", true_label);
+        emit("JMP L%d", false_label);
     }
-    printf("%s", node->type);
-    if (node->value != NULL) {
-        printf(" (%s)", node->value);
-    }
-    printf(" [type: %s]\n", node->data_type);
-    for (int i = 0; i < node->num_children; i++) {
-        print_tree(node->children[i], level + 1);
-    }
-}
-
-void write_tree_to_file(Node* node, FILE* file, int level) {
-    if (node == NULL || file == NULL) return;
-    for (int i = 0; i < level; i++) {
-        fprintf(file, "  ");
-    }
-    fprintf(file, "%s", node->type);
-    if (node->value != NULL) {
-        fprintf(file, " (%s)", node->value);
-    }
-    fprintf(file, " [type: %s]\n", node->data_type);
-    for (int i = 0; i < node->num_children; i++) {
-        write_tree_to_file(node->children[i], file, level + 1);
-    }
+    code_gen_depth--;
 }
