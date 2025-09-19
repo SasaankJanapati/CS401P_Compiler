@@ -226,9 +226,9 @@ char* current_decl_type; // Global variable to hold the type during a declaratio
 
 %%
 
-S: STMNTS M { $$ = create_node("PROGRAM", NULL); add_child($$, $1); root = $$; }
- |           { $$ = create_node("PROGRAM", "empty"); root = $$; }
- | error     { $$ = create_node("PROGRAM", "error"); root = $$; }
+S: STMNTS M  { $$ = create_node("PROGRAM", NULL); add_child($$, $1); root = $$; }
+ |            { $$ = create_node("PROGRAM", "empty"); root = $$; }
+ | error      { yyerrok; $$ = create_node("PROGRAM", "error"); root = $$; }
  ;
 
 STMNTS: STMNTS M A { $$ = $1; if ($3 != NULL) add_child($$, $3); }
@@ -236,34 +236,43 @@ STMNTS: STMNTS M A { $$ = $1; if ($3 != NULL) add_child($$, $3); }
       ;
 
 A: ASNEXPR ';'                  { $$ = $1; }
+ //| ASNEXPR error MEOF           { yyerrok; $$ = $1; fprintf(stderr, "Error at line %d: Malformed statement, semicolon might be missing.\n", yylineno); }
  | IF '(' BOOLEXPR ')' M A        { $$ = create_node("IF", NULL); add_child($$, $3); add_child($$, $6); }
  | IF '(' BOOLEXPR ')' M A ELSE NN M A { $$ = create_node("IF_ELSE", NULL); add_child($$, $3); add_child($$, $6); add_child($$, $10); }
+ //| IF BOOLEXPR ')' M A ELSE NN M A { yyerrok; $$ = create_node("IF_ELSE_ERROR", NULL); fprintf(stderr, "Error at line %d: Missing '(' in if statement.\n", yylineno); }
+ //| EXPR error MEOF              { yyerrok; $$ = $1; fprintf(stderr, "Error at line %d: Malformed expression statement.\n", yylineno); }
  | WHILE M '(' BOOLEXPR ')' M A { $$ = create_node("WHILE", NULL); add_child($$, $4); add_child($$, $7); }
- | DO { enter_scope(); } M A WHILE M '(' BOOLEXPR ')' ';' { $$ = create_node("DO_WHILE", NULL); add_child($$, $4); add_child($$, $8); exit_scope(); }
- | FOR '(' ASNEXPR ';' M BOOLEXPR ';' M ASNEXPR ')' { enter_scope(); } M A { $$ = create_node("FOR", NULL); add_child($$, $3); add_child($$, $6); add_child($$, $9); add_child($$, $13); exit_scope(); }
- | '{' { enter_scope(); } STMNTS '}' { $$ = $3; exit_scope(); }
+// | WHILE M BOOLEXPR ')' M A     { yyerrok; $$ = create_node("WHILE_ERROR", NULL); fprintf(stderr, "Error at line %d: Missing '(' in while statement.\n", yylineno); }
+ | DO { enter_scope(); } M A WHILE M '(' BOOLEXPR ')' ';' { $$ = create_node("DO_WHILE", NULL); add_child($$, $4); add_child($$, $8); $$->scope_table = current_table; exit_scope(); }
+ | FOR '(' OPT_ASNEXPR ';' M OPT_BOOLEXPR ';' M OPT_EXPR ')' { enter_scope(); } M A 
+   { 
+     $$ = create_node("FOR", NULL);
+     add_child($$, $3);
+     add_child($$, $6);
+     add_child($$, $9);
+     add_child($$, $13);
+     $$->scope_table = current_table; 
+     exit_scope(); 
+   }
+ | '{' { enter_scope(); } STMNTS '}' { $$ = $3; $$->scope_table = current_table; exit_scope(); }
  | '{' '}'                      { $$ = create_node("BLOCK", "empty"); }
  | EXPR ';'                     { $$ = create_node("EXPR_STMT", NULL); add_child($$, $1); }
  | DECLSTATEMENT                { $$ = $1; }
  | FUNCDECL                     { $$ = $1; }
+ | CLASSDECL                    { $$ = $1; }
+ | ABSTRACTCLASS                { $$ = $1; }
  | RETURN EXPR ';'              {
                                     has_return_statement = 1;
                                     $$ = create_node("RETURN", NULL); add_child($$, $2);
-                                    if (current_function_return_type == NULL) {
-                                        fprintf(stderr, "Error at line %d: return statement found outside of a function.\n", yylineno);
-                                    } else if (strcmp(current_function_return_type, "void") == 0) {
-                                        fprintf(stderr, "Error at line %d: A 'void' function cannot return a value.\n", yylineno);
-                                    } else if (!are_types_compatible(current_function_return_type, $2->data_type)) {
-                                        fprintf(stderr, "Error at line %d: Incompatible return type. Function expects '%s' but got '%s'.\n", yylineno, current_function_return_type, $2->data_type);
+                                    if (current_function_return_type && !are_types_compatible(current_function_return_type, $2->data_type)) {
+                                        fprintf(stderr, "Error line %d: Incompatible return type. Function expects '%s' but got '%s'.\n", yylineno, current_function_return_type, $2->data_type);
                                     }
                                 }
  | RETURN ';'                   {
                                     has_return_statement = 1;
                                     $$ = create_node("RETURN", "empty");
-                                    if (current_function_return_type == NULL) {
-                                        fprintf(stderr, "Error at line %d: return statement found outside of a function.\n", yylineno);
-                                    } else if (strcmp(current_function_return_type, "void") != 0) {
-                                        fprintf(stderr, "Error at line %d: Non-void function must return a value of type '%s'.\n", yylineno, current_function_return_type);
+                                    if (current_function_return_type && strcmp(current_function_return_type, "void") != 0) {
+                                        fprintf(stderr, "Error line %d: Non-void function must return a value.\n", yylineno);
                                     }
                                 }
  | BREAK ';'                    { $$ = create_node("BREAK", NULL); }
@@ -271,63 +280,46 @@ A: ASNEXPR ';'                  { $$ = $1; }
  | ';'                          { $$ = create_node("EMPTY_STMT", NULL); }
  ;
 
-FUNC_HEADER: TYPE IDEN '(' PARAMLIST ')' {
-                 $$ = create_node("FUNC_HEADER", NULL);
-                 add_child($$, $1); // TYPE node
-                 Node* iden_node = create_node("IDEN_VAL", $2); // Use different type to avoid confusion
-                 add_child($$, iden_node);
-                 add_child($$, $4); // PARAMLIST node
-             }
+/* FOR loop optional parts */
+OPT_ASNEXPR: ASNEXPR { $$ = $1; }
+           | DECLSTATEMENT { $$ = $1; }
+           | /* empty */ { $$ = create_node("EMPTY_EXPR", NULL); }
            ;
 
-FUNCDECL: FUNC_HEADER ';' {
-              // This is a function prototype
-              Node* header = $1;
-              Node* type_node = header->children[0];
-              Node* iden_node = header->children[1];
-              insert_symbol(iden_node->value, type_node->value);
-              
-              $$ = create_node("FUNC_DECL", iden_node->value);
-              add_child($$, type_node);
-              add_child($$, header->children[2]); // PARAMLIST
-          }
-        | FUNC_HEADER '{' {
-              // This is the start of a function definition
-              Node* header = $1;
-              Node* type_node = header->children[0];
-              Node* iden_node = header->children[1];
-              Node* params_node = header->children[2];
+OPT_BOOLEXPR: BOOLEXPR { $$ = $1; }
+            | /* empty */ { $$ = create_node("EMPTY_EXPR", NULL); }
+            ;
 
-              // Check for re-declaration or conflicting types
-              Symbol* s = lookup_symbol(iden_node->value);
-              if (s != NULL && s->scope == current_table->scope) {
-                  if (strcmp(s->type, type_node->value) != 0) {
-                       fprintf(stderr, "Error at line %d: Conflicting return types for function '%s'. Previous declaration was '%s'.\n", yylineno, iden_node->value, s->type);
-                  }
-              } else {
-                   insert_symbol(iden_node->value, type_node->value);
-              }
-              
-              current_function_return_type = type_node->value;
+OPT_EXPR: EXPR { $$ = $1; }
+        | /* empty */ { $$ = create_node("EMPTY_EXPR", NULL); }
+        ;
+
+FUNCDECL: /*TYPE IDEN '(' PARAMLIST ')' ';' {
+              insert_symbol($2, $1->value, "function_prototype");
+              $$ = create_node("FUNC_PROTO", $2);
+              add_child($$, $1);
+              add_child($$, $4);
+          }
+        | */TYPE IDEN '(' {
+              insert_symbol($2, $1->value, current_class_name ? "member_func" : "function");
+              current_function_return_type = $1->value;
               has_return_statement = 0;
-              
               enter_scope();
-              add_params_to_scope(params_node); // Add params to the new scope
-          } STMNTS '}' {
-              // End of function definition
+          } PARAMLIST ')' '{' STMNTS '}' {
+              SymbolTable* func_scope = current_table;
               if (strcmp(current_function_return_type, "void") != 0 && !has_return_statement) {
-                  fprintf(stderr, "Error at line %d: Missing return statement in non-void function.\n", yylineno);
+                  fprintf(stderr, "Error at line %d: Missing return statement in non-void function '%s'.\n", yylineno, $2);
               }
               exit_scope();
               current_function_return_type = NULL;
               
-              $$ = create_node("FUNC_DEF", $1->children[1]->value);
-              add_child($$, $1->children[0]); // TYPE
-              add_child($$, $1->children[2]); // PARAMLIST
-              add_child($$, $4); // STMNTS
+              $$ = create_node("FUNC_DEF", $2);
+              add_child($$, $1);
+              add_child($$, $5);
+              add_child($$, $8);
+              $$->scope_table = func_scope;
           }
         ;
-
 
 PARAMLIST: PARAM ',' PARAMLIST { $$ = create_node("PARAM_LIST", NULL); add_child($$, $1); add_child($$, $3); }
          | PARAM               { $$ = create_node("PARAM_LIST", NULL); add_child($$, $1); }
@@ -335,19 +327,17 @@ PARAMLIST: PARAM ',' PARAMLIST { $$ = create_node("PARAM_LIST", NULL); add_child
          ;
 
 PARAM: TYPE IDEN {
-        // Symbol insertion is now handled by FUNCDECL rule
+        insert_symbol($2, $1->value, "variable");
         $$ = create_node("PARAM", $2);
         add_child($$, $1);
-        $$->data_type = $1->value;
      }
      | TYPE IDEN INDEX {
-        // Symbol insertion is now handled by FUNCDECL rule
-        char array_type[50];
-        sprintf(array_type, "array(%s)", $1->value);
+        char* array_type = build_array_type($1->value, $3);
+        insert_symbol($2, array_type, "variable");
         $$ = create_node("PARAM_ARRAY", $2);
         add_child($$, $1);
         add_child($$, $3);
-        $$->data_type = strdup(array_type);
+        free(array_type);
      }
      ;
 
@@ -356,6 +346,14 @@ DECLSTATEMENT: TYPE DECLLIST ';' {
                  add_child($$, $1);
                  add_child($$, $2);
                }
+            //  | TYPE DECLLIST error  { 
+            //      yyerrok; 
+            //      $$ = create_node("DECL_STMT_ERROR", NULL);
+            //      add_child($$, $1);
+            //      add_child($$, $2);
+            //      fprintf(stderr, "Error at line %d: Malformed declaration, likely missing semicolon.\n", yylineno);
+            //    }
+            
              ;
 
 DECLLIST: DECL ',' DECLLIST { $$ = $3; add_child($$, $1); }
@@ -363,33 +361,32 @@ DECLLIST: DECL ',' DECLLIST { $$ = $3; add_child($$, $1); }
         ;
 
 DECL: IDEN {
-        insert_symbol($1, current_decl_type);
+        insert_symbol($1, current_decl_type, current_class_name ? "member_var" : "variable");
         $$ = create_node("VAR_DECL", $1);
-        $$->data_type = strdup(current_decl_type);
       }
     | IDEN '=' EXPR {
-        insert_symbol($1, current_decl_type);
+        insert_symbol($1, current_decl_type, current_class_name ? "member_var" : "variable");
         if (!are_types_compatible(current_decl_type, $3->data_type)) {
-            fprintf(stderr, "Error at line %d: Incompatible types in initialization. Cannot assign '%s' to variable of type '%s'\n", yylineno, $3->data_type, current_decl_type);
+            fprintf(stderr, "Error line %d: Incompatible types in initialization. Cannot assign '%s' to '%s'\n", yylineno, $3->data_type, current_decl_type);
         }
         $$ = create_node("VAR_INIT", $1);
         add_child($$, $3);
-        $$->data_type = strdup(current_decl_type);
       }
     | IDEN INDEX {
-        char array_type[50];
-        sprintf(array_type, "array(%s)", current_decl_type);
-        insert_symbol($1, array_type);
+        char* array_type = build_array_type(current_decl_type, $2);
+        insert_symbol($1, array_type, current_class_name ? "member_var" : "variable");
         $$ = create_node("ARRAY_DECL", $1);
         add_child($$, $2);
+        free(array_type);
       }
     | IDEN INDEX '=' '{' INITLIST '}' {
-        char array_type[50];
-        sprintf(array_type, "array(%s)", current_decl_type);
-        insert_symbol($1, array_type);
+        char* array_type = build_array_type(current_decl_type, $2);
+        insert_symbol($1, array_type, current_class_name ? "member_var" : "variable");
+        check_init_list_types($5, current_decl_type);
         $$ = create_node("ARRAY_INIT", $1);
         add_child($$, $2);
         add_child($$, $5);
+        free(array_type);
       }
     ;
 
@@ -397,18 +394,8 @@ INITLIST: INITLIST ',' EXPR { $$ = $1; add_child($$, $3); }
         | EXPR              { $$ = create_node("INIT_LIST", NULL); add_child($$, $1); }
         ;
 
-INDEX: '[' EXPR ']'       {
-        if(strcmp($2->data_type, "int") != 0) {
-            fprintf(stderr, "Error at line %d: Array index must be an integer, not '%s'\n", yylineno, $2->data_type);
-        }
-        $$ = create_node("INDEX", NULL); add_child($$, $2);
-      }
-     | '[' EXPR ']' INDEX {
-        if(strcmp($2->data_type, "int") != 0) {
-            fprintf(stderr, "Error at line %d: Array index must be an integer, not '%s'\n", yylineno, $2->data_type);
-        }
-        $$ = create_node("INDEX", NULL); add_child($$, $2); add_child($$, $4);
-      }
+INDEX: '[' EXPR ']' { $$ = create_node("INDEX", NULL); add_child($$, $2); }
+     | '[' EXPR ']' INDEX { $$ = create_node("INDEX", NULL); add_child($$, $2); add_child($$, $4); }
      ;
 
 TYPE: INT    { current_decl_type = "int"; $$ = create_node("TYPE", "int"); }
@@ -428,7 +415,7 @@ ASSGN: '='  { $$ = create_node("ASSIGN_OP", "="); }
 LVAL: IDEN {
         Symbol* s = lookup_symbol($1);
         if (s == NULL) {
-            fprintf(stderr, "Error at line %d: Variable '%s' not defined\n", yylineno, $1);
+            fprintf(stderr, "Error line %d: Variable '%s' not defined\n", yylineno, $1);
             $$ = create_node("IDEN", $1);
         } else {
             $$ = create_node("IDEN", $1);
@@ -437,74 +424,79 @@ LVAL: IDEN {
       }
     | IDEN INDEX {
         Symbol* s = lookup_symbol($1);
-        char base_type[50] = "undefined";
+        char* current_type;
         if (s == NULL) {
-            fprintf(stderr, "Error at line %d: Array '%s' not defined\n", yylineno, $1);
+            fprintf(stderr, "Error line %d: Array '%s' not defined\n", yylineno, $1);
+            current_type = strdup("undefined");
         } else {
-             // Extract base type e.g., from "array(int)" to "int"
-            sscanf(s->type, "array(%[^)])", base_type);
+            current_type = strdup(s->type);
         }
+
+        Node* index_node = $2;
+        while (index_node != NULL) {
+            Node* expr_node = index_node->children[0];
+            if (strcmp(expr_node->data_type, "int") != 0) {
+                fprintf(stderr, "Error line %d: Array index for '%s' is not an integer (got '%s')\n", yylineno, $1, expr_node->data_type);
+            }
+            if (strncmp(current_type, "array(", 6) == 0) {
+                char* temp = strdup(current_type + 6);
+                temp[strlen(temp) - 1] = '\0';
+                free(current_type);
+                current_type = temp;
+            } else {
+                fprintf(stderr, "Error line %d: Too many dimensions for array '%s'. '%s' is not an array type.\n", yylineno, $1, current_type);
+                free(current_type);
+                current_type = strdup("undefined");
+                break;
+            }
+            if (index_node->num_children == 2) {
+                index_node = index_node->children[1];
+            } else {
+                index_node = NULL;
+            }
+        }
+        
         $$ = create_node("ARRAY_ACCESS", $1);
         add_child($$, $2);
-        $$->data_type = strdup(base_type);
+        $$->data_type = current_type;
       }
     ;
 
 ASNEXPR: LVAL ASSGN EXPR {
            if (!are_types_compatible($1->data_type, $3->data_type)) {
-               fprintf(stderr, "Error at line %d: Type mismatch in assignment. Cannot assign '%s' to '%s'\n", yylineno, $3->data_type, $1->data_type);
+               fprintf(stderr, "Error line %d: Type mismatch in assignment. Cannot assign '%s' to '%s'\n", yylineno, $3->data_type, $1->data_type);
            }
            $$ = create_node("ASSIGN", NULL);
            add_child($$, $1);
            add_child($$, $2);
            add_child($$, $3);
          }
+       | EXPR { $$ = $1; }
        ;
 
-BOOLEXPR: BOOLEXPR OR M BOOLEXPR   { $$ = create_node("BOOL_OP", "||"); add_child($$, $1); add_child($$, $4); $$->data_type = "bool"; }
-        | BOOLEXPR AND M BOOLEXPR  { $$ = create_node("BOOL_OP", "&&"); add_child($$, $1); add_child($$, $4); $$->data_type = "bool"; }
-        | '!' BOOLEXPR             { $$ = create_node("BOOL_OP", "!"); add_child($$, $2); $$->data_type = "bool"; }
+BOOLEXPR: BOOLEXPR OR M BOOLEXPR   { $$ = create_node("BOOL_OP", "||"); add_child($$, $1); add_child($$, $4); $$->data_type="bool"; }
+        | BOOLEXPR AND M BOOLEXPR  { $$ = create_node("BOOL_OP", "&&"); add_child($$, $1); add_child($$, $4); $$->data_type="bool"; }
+        | '!' BOOLEXPR             { $$ = create_node("BOOL_OP", "!"); add_child($$, $2); $$->data_type="bool"; }
         | '(' BOOLEXPR ')'         { $$ = $2; }
-        | EXPR LT EXPR             { if(strcmp($1->data_type, $3->data_type) != 0 && strcmp($1->data_type, "undefined") != 0 && strcmp($3->data_type, "undefined") != 0) fprintf(stderr, "Error at line %d: Incompatible types for operator '<'. Operands must be of the same type, but are '%s' and '%s'.\n", yylineno, $1->data_type, $3->data_type); $$ = create_node("REL_OP", "<"); add_child($$, $1); add_child($$, $3); $$->data_type = "bool"; }
-        | EXPR GT EXPR             { if(strcmp($1->data_type, $3->data_type) != 0 && strcmp($1->data_type, "undefined") != 0 && strcmp($3->data_type, "undefined") != 0) fprintf(stderr, "Error at line %d: Incompatible types for operator '>'. Operands must be of the same type, but are '%s' and '%s'.\n", yylineno, $1->data_type, $3->data_type); $$ = create_node("REL_OP", ">"); add_child($$, $1); add_child($$, $3); $$->data_type = "bool"; }
-        | EXPR EQ EXPR             { if(strcmp($1->data_type, $3->data_type) != 0 && strcmp($1->data_type, "undefined") != 0 && strcmp($3->data_type, "undefined") != 0) fprintf(stderr, "Error at line %d: Incompatible types for operator '=='. Operands must be of the same type, but are '%s' and '%s'.\n", yylineno, $1->data_type, $3->data_type); $$ = create_node("REL_OP", "=="); add_child($$, $1); add_child($$, $3); $$->data_type = "bool"; }
-        | EXPR NE EXPR             { if(strcmp($1->data_type, $3->data_type) != 0 && strcmp($1->data_type, "undefined") != 0 && strcmp($3->data_type, "undefined") != 0) fprintf(stderr, "Error at line %d: Incompatible types for operator '!='. Operands must be of the same type, but are '%s' and '%s'.\n", yylineno, $1->data_type, $3->data_type); $$ = create_node("REL_OP", "!="); add_child($$, $1); add_child($$, $3); $$->data_type = "bool"; }
-        | EXPR LE EXPR             { if(strcmp($1->data_type, $3->data_type) != 0 && strcmp($1->data_type, "undefined") != 0 && strcmp($3->data_type, "undefined") != 0) fprintf(stderr, "Error at line %d: Incompatible types for operator '<='. Operands must be of the same type, but are '%s' and '%s'.\n", yylineno, $1->data_type, $3->data_type); $$ = create_node("REL_OP", "<="); add_child($$, $1); add_child($$, $3); $$->data_type = "bool"; }
-        | EXPR GE EXPR             { if(strcmp($1->data_type, $3->data_type) != 0 && strcmp($1->data_type, "undefined") != 0 && strcmp($3->data_type, "undefined") != 0) fprintf(stderr, "Error at line %d: Incompatible types for operator '>='. Operands must be of the same type, but are '%s' and '%s'.\n", yylineno, $1->data_type, $3->data_type); $$ = create_node("REL_OP", ">="); add_child($$, $1); add_child($$, $3); $$->data_type = "bool"; }
-        | TR                       { $$ = create_node("BOOL_CONST", "true"); $$->data_type = "bool"; }
-        | FL                       { $$ = create_node("BOOL_CONST", "false"); $$->data_type = "bool"; }
+        | EXPR LT EXPR             { $$ = create_node("REL_OP", "<"); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
+        | EXPR GT EXPR             { $$ = create_node("REL_OP", ">"); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
+        | EXPR EQ EXPR             { $$ = create_node("REL_OP", "=="); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
+        | EXPR NE EXPR             { $$ = create_node("REL_OP", "!="); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
+        | EXPR LE EXPR             { $$ = create_node("REL_OP", "<="); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
+        | EXPR GE EXPR             { $$ = create_node("REL_OP", ">="); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
+        | TR                       { $$ = create_node("BOOL_CONST", "true"); $$->data_type="bool"; }
+        | FL                       { $$ = create_node("BOOL_CONST", "false"); $$->data_type="bool"; }
         ;
 
-EXPR: EXPR '+' EXPR {
-        if(!is_numeric($1->data_type) || !is_numeric($3->data_type)) fprintf(stderr, "Error at line %d: Operands for '+' must be numeric.\n", yylineno);
-        $$ = create_node("BIN_OP", "+"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type);
-      }
-    | EXPR '-' EXPR {
-        if(!is_numeric($1->data_type) || !is_numeric($3->data_type)) fprintf(stderr, "Error at line %d: Operands for '-' must be numeric.\n", yylineno);
-        $$ = create_node("BIN_OP", "-"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type);
-      }
-    | EXPR '*' EXPR {
-        if(!is_numeric($1->data_type) || !is_numeric($3->data_type)) fprintf(stderr, "Error at line %d: Operands for '*' must be numeric.\n", yylineno);
-        $$ = create_node("BIN_OP", "*"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type);
-      }
-    | EXPR '/' EXPR {
-        if(!is_numeric($1->data_type) || !is_numeric($3->data_type)) fprintf(stderr, "Error at line %d: Operands for '/' must be numeric.\n", yylineno);
-        $$ = create_node("BIN_OP", "/"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type);
-      }
-    | EXPR '%' EXPR {
-        if(strcmp($1->data_type, "int") != 0 || strcmp($3->data_type, "int") != 0) fprintf(stderr, "Error at line %d: Operands for '%%' must be integers.\n", yylineno);
-        $$ = create_node("BIN_OP", "%"); add_child($$, $1); add_child($$, $3); $$->data_type = "int";
-      }
-    | BOOLEXPR '?' EXPR ':' EXPR {
-        if(strcmp($3->data_type, $5->data_type) != 0) fprintf(stderr, "Error at line %d: Type mismatch in ternary operator branches ('%s' and '%s').\n", yylineno, $3->data_type, $5->data_type);
-        $$ = create_node("TERNARY_OP", NULL); add_child($$, $1); add_child($$, $3); add_child($$, $5); $$->data_type = $3->data_type;
-      }
+EXPR: EXPR '+' EXPR { $$ = create_node("BIN_OP", "+"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type); }
+    | EXPR '-' EXPR { $$ = create_node("BIN_OP", "-"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type); }
+    | EXPR '*' EXPR { $$ = create_node("BIN_OP", "*"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type); }
+    | EXPR '/' EXPR { $$ = create_node("BIN_OP", "/"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type); }
+    | EXPR '%' EXPR { $$ = create_node("BIN_OP", "%"); add_child($$, $1); add_child($$, $3); $$->data_type = "int"; }
+    | BOOLEXPR '?' EXPR ':' EXPR { $$ = create_node("TERNARY_OP", NULL); add_child($$, $1); add_child($$, $3); add_child($$, $5); $$->data_type = $3->data_type; }
     | FUNC_CALL     { $$ = $1; }
     | TERM          { $$ = $1; }
-    | '-' EXPR %prec UMINUS {
-        if(!is_numeric($2->data_type)) fprintf(stderr, "Error at line %d: Unary minus operator requires a numeric type, not '%s'.\n", yylineno, $2->data_type);
-        $$ = create_node("UN_OP", "-"); add_child($$, $2); $$->data_type = strdup($2->data_type);
-      }
+    | '-' EXPR %prec UMINUS { $$ = create_node("UN_OP", "-"); add_child($$, $2); $$->data_type = strdup($2->data_type); }
     ;
 
 FUNC_CALL: IDEN '(' ARGLIST ')' {
@@ -512,10 +504,10 @@ FUNC_CALL: IDEN '(' ARGLIST ')' {
             $$ = create_node("FUNC_CALL", $1);
             add_child($$, $3);
             if (s == NULL) {
-                fprintf(stderr, "Error at line %d: Function '%s' is not defined.\n", yylineno, $1);
-                $$->data_type = strdup("undefined");
+                fprintf(stderr, "Error line %d: Function '%s' is not defined.\n", yylineno, $1);
+                $$->data_type = "undefined";
             } else {
-                $$->data_type = strdup(s->type); // The 'type' of the function symbol is its return type.
+                $$->data_type = strdup(s->type);
             }
          }
          ;
@@ -526,27 +518,139 @@ ARGLIST: EXPR ',' ARGLIST { $$ = $3; add_child($$, $1); }
        ;
 
 TERM: LVAL { $$ = $1; }
-    | NUM  { $$ = create_node("NUM", $1); $$->data_type = (strchr($1, '.') ? strdup("float") : strdup("int")); }
-    | CHR  { $$ = create_node("CHAR_LIT", $1); $$->data_type = strdup("char"); }
-    | STR  { $$ = create_node("STRING_LIT", $1); $$->data_type = strdup("string"); }
+    | NUM  { $$ = create_node("NUM", $1); $$->data_type = (strchr($1, '.') ? "float" : "int"); }
+    | STR  { $$ = create_node("STRING_LIT", $1); $$->data_type = "string"; }
+    | CHR  { $$ = create_node("CHAR_LIT", $1); $$->data_type = "char"; }
+    // | TR   { $$ = create_node("BOOL_CONST", "true"); $$->data_type="bool"; }
+    // | FL   { $$ = create_node("BOOL_CONST", "false"); $$->data_type="bool"; }
     | '(' EXPR ')' { $$ = $2; }
-    | LVAL INC {
-        if(!is_numeric($1->data_type)) fprintf(stderr, "Error at line %d: Cannot increment non-numeric type '%s'.\n", yylineno, $1->data_type);
-        $$ = create_node("POST_INC", "++"); add_child($$, $1); $$->data_type = $1->data_type;
-      }
-    | LVAL DEC {
-        if(!is_numeric($1->data_type)) fprintf(stderr, "Error at line %d: Cannot decrement non-numeric type '%s'.\n", yylineno, $1->data_type);
-        $$ = create_node("POST_DEC", "--"); add_child($$, $1); $$->data_type = $1->data_type;
-      }
-    | INC LVAL {
-        if(!is_numeric($2->data_type)) fprintf(stderr, "Error at line %d: Cannot increment non-numeric type '%s'.\n", yylineno, $2->data_type);
-        $$ = create_node("PRE_INC", "++"); add_child($$, $2); $$->data_type = $2->data_type;
-      }
-    | DEC LVAL {
-        if(!is_numeric($2->data_type)) fprintf(stderr, "Error at line %d: Cannot decrement non-numeric type '%s'.\n", yylineno, $2->data_type);
-        $$ = create_node("PRE_DEC", "--"); add_child($$, $2); $$->data_type = $2->data_type;
-      }
+    | LVAL INC { $$ = create_node("POST_INC", "++"); add_child($$, $1); $$->data_type = $1->data_type; }
+    | LVAL DEC { $$ = create_node("POST_DEC", "--"); add_child($$, $1); $$->data_type = $1->data_type; }
+    | INC LVAL { $$ = create_node("PRE_INC", "++"); add_child($$, $2); $$->data_type = $2->data_type; }
+    | DEC LVAL { $$ = create_node("PRE_DEC", "--"); add_child($$, $2); $$->data_type = $2->data_type; }
     ;
+
+/* --- OOP Grammar --- */
+CLASSDECL: CLASS IDEN OPT_INHERIT '{' CLASSBODY '}' ';' {
+            $$ = create_node("CLASS_DECL", $2);
+            add_child($$, $3); // OPT_INHERIT
+            add_child($$, $5); // CLASSBODY
+            $$->scope_table = current_table;
+            exit_scope();
+            current_class_name = NULL;
+            current_class_info = NULL;
+           };
+
+OPT_INHERIT: ':' INHERITLIST {
+                $$ = $2;
+             }
+           | /* empty */ {
+                // Actions for when a class is declared (before body)
+                // This is a bit tricky since IDEN is consumed before OPT_INHERIT
+                // We'll handle this in CLASSDECL before OPT_INHERIT is parsed.
+                // For now, just create an empty node.
+                $$ = create_node("NO_INHERITANCE", NULL);
+             }
+           ;
+
+INHERITLIST: ACCESS IDEN {
+                $$ = create_node("INHERIT_LIST", NULL);
+                Node* inherit_item = create_node("INHERIT_ITEM", $2);
+                add_child(inherit_item, $1);
+                add_child($$, inherit_item);
+             }
+           | ACCESS IDEN ',' INHERITLIST {
+                $$ = $4;
+                Node* inherit_item = create_node("INHERIT_ITEM", $2);
+                add_child(inherit_item, $1);
+                add_child($$, inherit_item);
+             }
+           ;
+
+
+CLASSBODY: CLASSBODY CLASSMEMBER { $$ = $1; add_child($$, $2); }
+         | CLASSMEMBER           { $$ = create_node("CLASS_BODY", NULL); add_child($$, $1); }
+         ;
+
+CLASSMEMBER: ACCESS MODIFIER_DECL { 
+                current_access_spec = $1->value; 
+                $$ = $2; 
+             }
+           | ACCESS FUNCDECL { 
+                current_access_spec = $1->value; 
+                $$ = $2; 
+             }
+           | ACCESS ABSTRACTFUNC {
+                current_access_spec = $1->value;
+                $$ = $2;
+             }
+           | ACCESS CONSTRUCTOR { 
+                current_access_spec = $1->value; 
+                $$ = $2; 
+             }
+           | ACCESS DESTRUCTOR { 
+                current_access_spec = $1->value; 
+                $$ = $2; 
+             }
+           ;
+
+ACCESS: PUBLIC    { $$ = create_node("ACCESS", "public"); }
+      | PRIVATE   { $$ = create_node("ACCESS", "private"); }
+      | PROTECTED { $$ = create_node("ACCESS", "protected"); }
+      | /* empty */ { $$ = create_node("ACCESS", "private"); /* Default access */ }
+      ;
+
+MODIFIER_DECL: TYPE DECLLIST ';' {
+                $$ = create_node("MEMBER_DECL", NULL);
+                add_child($$, $1);
+                add_child($$, $2);
+              }
+              ;
+
+CONSTRUCTOR: IDEN '(' PARAMLIST ')' '{' STMNTS '}' ';' {
+                if (strcmp($1, current_class_name) != 0) {
+                    fprintf(stderr, "Error line %d: Constructor name '%s' must match class name '%s'.\n", yylineno, $1, current_class_name);
+                }
+                $$ = create_node("CONSTRUCTOR", $1);
+                add_child($$, $3);
+                add_child($$, $6);
+             }
+             ;
+
+DESTRUCTOR: '~' IDEN '(' ')' '{' STMNTS '}' ';' {
+                if (strcmp($2, current_class_name) != 0) {
+                    fprintf(stderr, "Error line %d: Destructor name '~%s' must match class name '%s'.\n", yylineno, $2, current_class_name);
+                }
+                $$ = create_node("DESTRUCTOR", $2);
+                add_child($$, $6);
+            }
+            ;
+
+ABSTRACTCLASS: ABSTRACT CLASS IDEN OPT_INHERIT '{' ABSTRACTBODY '}' ';' {
+                $$ = create_node("ABSTRACT_CLASS", $3);
+                add_child($$, $4);
+                add_child($$, $6);
+                exit_scope();
+                current_class_name = NULL;
+             }
+             ;
+
+ABSTRACTBODY: ABSTRACTBODY ABSTRACTMEMBER { $$ = $1; add_child($$, $2); }
+            | ABSTRACTMEMBER             { $$ = create_node("ABSTRACT_BODY", NULL); add_child($$, $1); }
+            ;
+
+ABSTRACTMEMBER: ACCESS ABSTRACTFUNC { current_access_spec = $1->value; $$ = $2; }
+              ;
+
+ABSTRACTFUNC: TYPE IDEN '(' PARAMLIST ')' ';' {
+                insert_symbol($2, $1->value, "abstract_method");
+                $$ = create_node("ABSTRACT_FUNC", $2);
+                add_child($$, $1);
+                add_child($$, $4);
+              }
+              ;
+/* --- End OOP Grammar --- */
+
 
 /* Markers */
 M:  { $$ = NULL; }

@@ -1,0 +1,43 @@
+class TestClass {
+   public int publicVar;
+        public void publicMethod() {
+            publicVar = 10;
+        }
+
+    private int privateVar;
+
+    protected int protectedVar;
+
+};
+
+/* This is a sample test case for the compiler.
+   It includes variable declarations, function definitions,
+   control flow statements, and expressions.
+*/
+
+// Single line comment example
+
+
+int compute_sum(int a, int b) {
+    int sum = a + b;
+    return sum;
+}
+
+void main() {
+    int var1;
+    int var2 = 15; // var initialization
+    float gh = 20.5;
+    if(gh > 10.0) {
+        var1 = 100;
+    } else {
+        var1 = 200;
+        if(var2 < 20) {
+            var1 = 300;
+        }
+    }
+    string strVar = "Test HELLO";
+    char charVar = 'A';
+    int localVar = 5;
+    var1 = compute_sum(var2, gh);
+    localVar = localVar + 10;
+}

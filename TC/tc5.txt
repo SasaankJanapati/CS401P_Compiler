@@ -1,7 +1,6 @@
 
 
-int transform(int data_point, int salt);
-void init_array(int arr[10], int size);
+
 
 void main() {
     int numbers[10];

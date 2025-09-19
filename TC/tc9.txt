@@ -1,8 +1,29 @@
-string GREETING = "Hello, World!";
-char SPECIAL_CHAR = '$';
 
-int count_vowels(string s);
-void reverse_string(string s);
+
+
+void reverse_string(string s) {
+    
+    int placeholder = 0;
+    if (placeholder == 0) {
+        string reversed_message = "gnirts desrever";
+    }
+    return;
+}
+
+int count_vowels(string s) {
+    int count = 0;
+    char current_char;
+
+
+    for ( i = 0; i < 10; i++) {
+
+        current_char = 'a'; 
+        if (current_char == 'a' || current_char == 'e' || current_char == 'i' || current_char == 'o' || current_char == 'u') {
+            count = count + 1;
+        }
+    }
+    return count;
+}
 
 void main() {
     string sample_text = "This is a test string for the compiler.";
@@ -22,28 +43,7 @@ void main() {
     }
 }
 
-int count_vowels(string s) {
-    int count = 0;
-    int i = 0;
-    char current_char;
 
 
-    for (i = 0; i < 10; i = i + 1) {
 
-        current_char = 'a'; 
-        if (current_char == 'a' || current_char == 'e' || current_char == 'i' || current_char == 'o' || current_char == 'u') {
-            count = count + 1;
-        }
-    }
-    return count;
-}
-
-void reverse_string(string s) {
-    
-    int placeholder = 0;
-    if (placeholder == 0) {
-        string reversed_message = "gnirts desrever";
-    }
-    return;
-}
 

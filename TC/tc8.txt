@@ -1,16 +1,20 @@
-int get_value() {
+int get_value(int y) {
     int x = 10;
+    return x + y;
 }
 
 void set_value(int val) {
-    int local = val;
-    return local; 
+    int local = val; 
 }
 
 void main() {
     int an_int;
-    float a_float = 10.5;
+    int a_float = 10;
+    float a_float2 = 5.5;
+    int z = 3;
     int my_array[5];
+
+    an_int = get_value(z);
 
     an_int = a_float;
 
@@ -18,8 +22,6 @@ void main() {
 
     an_int = z + 1;
 
-    int a_float = 5;
-
-    my_array[2.5] = 100;
+    my_array[2] = 100;
 }
 
