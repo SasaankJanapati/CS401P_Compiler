@@ -910,3 +910,313 @@ void generate_code_for_boolean_expr(Node* node, int true_label, int false_label,
     }
     code_gen_depth--;
 }
+
+
+void generate_code_for_expr(Node* node, SymbolTable* scope) {
+    if (!node) return;
+    debug_print("Gen EXPR for: %s (%s)", node->type, node->value ? node->value : "");
+    code_gen_depth++;
+
+    if (strcmp(node->type, "NUM") == 0 && node->data_type == "int") {
+        emit("PUSH %s", node->value);
+    } else if (strcmp(node->type, "NUM") == 0 && node->data_type == "float") {
+        emit("FPUSH %s", node->value);
+    }
+    else if (strcmp(node->type, "STRING_LIT") == 0) {
+        int index = get_string_label_index(node->value);
+        if (index != -1) {
+            emit("PUSH STR_%d  ; Push address of string literal %s", index, node->value);
+        }
+    } else if (strcmp(node->type, "CHAR_LIT") == 0) {
+        int ascii_val = (int)node->value[1];
+        emit("PUSH %d      ; Push ASCII for char %s", ascii_val, node->value);
+    } else if (strcmp(node->type, "IDEN") == 0) {
+        Symbol* s = lookup_symbol_codegen(node->value, scope);
+        if (s) {
+            emit("LOAD %d  ; Load %s", s->address, s->name);
+        } else {
+            fprintf(stderr, "Codegen Error: Undefined symbol '%s'\n", node->value);
+        }
+    } else if (strcmp(node->type, "BIN_OP") == 0) {
+        generate_code_for_expr(node->children[0], scope);
+        generate_code_for_expr(node->children[1], scope);
+        if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "int") == 0) emit("IADD");
+        else if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "float") == 0) emit("FADD");
+        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "int") == 0) emit("ISUB");
+        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "float") == 0) emit("FSUB");
+        else if (strcmp(node->value, "*") == 0 && strcmp(node->data_type, "int") == 0) emit("IMUL");
+        else if (strcmp(node->value, "*") == 0 && strcmp(node->data_type, "float") == 0) emit("FMUL");
+        else if (strcmp(node->value, "/") == 0 && strcmp(node->data_type, "int") == 0) emit("IDIV");
+        else if (strcmp(node->value, "/") == 0 && strcmp(node->data_type, "float") == 0) emit("FDIV");
+        else if (strcmp(node->value, "%") == 0 && strcmp(node->data_type, "int") == 0) emit("IMOD");
+    } else if (strcmp(node->type, "UN_OP") == 0) {
+        generate_code_for_expr(node->children[0], scope);
+        if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "int") == 0) emit("INEG");
+        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "float") == 0) emit("FNEG");
+    } else if (strcmp(node->type, "FUNC_CALL") == 0) {
+        Node* arg_list = node->children[0];
+        for (int i = arg_list->num_children - 1; i >= 0; i--) {
+            generate_code_for_expr(arg_list->children[i], scope);
+        }
+        emit("CALL %s", node->value);
+    } else if (strcmp(node->type, "REL_OP") == 0 || strcmp(node->type, "BOOL_OP") == 0 || strcmp(node->type, "BOOL_CONST") == 0) {
+        int true_label = new_label();
+        int end_label = new_label();
+        generate_code_for_boolean_expr(node, true_label, end_label, scope);
+        emit("L%d:", true_label);
+        emit("PUSH 1");
+        emit("JMP L%d", end_label + 1);
+        emit("L%d:", end_label);
+        emit("PUSH 0");
+        emit("L%d:", end_label + 1);
+        label_count++;
+    }
+    code_gen_depth--;
+}
+
+void generate_code_for_statement(Node* node, SymbolTable* scope) {
+    if (!node) return;
+    debug_print("Gen STMT for: %s (%s)", node->type, node->value ? node->value : "");
+    code_gen_depth++;
+
+    if (strcmp(node->type, "ASSIGN") == 0) {
+        Node* lval = node->children[0];
+        Node* expr = node->children[2];
+        Symbol* s = lookup_symbol_codegen(lval->value, scope);
+
+        if (strcmp(lval->type, "ARRAY_ACCESS") == 0) {
+             emit("; Calculating value for array assignment...");
+             generate_code_for_expr(expr, scope);
+             emit("; ISA Limitation: Cannot generate code for array element assignment for now.");
+             emit("; Value to be stored is now on top of the stack.");
+        } else if (s) {
+            generate_code_for_expr(expr, scope);
+            emit("STORE %d ; Store to %s", s->address, s->name);
+        }
+    } else if(strcmp(node->type, "VAR_INIT") == 0) {
+        Symbol* s = lookup_symbol_codegen(node->value, scope);
+        if(s) {
+            generate_code_for_expr(node->children[0], scope);
+            emit("STORE %d ; Init %s", s->address, s->name);
+        }
+    } else if (strcmp(node->type, "IF") == 0) {
+        int end_if_label = new_label();
+        int true_label = new_label();
+        SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
+        generate_code_for_boolean_expr(node->children[0], true_label, end_if_label, next_scope);
+        emit("L%d:", true_label);
+        generate_assembly(node->children[1], next_scope); // if body
+        emit("L%d:", end_if_label);
+    } else if (strcmp(node->type, "IF_ELSE") == 0) {
+        int true_label = new_label();
+        int false_label = new_label();
+        int end_label = new_label();
+        SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
+        generate_code_for_boolean_expr(node->children[0], true_label, false_label, next_scope);
+        emit("L%d:", true_label);
+        generate_assembly(node->children[1], next_scope); // if body
+        emit("JMP L%d", end_label);
+        emit("L%d:", false_label);
+        generate_assembly(node->children[2], next_scope); // else body
+        emit("L%d:", end_label);
+    } else if (strcmp(node->type, "WHILE") == 0) {
+        int loop_start_label = new_label();
+        int loop_body_label = new_label();
+        int loop_end_label = new_label();
+        SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
+        emit("L%d:", loop_start_label);
+        generate_code_for_boolean_expr(node->children[0], loop_body_label, loop_end_label, next_scope);
+        emit("L%d:", loop_body_label);
+        generate_assembly(node->children[1], next_scope); // body
+        emit("JMP L%d", loop_start_label);
+        emit("L%d:", loop_end_label);
+    } else if (strcmp(node->type, "FOR") == 0) {
+        int loop_start_label = new_label();
+        int loop_body_label = new_label();
+        int loop_end_label = new_label();
+        SymbolTable* for_scope = node->scope_table ? node->scope_table : scope;
+
+        if(node->children[0]) {
+            generate_assembly(node->children[0], for_scope);
+        }
+        
+        emit("L%d:", loop_start_label);
+        if(node->children[1] && strcmp(node->children[1]->type, "EMPTY_EXPR") != 0) {
+            generate_code_for_boolean_expr(node->children[1], loop_body_label, loop_end_label, for_scope);
+        } else {
+            emit("JMP L%d", loop_body_label);
+        }
+
+        emit("L%d:", loop_body_label);
+        if(node->children[3]){
+             generate_assembly(node->children[3], for_scope);
+        }
+       
+        if(node->children[2] && strcmp(node->children[2]->type, "EMPTY_EXPR") != 0) {
+            generate_assembly(node->children[2], for_scope);
+        }
+        
+        emit("JMP L%d", loop_start_label);
+        emit("L%d:", loop_end_label);
+
+    } else if (strcmp(node->type, "FUNC_DEF") == 0) {
+        int locals_count = calculate_total_locals(node->scope_table);
+        int stack_depth = calculate_max_stack_depth(node->children[2]);
+        if (stack_depth < 2) stack_depth = 2; // Minimum sensible stack size
+
+        emit("\n.method %s", node->value);
+        emit(".limit stack %d", stack_depth);
+        emit(".limit locals %d", locals_count);
+
+        generate_assembly(node->children[2], node->scope_table); // Use function's own scope
+        emit("RET"); // Ensure function returns
+        emit(".endmethod");
+    } else if (strcmp(node->type, "RETURN") == 0) {
+        if (node->num_children > 0) {
+            generate_code_for_expr(node->children[0], scope);
+        }
+        //emit("RET");
+    } else if (strcmp(node->type, "EXPR_STMT") == 0) {
+        generate_code_for_expr(node->children[0], scope);
+        // Discard result if not a function call
+        if(strcmp(node->children[0]->data_type, "float") == 0) {
+            emit("FPOP"); 
+        } else if(strcmp(node->children[0]->data_type, "int") == 0 || strcmp(node->children[0]->data_type, "char") == 0) {
+            emit("POP"); 
+        }
+    }
+    code_gen_depth--;
+}
+
+
+void generate_assembly(Node* node, SymbolTable* scope) {
+    if (!node) return;
+    debug_print("Gen ASSEMBLY for: %s (%s)", node->type, node->value ? node->value : "");
+    code_gen_depth++;
+    
+    SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
+
+    if (strcmp(node->type, "PROGRAM") == 0 || strcmp(node->type, "STATEMENTS") == 0 || strcmp(node->type, "DECL_LIST") == 0) {
+        for (int i = 0; i < node->num_children; i++) {
+            generate_assembly(node->children[i], next_scope);
+        }
+    } else if (strcmp(node->type, "CLASS_DECL") == 0) {
+        emit("\n.class %s", node->value);
+        generate_assembly(node->children[1], next_scope); // children[0] is inherit, [1] is body
+        emit(".endclass");
+    }
+    else if (strcmp(node->type, "CLASS_BODY") == 0) {
+        for (int i = 0; i < node->num_children; i++) {
+            generate_assembly(node->children[i], next_scope);
+        }
+    } else if (strcmp(node->type, "DECL_STMT") == 0 || strcmp(node->type, "MEMBER_DECL") == 0) {
+         generate_assembly(node->children[1], next_scope);
+    }
+    else {
+        generate_code_for_statement(node, next_scope);
+    }
+    code_gen_depth--;
+}
+
+// --- Main & Error Functions ---
+
+int main(int argc, char **argv) {
+    if (argc > 1) {
+        yyin = fopen(argv[1], "r");
+        if (!yyin) {
+            perror(argv[1]);
+            return 1;
+        }
+    }
+    
+    yylineno = 1;
+    init_symbol_table();
+    yyparse();
+
+    if (root) {
+        FILE *output_file = fopen("parser_output.txt", "w");
+        if (output_file) {
+            write_tree_to_file(root, output_file, 0);
+            fclose(output_file);
+        }
+        
+        asm_file = fopen("code.asm", "w");
+        if(asm_file){
+            printf("\nGenerating assembly code in code.asm...\n");
+            generate_assembly(root, all_tables[0]);
+
+            if (string_pool_count > 0) {
+                fprintf(asm_file, "\n.data\n");
+                for (int i = 0; i < string_pool_count; i++) {
+                    fprintf(asm_file, "STR_%d: .word \"%s\"\n", i, string_pool[i]);
+                    free(string_pool[i]);
+                }
+            }
+            
+            
+
+            // This metadata format is now superseded by the new directives.
+            // Commenting out to avoid duplicate/conflicting output.
+            /*
+            if (class_pool_count > 0) {
+                fprintf(asm_file, "\n.classmeta\n");
+                for (int i = 0; i < class_pool_count; i++) {
+                    ClassInfo* cls = class_metadata_pool[i];
+                    fprintf(asm_file, "CLASS_BEGIN %s\n", cls->name);
+                    fprintf(asm_file, "FIELD_COUNT %d\n", cls->field_count);
+                    for (int j = 0; j < cls->field_count; j++) {
+                        fprintf(asm_file, "FIELD %s %s %s\n", cls->fields[j].name, cls->fields[j].type, cls->fields[j].access_spec);
+                    }
+                    fprintf(asm_file, "METHOD_COUNT %d\n", cls->method_count);
+                    for (int j = 0; j < cls->method_count; j++) {
+                        fprintf(asm_file, "METHOD %s %s %s\n", cls->methods[j].name, cls->methods[j].return_type, cls->methods[j].access_spec);
+                    }
+                    fprintf(asm_file, "CLASS_END\n");
+                }
+            }
+            */
+
+            fclose(asm_file);
+        }
+    }
+
+    FILE* sym_file = fopen("symbol_table.txt", "w");
+    if (sym_file) {
+        printf("\nWriting symbol table to symbol_table.txt...\n");
+        for (int i = 0; i < table_count; i++) {
+            print_table_to_file(all_tables[i], sym_file);
+        }
+        fclose(sym_file);
+    }
+
+    return 0;
+}
+
+void yyerror(const char* s) {
+    fprintf(stderr, "Parse error at line %d: %s\n", yylineno, s);
+}
+
+// --- Tree Printing Functions ---
+
+void print_tree(Node* node, int level) {
+    if (node == NULL) return;
+    for (int i = 0; i < level; i++) printf("  ");
+    printf("%s", node->type);
+    if (node->value != NULL) printf(" (%s)", node->value);
+    printf(" [type: %s]\n", node->data_type);
+    for (int i = 0; i < node->num_children; i++) {
+        print_tree(node->children[i], level + 1);
+    }
+}
+
+void write_tree_to_file(Node* node, FILE* file, int level) {
+    if (node == NULL || file == NULL) return;
+    for (int i = 0; i < level; i++) fprintf(file, "  ");
+    fprintf(file, "%s", node->type);
+    if (node->value != NULL) fprintf(file, " (%s)", node->value);
+    fprintf(file, " [type: %s]\n", node->data_type);
+    for (int i = 0; i < node->num_children; i++) {
+        write_tree_to_file(node->children[i], file, level + 1);
+    }
+}
+
