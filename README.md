@@ -7,6 +7,28 @@ This repository contains a small compiler project created for the CS401P course.
 - Sonith: In charge of the Parser, the final Stack Code generation, and setting up the project.
 - Pavan: In charge of writing all the .xyz test programs and verifying the output at every step.
 
+## Module 4 (Sept 19)
+
+Planned scope for Module 4: add grammar support for OOP concepts such as class declaration, generate stack based instructions for VM till function calls and basic OOP constructs.
+
+Current lines-of-code for key modules (from local file counts):
+
+- `parser.y` (parser/grammar): 1221 lines
+- `lexer.l` (lexer): 90 lines
+- `TC/` (testcases, all files in the folder): ~200 lines (sum of current test files)
+
+### Module 4 — current author attribution
+
+- `parser.y` total: 1221 lines
+	- Sasaank: 582 lines (+203)
+	- Sonith: 310 lines (+175)
+	- Pavan: 329 lines
+
+- `lexer.l` total: 90 lines
+	- Pavan: (+15 lines)
+
+- `TC/` : ~200 lines total (+1 new testcase) — committed by Pavan
+
 ## Module 3 (Sept 06)
 
 Planned scope for Module 3: add strict type checking, scope management and parser actions and add a comprehensive test-suite of input programs.
@@ -17,7 +39,7 @@ Current lines-of-code for key modules (from local file counts):
 - `lexer.l` (lexer): 75 lines
 - `TC/` (testcases, all files in the folder): ~195 lines (sum of current test files)
 
-### Module 2 — current author attribution
+### Module 3 — current author attribution
 
 - `parser.y` total: 635 lines
 	- Sasaank: 307 lines (+203)
