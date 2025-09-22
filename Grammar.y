@@ -177,7 +177,7 @@ TERM: IDEN
 --  | FL removed  due to reduce reduc conflicts;
  | '(' EXPR ')'
  | LVAL INC
- | LVAL DEC
+ | LVAL DEC//
  | INC LVAL
  | DEC LVAL
 ;

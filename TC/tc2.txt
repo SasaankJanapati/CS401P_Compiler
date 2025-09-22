@@ -1,12 +1,24 @@
-int a = 5;
-int b = 10;
 
-if (a < b) {
-    a = a + 1;
-} else {
-    b = b + 1;
-}
+void main() {
+    int a = 0;
+    int b = 10;
 
-while (a < 10) {
-    a = a + 1;
+    if (a < b) {
+        a = a + 1;
+    } else {
+        b = b + 1;
+    }
+
+    while(a<10)
+    {
+        a++;
+    }
+    int i =0;
+    while(i<10)
+    {
+        a++;
+        b++;
+        i++;
+    }
+    
 }

@@ -1,13 +1,15 @@
 
 
+int add(int a, int b) {
+    a = a + b;
+    int c = 2;
+    return a+b+c;
+}
+
 int main() {
     int result = 5;
-    add(result, 10);
+    int c = add(result, 10);
     return 0;
 }
 
-void add(int a, int b) {
-    a = a + b;
-    int c = 2;
-    return;
-}
+

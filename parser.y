@@ -173,6 +173,7 @@ void init_symbol_table() {
 }
 
 void enter_scope() {
+    printf("enter scope\n");
     SymbolTable* new_table = (SymbolTable*)malloc(sizeof(SymbolTable));
     new_table->count = 0;
     new_table->scope = (current_table->scope) + 1;
@@ -186,8 +187,10 @@ void enter_scope() {
 }
 
 void exit_scope() {
+    printf("exit scope\n");
     if (current_table->parent != NULL) {
         current_table = current_table->parent;
+        local_address_counter = current_table->count;
     }
 }
 
