@@ -1,6 +1,6 @@
 
 
-void test_precedence() {
+void main() {
     int a = 5, b = 10, c = 2, d = 3;
     
 
@@ -8,7 +8,7 @@ void test_precedence() {
     
 
     
-    if (a + b * 2 == 25 && c != d || !(a > b)) {
+    if (a + b * 2 == 25 && c == d || !(a > b)) {
         a = 1;
     } else {
         a = 0;
@@ -16,6 +16,7 @@ void test_precedence() {
     
    
     int x, y, z;
+    a+b;
     
     
 }

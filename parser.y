@@ -953,6 +953,82 @@ void generate_code_for_expr(Node* node, SymbolTable* scope) {
         generate_code_for_expr(node->children[0], scope);
         if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "int") == 0) emit("INEG");
         else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "float") == 0) emit("FNEG");
+    } else if (strcmp(node->type, "POST_INC") == 0) {
+        Node* lval = node->children[0];
+        Symbol* s = lookup_symbol_codegen(lval->value, scope);
+        if(s) {
+            emit("LOAD %d  ; Post-Increment: Load original value of %s", s->address, s->name);
+            emit("DUP");
+            if (strcmp(lval->data_type, "float") == 0) {
+                emit("FPUSH 1.0");
+                emit("FADD");
+            } else if(strcmp(lval->data_type, "int") == 0) {
+                emit("PUSH 1");
+                emit("IADD");
+            } else {
+                fprintf(stderr, "Codegen Error: Can Increment variable other than float or int");
+            }
+            emit("STORE %d ; Post-Increment: Store new value to %s", s->address, s->name);
+        } else {
+            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post-increment operation.\n", lval->value);
+        }
+    } else if (strcmp(node->type, "POST_DEC") == 0) {
+        Node* lval = node->children[0];
+        Symbol* s = lookup_symbol_codegen(lval->value, scope);
+        if(s) {
+            emit("LOAD %d  ; Post-Decrement: Load original value of %s", s->address, s->name);
+            emit("DUP");
+            if (strcmp(lval->data_type, "float") == 0) {
+                emit("FPUSH 1.0");
+                emit("FSUB");
+            } else if(strcmp(lval->data_type, "int") == 0) {
+                emit("PUSH 1");
+                emit("ISUB");
+            } else {
+                fprintf(stderr, "Codegen Error: Can Decrement variable other than float or int");
+            }
+            emit("STORE %d ; Post-Decrement: Store new value to %s", s->address, s->name);
+        } else {
+            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post-Decrement operation.\n", lval->value);
+        }
+    } else if (strcmp(node->type, "PRE_INC") == 0) {
+        Node* lval = node->children[0];
+        Symbol* s = lookup_symbol_codegen(lval->value, scope);
+        if(s) {
+            emit("LOAD %d  ; Pre-Increment: Load original value of %s", s->address, s->name);
+            if (strcmp(lval->data_type, "float") == 0) {
+                emit("FPUSH 1.0");
+                emit("FADD");
+            } else if(strcmp(lval->data_type, "int") == 0) {
+                emit("PUSH 1");
+                emit("IADD");
+            } else {
+                fprintf(stderr, "Codegen Error: Can Increment variable other than float or int");
+            }
+            emit("DUP");
+            emit("STORE %d ; Pre-Increment: Store new value to %s", s->address, s->name);
+        } else {
+            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post-increment operation.\n", lval->value);
+        }
+    } else if (strcmp(node->type, "PRE_DEC") == 0) {
+        Node* lval = node->children[0];
+        Symbol* s = lookup_symbol_codegen(lval->value, scope);
+        if(s) {
+            emit("LOAD %d  ; Pre-Decrement: Load original value of %s", s->address, s->name);
+            if (strcmp(lval->data_type, "float") == 0) {
+                emit("FPUSH 1.0");
+                emit("FSUB");
+            } else if(strcmp(lval->data_type, "int") == 0) {
+                emit("PUSH 1");
+                emit("ISUB");
+            } else {
+                fprintf(stderr, "Codegen Error: Can Decrement variable other than float or int");
+            }
+            emit("DUP");
+            emit("STORE %d ; Pre-Decrement: Store new value to %s", s->address, s->name);
+        } else {
+            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post-Decrement operation.\n", lval->value);
+        }
     } else if (strcmp(node->type, "FUNC_CALL") == 0) {
         Node* arg_list = node->children[0];
         for (int i = arg_list->num_children - 1; i >= 0; i--) {
