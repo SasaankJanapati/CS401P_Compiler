@@ -36,22 +36,28 @@ Node* root = NULL;
 // --- Data Structures for Symbol Table ---
 
 #define TABLE_SIZE 100
+#define MAX_PARAMS 20
+#define MAX_LOOP_DEPTH 50
 
 typedef struct Symbol {
     char* name;
     char* type;
-    char* kind;           // e.g., "variable", "function", "class", "member_var"
+    char* kind;           // e.g., "variable", "function", "class", "member_var", "object"
     char* access_spec;    // "public", "private", "protected", or "default"
     char* class_name;     // Name of the class if it's a member
     int scope;
     int line_declared;
     int address;          // For code generation (e.g., local variable index)
+    char* signature;      // For functions/methods: e.g., "(int,float)->void"
+    Node* initializer_node; // For members initialized at declaration
+    Node* dimension_info; // For arrays: points to the INDEX node from declaration
 } Symbol;
 
 typedef struct SymbolTable {
     Symbol* symbols[TABLE_SIZE];
     int count;
     int scope;
+    int base_count; // To track local variable count at scope entry
     struct SymbolTable* parent;
 } SymbolTable;
 
@@ -61,48 +67,97 @@ int table_count = 0;
 int local_address_counter = 0; // For assigning local variable addresses
 
 // --- Data Structures for Class Metadata ---
+#define MAX_PARENTS 10
+#define MAX_MEMBERS 100
+
+typedef struct ParamInfo {
+    char* type;
+} ParamInfo;
 
 typedef struct FieldInfo {
     char* name;
     char* type;
     char* access_spec;
+    Node* initializer;
 } FieldInfo;
 
 typedef struct MethodInfo {
     char* name;
     char* return_type;
     char* access_spec;
+    char* signature; // e.g., "(int,float)->void"
+    int param_count;
+    ParamInfo params[MAX_PARAMS];
+    bool is_override;
+    bool is_abstract;
+    int vtable_index; // Index in the vtable for dynamic dispatch
 } MethodInfo;
 
 typedef struct ClassInfo {
     char* name;
-    FieldInfo fields[TABLE_SIZE];
+    int parent_count;
+    char* parent_names[MAX_PARENTS];
+    struct ClassInfo* parents[MAX_PARENTS];
+
+    FieldInfo fields[MAX_MEMBERS];
     int field_count;
-    MethodInfo methods[TABLE_SIZE];
+    MethodInfo methods[MAX_MEMBERS];
     int method_count;
+
+    struct ClassInfo* mro[MAX_PARENTS + 1]; // Method Resolution Order
+    int mro_count;
+
+    bool is_abstract;
+    struct SymbolTable* symbol_table; // Symbol table for class scope
+
+    int constructors_count;
 } ClassInfo;
 
 ClassInfo* class_metadata_pool[TABLE_SIZE];
 int class_pool_count = 0;
 ClassInfo* current_class_info = NULL; // Pointer to the class currently being parsed
 
+// --- Data Structure for Constant Pool ---
+#define CONST_POOL_SIZE 256
+char* constant_pool[CONST_POOL_SIZE];
+int constant_pool_count = 0;
 
 // --- Helper Functions for Type Checking & Symbol Management ---
+
+char* get_mangled_name(const char* func_name, Node* param_list_node);
+bool is_diamond_ancestor(ClassInfo* class_info, ClassInfo* ancestor);
+void perform_diamond_check(ClassInfo* class_info);
+FieldInfo* find_field_in_hierarchy(const char* field_name, ClassInfo* class_info);
+MethodInfo* find_method_in_hierarchy(const char* method_name, const char* signature, ClassInfo* class_info);
+ClassInfo* find_class_info(const char* class_name);
+
+Symbol* lookup_symbol_codegen(char* name, SymbolTable* scope, ClassInfo* class_context);
+int get_class_index(const char* class_name);
+int get_field_index(const char* class_name, const char* field_name);
+int get_method_vtable_index(const char* class_name, const char* mangled_name);
 
 char* current_function_return_type;
 int has_return_statement;
 char* current_class_name = NULL;
 char* current_access_spec = "private"; // Default for classes
+bool in_class_func = false;
 
-// Forward declaration
-void insert_symbol(char* name, char* type, char* kind);
-Symbol* lookup_symbol_codegen(char* name, SymbolTable* scope);
+// Forward declarations
+void insert_symbol(char* name, char* type, char* kind, Node* initializer, Node* index_node);
+ClassInfo* find_class_info(const char* class_name);
 
 
 // Helper function to recursively build a nested type string for multi-dimensional arrays
 char* build_array_type(const char* base_type, Node* index_node) {
     if (index_node == NULL) {
-        return strdup(base_type);
+        if (strcmp(base_type,"int")==0) return "I";
+        else if (strcmp(base_type,"float")==0) return "F";
+        else if (strcmp(base_type,"char")==0) return "C";
+        else { 
+            char* obj_type = malloc(strlen(base_type) + 3); // L + type + ; + \0
+            sprintf(obj_type, "L%s;", base_type);
+            return obj_type;
+            } 
     }
     char* inner_type;
     // Recursively call for the rest of the dimensions
@@ -110,9 +165,17 @@ char* build_array_type(const char* base_type, Node* index_node) {
         inner_type = build_array_type(base_type, index_node->children[1]);
     } else { // base case: '[' EXPR ']'
         inner_type = strdup(base_type);
+        if (strcmp(base_type,"int")==0) inner_type = strdup("I");
+        else if (strcmp(base_type,"float")==0) inner_type = strdup("F");
+        else if (strcmp(base_type,"char")==0) inner_type = strdup("C");
+        else { 
+            char* obj_type = malloc(strlen(base_type) + 3); // L + type + ; + \0
+            sprintf(obj_type, "L%s;", base_type);
+            inner_type = obj_type;
+        }
     }
     char* final_type = malloc(strlen(inner_type) + 10);
-    sprintf(final_type, "array(%s)", inner_type);
+    sprintf(final_type, "[%s", inner_type);
     free(inner_type);
     return final_type;
 }
@@ -132,9 +195,9 @@ int are_types_compatible(char* lval_type, char* rval_type) {
     if (strcmp(lval_type, "undefined") == 0 || strcmp(rval_type, "undefined") == 0) return 1;
     if (strcmp(lval_type, rval_type) == 0) return 1;
     if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "int") == 0) return 1;
-    // Added for char and string
-    if (strcmp(lval_type, "char") == 0 && strcmp(rval_type, "char") == 0) return 1;
-    if (strcmp(lval_type, "string") == 0 && strcmp(rval_type, "string") == 0) return 1;
+    if (strncmp(lval_type, "[", 1) == 0 && strcmp(rval_type, "int") == 0) return 1; // Allow assigning 0 (null) to arrays
+    if (find_class_info(lval_type) != NULL && strcmp(rval_type, "int") == 0) return 1; // Allow assigning 0 (null) to objects
+
     return 0;
 }
 
@@ -155,11 +218,11 @@ char* get_promoted_type(char* type1, char* type2) {
 void print_table_to_file(SymbolTable* table, FILE* file) {
     if (!table || !file) return;
     fprintf(file, "\n--- Scope: %d (Parent Scope: %d) ---\n", table->scope, table->parent ? table->parent->scope : -1);
-    fprintf(file, "%-20s | %-15s | %-12s | %-12s | %-15s | %s\n", "Name", "Type", "Kind", "Access", "Class", "Line Declared");
-    fprintf(file, "------------------------------------------------------------------------------------------------------\n");
+    fprintf(file, "%-20s | %-15s | %-12s | %-12s | %-15s| %-12s | %s\n", "Name", "Type", "Kind", "Access", "Class", "Line address" ,"Line Declared");
+    fprintf(file, "--------------------------------------------------------------------------------------------------------------------\n");
     for (int i = 0; i < table->count; i++) {
         Symbol* s = table->symbols[i];
-        fprintf(file, "%-20s | %-15s | %-12s | %-12s | %-15s | %d\n", s->name, s->type, s->kind, s->access_spec, s->class_name ? s->class_name : "N/A", s->line_declared);
+        fprintf(file, "%-20s | %-15s | %-12s | %-12s | %-15s | %-12d | %d\n", s->name, s->type, s->kind, s->access_spec, s->class_name ? s->class_name : "N/A", s->address, s->line_declared);
     }
 }
 
@@ -167,73 +230,93 @@ void print_table_to_file(SymbolTable* table, FILE* file) {
 void init_symbol_table() {
     current_table = (SymbolTable*)malloc(sizeof(SymbolTable));
     current_table->count = 0;
+    current_table->base_count = 0;
     current_table->scope = 0;
     current_table->parent = NULL;
     all_tables[table_count++] = current_table;
 }
 
 void enter_scope() {
-    printf("enter scope\n");
     SymbolTable* new_table = (SymbolTable*)malloc(sizeof(SymbolTable));
     new_table->count = 0;
     new_table->scope = (current_table->scope) + 1;
     new_table->parent = current_table;
+    new_table->base_count = local_address_counter; // Save count for restoring local_address_counter on exit
     current_table = new_table;
-    all_tables[table_count++] = current_table;
+    all_tables[table_count++] = new_table;
+    fprintf(stderr, "Debug: Entered new scope %d %d\n", new_table->scope, local_address_counter);
     // Reset local address counter only when entering a function-level scope
-    if (new_table->parent->scope == 0 || current_function_return_type != NULL) { 
-        local_address_counter = 0;
-    }
+    
 }
 
 void exit_scope() {
-    printf("exit scope\n");
     if (current_table->parent != NULL) {
+        fprintf(stderr, "Debug: Exited to scope %d %d\n",local_address_counter,current_table->scope);
         current_table = current_table->parent;
-        local_address_counter = current_table->count;
+        local_address_counter = current_table->base_count; // Restore local address counter
+        fprintf(stderr, "Debug: Exited to scope %d %d\n",local_address_counter,current_table->scope);
     }
 }
 
-void insert_symbol(char* name, char* type, char* kind) {
-    for (int i = 0; i < current_table->count; i++) {
-        if (strcmp(current_table->symbols[i]->name, name) == 0) {
-            fprintf(stderr, "Error at line %d: Redeclaration of '%s'\n", yylineno, name);
+void insert_symbol(char* name, char* type, char* kind, Node* initializer, Node* index_node) {
+    if(current_table->count >= TABLE_SIZE) {
+        yyerror("Symbol table overflow.");
+        return;
+    }
+    // For local scopes, check for simple redeclaration.
+    // For class scope, overloading (functions with different signatures) is allowed.
+    for(int i = 0; i < current_table->count; i++) {
+        if(strcmp(current_table->symbols[i]->name, name) == 0) {
+            // Allow function overloading in class scope
+            if (current_class_info != NULL && strcmp(kind, "member_func") == 0) {
+                // A more robust check would involve comparing full signatures here
+                continue; 
+            }
+            fprintf(stderr, "Error line %d: Redeclaration of symbol '%s'\n", yylineno, name);
             return;
         }
     }
+    Symbol* s = (Symbol*)calloc(1, sizeof(Symbol));
+    s->name = strdup(name);
+    s->type = strdup(type);
+    s->kind = strdup(kind);
+    s->line_declared = yylineno;
+    s->access_spec = strdup(current_access_spec);
+    s->class_name = current_class_name ? strdup(current_class_name) : NULL;
+    s->dimension_info = index_node; // Store dimension info for arrays
+    if(strcmp(kind, "variable") == 0 || strcmp(kind, "parameter") == 0 || strcmp(kind, "object") == 0) {
+        s->address = local_address_counter++;
+    } else {
+        s->address = -1; // Not a stack-allocatable local variable
+    }
+        
+    current_table->symbols[current_table->count++] = s;
 
-    if (current_table->count < TABLE_SIZE) {
-        Symbol* symbol = (Symbol*)malloc(sizeof(Symbol));
-        symbol->name = strdup(name);
-        symbol->type = strdup(type);
-        symbol->kind = strdup(kind);
-        symbol->scope = current_table->scope;
-        symbol->line_declared = yylineno;
-        symbol->access_spec = strdup(current_access_spec);
-        symbol->class_name = current_class_name ? strdup(current_class_name) : NULL;
-        symbol->address = (strcmp(kind, "variable") == 0 || strcmp(kind, "member_var") == 0) ? local_address_counter++ : -1;
-        current_table->symbols[current_table->count++] = symbol;
-
-        // If inside a class, add to metadata
-        if (current_class_info) {
-            if (strcmp(kind, "member_var") == 0) {
+    // If inside a class, also add to the class's specific metadata list
+    if (current_class_info) {
+        if (strcmp(kind, "member_var") == 0) {
+            if (current_class_info->field_count < MAX_MEMBERS) {
+                fprintf(stderr, "Debug: Adding member variable '%s' to class '%s'\n", name, current_class_info->name);
                 FieldInfo* field = &current_class_info->fields[current_class_info->field_count++];
                 field->name = strdup(name);
                 field->type = strdup(type);
                 field->access_spec = strdup(current_access_spec);
-            } else if (strcmp(kind, "member_func") == 0) {
-                MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
-                method->name = strdup(name);
-                method->return_type = strdup(type);
-                method->access_spec = strdup(current_access_spec);
+                field->initializer = initializer;
+            }
+        } else if (strcmp(kind, "member_func") == 0) {
+            // This part is handled in the FUNCDECL rule to get the full signature
+        } else if (strcmp(kind, "member_obj") == 0) {
+            if (current_class_info->field_count < MAX_MEMBERS) {
+                FieldInfo* field = &current_class_info->fields[current_class_info->field_count++];
+                field->name = strdup(name);
+                field->type = strdup(type);
+                field->access_spec = strdup(current_access_spec);
+                field->initializer = initializer;
             }
         }
-    } else {
-        fprintf(stderr, "Error: Symbol table overflow.\n");
     }
 }
 
-// Original lookup for use during parsing
 Symbol* lookup_symbol(char* name) {
     SymbolTable* table = current_table;
     while (table != NULL) {
@@ -246,6 +329,267 @@ Symbol* lookup_symbol(char* name) {
     }
     return NULL;
 }
+
+Symbol* lookup_in_class_hierarchy(const char* name, ClassInfo* class_info) {
+    if (!class_info || !class_info->symbol_table) {
+        return NULL;
+    }
+
+    // Search for the member in the current class's symbol table.
+    SymbolTable* table = class_info->symbol_table;
+    for (int i = 0; i < table->count; i++) {
+        Symbol* s = table->symbols[i];
+        if (strcmp(s->kind, "member_var") == 0 && strcmp(s->name, name) == 0) {
+            return s;
+        }
+    }
+
+    // If not found, recurse on all parent classes.
+    for (int i = 0; i < class_info->parent_count; i++) {
+        Symbol* s = lookup_in_class_hierarchy(name, class_info->parents[i]);
+        if (s) {
+            return s;
+        }
+    }
+    
+    return NULL;
+}
+
+
+bool is_diamond_ancestor(ClassInfo* class_info, ClassInfo* ancestor_to_find) {
+    int paths_found = 0;
+    if (class_info == NULL) return false;
+
+    for (int i = 0; i < class_info->parent_count; i++) {
+        ClassInfo* parent = class_info->parents[i];
+        if (parent == ancestor_to_find) {
+            paths_found++;
+        }
+        if (is_diamond_ancestor(parent, ancestor_to_find)) {
+            paths_found++;
+        }
+    }
+    return paths_found > 1;
+}
+
+void perform_diamond_check(ClassInfo* class_info) {
+    // First, link parent pointers from parent_names
+    for (int i = 0; i < class_info->parent_count; i++) {
+        class_info->parents[i] = find_class_info(class_info->parent_names[i]);
+        if (!class_info->parents[i]) {
+            fprintf(stderr, "Error: Parent class '%s' for class '%s' not found.\n", class_info->parent_names[i], class_info->name);
+        }
+    }
+
+    for (int i = 0; i < class_pool_count; i++) {
+        ClassInfo* potential_ancestor = class_metadata_pool[i];
+        if (class_info != potential_ancestor && is_diamond_ancestor(class_info, potential_ancestor)) {
+             fprintf(stderr, "Error at line %d: Diamond inheritance problem detected. Class '%s' is inherited multiple times by '%s'. The grammar must be extended with 'virtual' inheritance to resolve this ambiguity.\n", yylineno, potential_ancestor->name, class_info->name);
+        }
+    }
+}
+
+int get_total_field_count(ClassInfo* class_info) {
+    if (!class_info) return 0;
+    int count = class_info->field_count;
+    for (int i = 0; i < class_info->parent_count; i++) {
+        count += get_total_field_count(class_info->parents[i]);
+    }
+    return count;
+}
+
+
+// --- Helper Functions for Class and Member Lookups ---
+ClassInfo* find_class_info(const char* class_name) {
+    //fprintf(stderr, "Debug: fci Looking up class info for '%s'\n", class_name);
+    if (class_name == NULL) return NULL;
+    for (int i = 0; i < class_pool_count; i++) {
+        //fprintf(stderr, "Checking class '%s' against '%s'\n", class_metadata_pool[i]->name, class_name);
+        if (strcmp(class_metadata_pool[i]->name, class_name) == 0) {
+            return class_metadata_pool[i];
+        }
+    }
+    return NULL;
+}
+
+// Get the integer index of a class for the NEW instruction
+int get_class_index(const char* class_name) {
+    if (class_name == NULL) return -1;
+    //printf("Looking up class index for '%s'\n", class_name);
+    for (int i = 0; i < class_pool_count; i++) {
+        //printf("Checking class '%s'\n", class_metadata_pool[i]->name);
+        if (strcmp(class_metadata_pool[i]->name, class_name) == 0) {
+            return i;
+        }
+    }
+    return -1; // Not found
+}
+
+// Get the integer index of a field for GETFIELD/PUTFIELD, considering inheritance
+int get_field_index(const char* class_name, const char* field_name) {
+    ClassInfo* cls = find_class_info(class_name);
+    //fprintf(stderr, "Debug: Looking up field index for '%s' in class '%s'\n", field_name, class_name);
+    if (!cls) return -1;
+    //fprintf(stderr, "Looking up field index for '%s' in class '%s'\n", field_name, class_name);
+    // Calculate base offset from parents
+    int base_offset = 0;
+    for(int i = 0; i < cls->parent_count; i++) {
+        base_offset += get_total_field_count(cls->parents[i]);
+    }
+    //fprintf(stderr, "Base offset from parents: %d\n", base_offset);
+    
+    for (int i = 0; i < cls->field_count; i++) {
+        //fprintf(stderr, "Checking field '%s' at index %d (base offset %d) against '%s'\n", cls->fields[i].name, i, base_offset, field_name);
+        if (strcmp(cls->fields[i].name, field_name) == 0) return base_offset + i;
+    }
+    //fprintf(stderr, "Field '%s' not found in class '%s'. Checking parents...\n", field_name, class_name);
+
+    if(cls->parent_count > 0) {
+        return get_field_index(cls->parents[0]->name, field_name);
+    }
+
+    return -1;
+}
+
+
+// Get the integer vtable index of a method for INVOKEVIRTUAL/INVOKESPECIAL
+int get_method_vtable_index(const char* class_name, const char* mangled_name) {
+     ClassInfo* cls = find_class_info(class_name);
+    if (!cls) return -1;
+    //fprintf(stderr, "Debug: Looking up method vtable index for '%s' in class '%s'\n", mangled_name, class_name);
+    MethodInfo* method = find_method_in_hierarchy(NULL, mangled_name, cls);
+    //fprintf(stderr, "Debug: Method lookup result: %s\n", method ? "found" : "not found");
+    if(method) return method->vtable_index;
+    
+    return -1; // Not found
+}
+
+FieldInfo* find_field_in_hierarchy(const char* field_name, ClassInfo* class_info) {
+    if (!class_info) return NULL;
+    for (int i = 0; i < class_info->field_count; i++) {
+        if (strcmp(class_info->fields[i].name, field_name) == 0) {
+            return &class_info->fields[i];
+        }
+    }
+    for (int i = 0; i < class_info->parent_count; i++) {
+        FieldInfo* field = find_field_in_hierarchy(field_name, class_info->parents[i]);
+        if (field) return field;
+    }
+    return NULL;
+}
+
+void check_abstract_implementation(ClassInfo* class_info) {
+    if (class_info == NULL || class_info->is_abstract) {
+        return; // No check needed for abstract classes themselves.
+    }
+
+    // Iterate through all parent classes
+    for (int i = 0; i < class_info->parent_count; i++) {
+        ClassInfo* parent = class_info->parents[i];
+        if (parent == NULL) continue;
+
+        // Iterate through all methods of the parent
+        for (int j = 0; j < parent->method_count; j++) {
+            MethodInfo* parent_method = &parent->methods[j];
+
+            // If we find an inherited abstract method...
+            if (parent_method->is_abstract) {
+                bool is_implemented = false;
+                // ...check if the current class has implemented it.
+                for (int k = 0; k < class_info->method_count; k++) {
+                    if (strcmp(class_info->methods[k].signature, parent_method->signature) == 0) {
+                        is_implemented = true;
+                        break;
+                    }
+                }
+
+                if (!is_implemented) {
+                    fprintf(stderr, "Error line %d: Non-abstract class '%s' must implement inherited abstract method with signature '%s'\n",
+                          yylineno, class_info->name, parent_method->signature);
+                }
+            }
+        }
+    }
+}
+
+char* get_mangled_name(const char* func_name, Node* arg_list_node) {
+    char mangled_name[512];
+    strcpy(mangled_name, func_name);
+    
+    if (arg_list_node && strcmp(arg_list_node->type, "PARAM_LIST") == 0) {
+        while (arg_list_node && strcmp(arg_list_node->type, "PARAM_LIST") == 0) {
+            if (arg_list_node->num_children == 0) break;
+            for (int i = 0; i < arg_list_node->num_children; i++) {
+                //fprintf(stderr, "Debug: Processing child %d of '%s'\n", i, arg_list_node->type);
+                Node* expr_or_param = arg_list_node->children[i];
+                //fprintf(stderr, "Debug: Child type: '%s' '%s'\n", expr_or_param->type,mangled_name);
+
+                // Param lists have a different structure than arg lists
+                if(strcmp(expr_or_param->type, "PARAM_LIST") == 0) {
+                    arg_list_node = expr_or_param;
+                    // fprintf(stderr, "mangled name: %s\n", mangled_name);
+                    // fprintf(stderr, "Debug: Descending into nested param/arg list '%s'\n", arg_list_node->type);
+                    break;
+                } else if(strcmp(expr_or_param->type, "PARAM") == 0) {
+                    strcat(mangled_name, "@");
+                    strcat(mangled_name, expr_or_param->children[0]->value);
+                    if(arg_list_node->num_children == 1) {
+                        arg_list_node = NULL; // End of list
+                        break;
+                    }
+                } else {
+                    //fprintf(stderr, "Debug: Mangling param/arg of type '%s' with data type '%s'\n", expr_or_param->type, expr_or_param->data_type ? expr_or_param->data_type : "NULL");
+                    strcat(mangled_name, expr_or_param->data_type ? expr_or_param->data_type : "unknown");
+                }
+            }
+        }
+    } else if (arg_list_node && strcmp(arg_list_node->type, "ARG_LIST") == 0) {
+        //fprintf(stderr, "mangled name: %s\n", mangled_name);
+        for (int i = 0; i < arg_list_node->num_children; i++) {
+
+            //fprintf(stderr, "Debug: Processing child %d of '%s'\n", i, arg_list_node->type);
+            //fprintf(stderr, "mangled name: %s\n", mangled_name);
+            Node* expr_or_param = arg_list_node->children[i];
+            //fprintf(stderr, "Debug: Child type: '%s'\n", expr_or_param->type);
+            strcat(mangled_name, "@");
+            // Arg lists have a different structure than param lists
+            strcat(mangled_name, expr_or_param->data_type ? expr_or_param->data_type : "unknown");
+    
+        }
+    }
+    //fprintf(stderr, "Debug: Mangled name generated: '%s'\n", mangled_name);
+    return strdup(mangled_name);
+}
+
+MethodInfo* find_method_in_hierarchy(const char* method_name, const char* signature, ClassInfo* class_info) {
+    if (!class_info) return NULL;
+    for (int i = 0; i < class_info->method_count; i++) {
+        //fprintf(stderr, "Debug: Checking method '%s' with signature '%s' against '%s'\n", class_info->methods[i].name, class_info->methods[i].signature, signature);
+        if (strcmp(class_info->methods[i].signature, signature) == 0) {
+            return &class_info->methods[i];
+        }
+    }
+    for (int i = 0; i < class_info->parent_count; i++) {
+        MethodInfo* method = find_method_in_hierarchy(method_name, signature, class_info->parents[i]);
+        if (method) return method;
+    }
+    return NULL;
+}
+
+void check_for_override(ClassInfo* child, MethodInfo* new_method) {
+    for (int i = 0; i < child->parent_count; i++) {
+        MethodInfo* parent_method = find_method_in_hierarchy(new_method->name, new_method->signature, child->parents[i]);
+        if (parent_method) {
+            new_method->is_override = true;
+            new_method->vtable_index = parent_method->vtable_index; 
+            return;
+        }
+    }
+    new_method->is_override = false;
+    // This vtable index assignment needs to be more robust, considering all inherited methods.
+    new_method->vtable_index = child->method_count -1; 
+}
+
 
 // --- Parse Tree Node Functions ---
 
