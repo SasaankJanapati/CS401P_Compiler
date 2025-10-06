@@ -23,6 +23,7 @@ extern int yylineno;
 "private"       { return PRIVATE; }
 "protected"     { return PROTECTED; }
 "abstract"      { return ABSTRACT; }
+"new"           { return NEW; }
 
 
 "int"           { yylval.str_val = strdup(yytext); return INT; }
@@ -73,6 +74,7 @@ extern int yylineno;
 "?"             { return '?'; }
 ":"             { return ':'; }
 "~"             { return '~'; } /* Destructor token */
+"."             { return '.'; }
 
 [ \t]+        ; /* skip whitespace */
 "//".*        ; /* skip single line comments */

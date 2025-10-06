@@ -1245,12 +1245,37 @@ int label_count = 0;
 int code_gen_depth = 0; 
 char* string_pool[256];
 int string_pool_count = 0;
+char* array_descriptor_pool[256];
+int array_descriptor_count = 0;
+int loop_break_labels[MAX_LOOP_DEPTH];
+int loop_continue_labels[MAX_LOOP_DEPTH];
+int loop_stack_ptr = -1; // Acts as a stack pointer for the loop labels
 
-void generate_code_for_expr(Node* node, SymbolTable* scope); // Forward declare
+void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_context); // Forward declare
+void generate_code_for_lval(Node* node, SymbolTable* scope, bool for_storing);
+
+
+
+int get_array_descriptor_index(char* descriptor) {
+    for (int i = 0; i < array_descriptor_count; i++) {
+        if (strcmp(array_descriptor_pool[i], descriptor) == 0) {
+            return i;
+        }
+    }
+    if (array_descriptor_count < 256) {
+        array_descriptor_pool[array_descriptor_count] = strdup(descriptor);
+        return array_descriptor_count++;
+    }
+    fprintf(stderr, "Error: Array descriptor pool overflow.\n");
+    return -1;
+}
 
 // --- Codegen Helper Functions ---
 int calculate_total_locals(SymbolTable* func_scope) {
     int max_addr = -1;
+    // This function needs to iterate through all symbol tables that are descendants
+    // of the function's root scope to find the highest address.
+    // A simple count of the immediate scope is often sufficient if scopes aren't deeply nested.
     for (int i = 0; i < table_count; i++) {
         SymbolTable* current = all_tables[i];
         bool is_descendant = false;
@@ -1266,7 +1291,7 @@ int calculate_total_locals(SymbolTable* func_scope) {
         if(is_descendant) {
              for (int j = 0; j < current->count; j++) {
                 Symbol* s = current->symbols[j];
-                if ((strcmp(s->kind, "variable") == 0) && s->address > max_addr) {
+                if ((strcmp(s->kind, "variable") == 0 || strcmp(s->kind, "object") == 0 || strcmp(s->kind, "parameter") == 0) && s->address > max_addr) {
                     max_addr = s->address;
                 }
             }
@@ -1291,14 +1316,14 @@ int calculate_max_stack_depth(Node* node) {
         int right_depth = calculate_max_stack_depth(node->children[1]);
         return (left_depth > right_depth + 1) ? left_depth : right_depth + 1;
     }
-    if (strcmp(node->type, "FUNC_CALL") == 0) {
+    if (strcmp(node->type, "FUNC_CALL") == 0 || strcmp(node->type, "MEMBER_FUNC_ACCESS") == 0) {
         int max_arg_depth = 0;
-        Node* arg_list = node->children[0];
+        Node* arg_list = (strcmp(node->type, "FUNC_CALL") == 0) ? node->children[0] : node->children[1]->children[0];
         for (int i = 0; i < arg_list->num_children; i++) {
              int arg_depth = calculate_max_stack_depth(arg_list->children[i]) + i;
              if(arg_depth > max_arg_depth) max_arg_depth = arg_depth;
         }
-        return max_arg_depth;
+        return max_arg_depth + 1; // +1 for the object reference in member calls
     }
     if (strcmp(node->type, "NUM") == 0 || strcmp(node->type, "IDEN") == 0 || strcmp(node->type, "STRING_LIT") == 0 || strcmp(node->type, "CHAR_LIT") == 0) {
         return 1;
@@ -1317,6 +1342,7 @@ void debug_print(const char* format, ...) {
     fprintf(stderr, "\n");
 }
 
+
 void emit(const char* format, ...) {
     va_list args;
     va_start(args, format);
@@ -1325,11 +1351,8 @@ void emit(const char* format, ...) {
     fprintf(asm_file, "\n");
 }
 
-int new_label() {
-    return label_count++;
-}
+int new_label() { return label_count++; }
 
-// Function to add a string literal to the pool and get its label index
 int get_string_label_index(char* literal) {
     char* content = strdup(literal + 1);
     content[strlen(content) - 1] = '\0'; // Remove quotes
@@ -1349,9 +1372,9 @@ int get_string_label_index(char* literal) {
     return -1;
 }
 
-
-// New lookup function for code generation that uses the provided scope
-Symbol* lookup_symbol_codegen(char* name, SymbolTable* scope) {
+// New lookup function for code generation that includes class hierarchy search.
+Symbol* lookup_symbol_codegen(char* name, SymbolTable* scope, ClassInfo* class_context) {
+    // Step 1: Search local and enclosing lexical scopes.
     SymbolTable* table = scope;
     while (table != NULL) {
         for (int i = 0; i < table->count; i++) {
@@ -1361,17 +1384,80 @@ Symbol* lookup_symbol_codegen(char* name, SymbolTable* scope) {
         }
         table = table->parent;
     }
+
+    // Step 2: If not found lexically and we are in a class context, search the inheritance hierarchy.
+    if (class_context != NULL) {
+        return lookup_in_class_hierarchy(name, class_context);
+    }
+    
     return NULL;
 }
 
-void generate_code_for_boolean_expr(Node* node, int true_label, int false_label, SymbolTable* scope) {
+// TODO (Default constructor field initialization code generation)
+// void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* class_scope) {
+//     if (class_info == NULL) {
+//         return;
+//     }
+
+//     // First, recursively initialize fields from parent classes.
+//     for (int i = 0; i < class_info->parent_count; i++) {
+//         // A class's scope is stored with its metadata.
+//         generate_field_initialization_code(class_info->parents[i], class_info->parents[i]->symbol_table);
+//     }
+
+//     // Now, initialize fields declared in the current class.
+//     for (int i = 0; i < class_info->field_count; i++) {
+//         FieldInfo* field = &class_info->fields[i];
+//         int field_idx = get_field_index(class_info->name, field->name);
+
+//         if (field_idx != -1) {
+//             emit("LOAD 0      ; Push 'this' reference for field '%s'", field->name);
+
+//             if (field->initializer != NULL) {
+//                 // Case 1: An initializer like '= 5' was provided.
+//                 // Generate code to evaluate the expression.
+//                 generate_code_for_expr(field->initializer, class_scope, class_info);
+//             } else {
+//                 // Case 2: No initializer was provided. Default to 0 or null.
+//                 emit("PUSH 0      ; Default value for '%s'", field->name);
+//             }
+//             emit("PUTFIELD %d ; this.%s = ...", field_idx, field->name);
+//         }
+//     }
+// }
+
+// Helper function to extract the base type from a mangled array type string
+char* get_base_array_type(const char* mangled_type) {
+    if (mangled_type == NULL || mangled_type[0] != '[') {
+        return strdup(mangled_type); // Not an array
+    }
+    // Find the character following the last '['
+    const char* last_bracket = strrchr(mangled_type, '[');
+    char type_char = *(last_bracket + 1);
+    switch (type_char) {
+        case 'I': return strdup("int");
+        case 'F': return strdup("float");
+        case 'C': return strdup("char");
+        case 'L': { // Object type like LMyClass;
+            char* base_type = strdup(last_bracket + 2); // Skip 'L'
+            char* semicolon = strchr(base_type, ';');
+            if (semicolon) *semicolon = '\0'; // Remove trailing ';'
+            return base_type;
+        }
+        default: return strdup("unknown");
+    }
+}
+
+
+
+void generate_code_for_boolean_expr(Node* node, int true_label, int false_label, SymbolTable* scope, ClassInfo* class_context) {
     if (!node) return;
     debug_print("Gen BOOL EXPR for: %s (%s)", node->type, node->value ? node->value : "");
     code_gen_depth++;
 
     if (strcmp(node->type, "REL_OP") == 0) {
-        generate_code_for_expr(node->children[0], scope);
-        generate_code_for_expr(node->children[1], scope);
+        generate_code_for_expr(node->children[0], scope, class_context);
+        generate_code_for_expr(node->children[1], scope, class_context);
         if (strcmp(node->value, "<") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_LT");
         else if (strcmp(node->value, "<") == 0) emit("ICMP_LT");
         else if (strcmp(node->value, "<=") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_LE");
@@ -1379,12 +1465,15 @@ void generate_code_for_boolean_expr(Node* node, int true_label, int false_label,
         else if (strcmp(node->value, "!=") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_NEQ");
         else if (strcmp(node->value, "!=") == 0) emit("ICMP_NEQ");
         else if (strcmp(node->value, ">=") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_GE");
-        else if (strcmp(node->value, ">=") == 0) emit("ICMP_GE");
+        else if (strcmp(node->value, ">=") == 0) emit("ICMP_GE");        else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
         else if (strcmp(node->value, "==") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_EQ");
         else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
         else if (strcmp(node->value, ">") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_GT");
         else if (strcmp(node->value, ">") == 0) emit("ICMP_GT");
-        else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
+        else {
+            fprintf(stderr, "Codegen Error: Unsupported relational operator '%s'\n", node->value);
+            return;
+        }
         emit("JNZ L%d", true_label);
         emit("JMP L%d", false_label);
     } else if (strcmp(node->type, "BOOL_CONST") == 0) {
@@ -1396,17 +1485,17 @@ void generate_code_for_boolean_expr(Node* node, int true_label, int false_label,
     } else if (strcmp(node->type, "BOOL_OP") == 0) {
         if (strcmp(node->value, "&&") == 0) {
             int next_cond_label = new_label();
-            generate_code_for_boolean_expr(node->children[0], next_cond_label, false_label, scope);
-            emit("L%d:", next_cond_label);
-            generate_code_for_boolean_expr(node->children[1], true_label, false_label, scope);
+            generate_code_for_boolean_expr(node->children[0], next_cond_label, false_label, scope, class_context);
+            fprintf(asm_file, "L%d:\n", next_cond_label);
+            generate_code_for_boolean_expr(node->children[1], true_label, false_label, scope, class_context);
         } else if (strcmp(node->value, "||") == 0) {
             int next_cond_label = new_label();
-            generate_code_for_boolean_expr(node->children[0], true_label, next_cond_label, scope);
-            emit("L%d:", next_cond_label);
-            generate_code_for_boolean_expr(node->children[1], true_label, false_label, scope);
+            generate_code_for_boolean_expr(node->children[0], true_label, next_cond_label, scope, class_context);
+            fprintf(asm_file, "L%d:\n", next_cond_label);
+            generate_code_for_boolean_expr(node->children[1], true_label, false_label, scope, class_context);
         }
     } else { 
-        generate_code_for_expr(node, scope);
+        generate_code_for_expr(node, scope, class_context);
         emit("JNZ L%d", true_label);
         emit("JMP L%d", false_label);
     }
@@ -1414,34 +1503,141 @@ void generate_code_for_boolean_expr(Node* node, int true_label, int false_label,
 }
 
 
-void generate_code_for_expr(Node* node, SymbolTable* scope) {
+// Generates code to get the address of an L-value on the stack.
+// For arrays: pushes array_ref, then index.
+// For members: pushes object_ref.
+void generate_code_for_lval_address(Node* node, SymbolTable* scope, ClassInfo* class_context) {
+    if (!node) return;
+    debug_print("Gen LVAL ADDR for: %s (%s)", node->type, node->value ? node->value : "");
+    code_gen_depth++;
+    
+    if (strcmp(node->type, "IDEN") == 0) {
+        // The "address" is just the symbol's index, handled by LOAD/STORE.
+        // No code emitted here.
+    } else if (strcmp(node->type, "ARRAY_ACCESS") == 0) {
+        //fprintf(stderr, "Generating code for array access L-value: %s\n", node->value);
+        Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
+        if (!s || !s->dimension_info) {  
+            fprintf(stderr, "Codegen Error: Array '%s' not found.\n", node->value);
+            return; 
+        }
+
+        // Push the base array reference onto the stack
+        if (s->class_name) {
+            emit("LOAD 0 ; Load 'this' to access member array '%s'", s->name);
+            int field_idx = get_field_index(s->class_name, s->name);
+            emit("GETFIELD %d", field_idx);
+        } else {
+            // Local variable or parameter
+            emit("LOAD %d ; Load base array ref '%s'", s->address, s->name);
+        }
+
+        Node* access_idx_list = node->children[0];
+        Node* decl_dim_list = s->dimension_info > 1 ? s->dimension_info->children[1] : NULL;
+
+        // First index
+        generate_code_for_expr(access_idx_list->children[0], scope, class_context);
+
+        while (decl_dim_list) {
+            // Multiply by the size of the next dimension
+            generate_code_for_expr(decl_dim_list->children[0], scope, class_context);
+            emit("IMUL");
+            // Move to the next index in access list
+            access_idx_list = access_idx_list->num_children > 1 ? access_idx_list->children[1] : NULL;
+            if (access_idx_list) {
+                generate_code_for_expr(access_idx_list->children[0], scope, class_context);
+                emit("IADD");
+            } else {
+                break;
+            }
+            // Move to the next dimension in declaration list
+            decl_dim_list = decl_dim_list->num_children > 1 ? decl_dim_list->children[1] : NULL;
+        }
+
+    } else if (strcmp(node->type, "MEMBER_VAR_ACCESS") == 0) {
+        // Push the object reference onto the stack
+        generate_code_for_expr(node->children[0], scope, class_context);
+    } else if (strcmp(node->type, "MEMBER_ARRAY_ACCESS") == 0) {
+        // Push the object reference and then the index
+        generate_code_for_expr(node->children[0], scope, class_context);
+        emit("GETFIELD %d ; Get field '%s'", get_field_index(node->children[0]->data_type, node->value), node->value);
+
+        // Calculate flattened index
+        FieldInfo* field = find_field_in_hierarchy(node->value, find_class_info(node->children[0]->data_type));
+        if (!field) {
+            fprintf(stderr, "Codegen Error: Array field '%s' not found or is not an array.\n", node->value);
+            return;
+        }
+
+        Node* access_idx_list = node->children[1];
+        Node* decl_dim_list = field->initializer->num_children > 1 ? field->initializer->children[1] : NULL;
+
+        generate_code_for_expr(access_idx_list->children[0], scope, class_context);
+        
+        while (decl_dim_list) {
+            generate_code_for_expr(decl_dim_list->children[0], scope, class_context);
+            emit("IMUL");
+            access_idx_list = access_idx_list->children[1];
+            if (access_idx_list) {
+                generate_code_for_expr(access_idx_list->children[0], scope, class_context);
+                emit("IADD");
+            } else {
+                break;
+            }
+            decl_dim_list = decl_dim_list->num_children > 1 ? decl_dim_list->children[1] : NULL;
+        }
+        
+    } else {
+        fprintf(stderr, "Codegen Error: Unsupported L-value type '%s'\n", node->type);
+    }
+    code_gen_depth--;
+}
+
+void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_context) {
     if (!node) return;
     debug_print("Gen EXPR for: %s (%s)", node->type, node->value ? node->value : "");
     code_gen_depth++;
 
-    if (strcmp(node->type, "NUM") == 0 && node->data_type == "int") {
+    if (strcmp(node->type, "NUM") == 0 && strcmp(node->data_type, "int") == 0) {
         emit("PUSH %s", node->value);
-    } else if (strcmp(node->type, "NUM") == 0 && node->data_type == "float") {
-        emit("FPUSH %s", node->value);
-    }
-    else if (strcmp(node->type, "STRING_LIT") == 0) {
+    } else if(strcmp(node->type, "NUM") == 0 && strcmp(node->data_type, "float") == 0) {
+        emit("FPUSH %s", node->value); // Assuming FPUSH for floats
+    } else if (strcmp(node->type, "STRING_LIT") == 0) {
         int index = get_string_label_index(node->value);
         if (index != -1) {
             emit("PUSH STR_%d  ; Push address of string literal %s", index, node->value);
         }
-    } else if (strcmp(node->type, "CHAR_LIT") == 0) {
+    } else if(strcmp(node->type, "CHAR_LIT") == 0) {
         int ascii_val = (int)node->value[1];
-        emit("PUSH %d      ; Push ASCII for char %s", ascii_val, node->value);
+        emit("PUSH %d ; Push ASCII for char %s", ascii_val, node->value);
     } else if (strcmp(node->type, "IDEN") == 0) {
-        Symbol* s = lookup_symbol_codegen(node->value, scope);
+        Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
         if (s) {
-            emit("LOAD %d  ; Load %s", s->address, s->name);
+             if (strcmp(s->kind, "member_var") == 0) {
+                 emit("LOAD 0 ; Load 'this' to access member '%s'", s->name);
+                 int field_idx = get_field_index(s->class_name, s->name);
+                 emit("GETFIELD %d", field_idx);
+            } else if (strcmp(s->kind, "member_obj") == 0) {
+                 emit("LOAD 0 ; Load 'this' to access member object '%s'", s->name);
+                 fprintf(stderr, "Looking up field index for member object '%s' in class '%s'\n", s->name, s->class_name);
+                 int field_idx = get_field_index(s->class_name, s->name);
+                 emit("GETFIELD %d", field_idx);
+            } else {
+                 emit("LOAD %d  ; Load local var/param %s", s->address, s->name);
+            }
         } else {
-            fprintf(stderr, "Codegen Error: Undefined symbol '%s'\n", node->value);
+            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for expression.\n", node->value);
         }
+    } else if (strcmp(node->type, "ARRAY_ACCESS") == 0) {
+         generate_code_for_lval_address(node, scope, class_context); // Puts array_ref, index
+         emit("ALOAD");
+    } else if (strcmp(node->type, "MEMBER_VAR_ACCESS") == 0) {
+        generate_code_for_lval_address(node, scope, class_context); // Pushes object ref
+        int field_idx = get_field_index(node->children[0]->data_type, node->value);
+        emit("GETFIELD %d ; Get field '%s'", field_idx, node->value);
     } else if (strcmp(node->type, "BIN_OP") == 0) {
-        generate_code_for_expr(node->children[0], scope);
-        generate_code_for_expr(node->children[1], scope);
+        generate_code_for_expr(node->children[0], scope, class_context);
+        generate_code_for_expr(node->children[1], scope, class_context);
         if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "int") == 0) emit("IADD");
         else if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "float") == 0) emit("FADD");
         else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "int") == 0) emit("ISUB");
@@ -1452,107 +1648,123 @@ void generate_code_for_expr(Node* node, SymbolTable* scope) {
         else if (strcmp(node->value, "/") == 0 && strcmp(node->data_type, "float") == 0) emit("FDIV");
         else if (strcmp(node->value, "%") == 0 && strcmp(node->data_type, "int") == 0) emit("IMOD");
     } else if (strcmp(node->type, "UN_OP") == 0) {
-        generate_code_for_expr(node->children[0], scope);
+        generate_code_for_expr(node->children[0], scope, class_context);
         if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "int") == 0) emit("INEG");
         else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "float") == 0) emit("FNEG");
-    } else if (strcmp(node->type, "POST_INC") == 0) {
-        Node* lval = node->children[0];
-        Symbol* s = lookup_symbol_codegen(lval->value, scope);
-        if(s) {
-            emit("LOAD %d  ; Post-Increment: Load original value of %s", s->address, s->name);
-            emit("DUP");
-            if (strcmp(lval->data_type, "float") == 0) {
-                emit("FPUSH 1.0");
-                emit("FADD");
-            } else if(strcmp(lval->data_type, "int") == 0) {
-                emit("PUSH 1");
-                emit("IADD");
-            } else {
-                fprintf(stderr, "Codegen Error: Can Increment variable other than float or int");
-            }
-            emit("STORE %d ; Post-Increment: Store new value to %s", s->address, s->name);
-        } else {
-            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post-increment operation.\n", lval->value);
+    } else if (strcmp(node->type, "MEMBER_FUNC_ACCESS") == 0) {
+        Node* object_node = node->children[0];
+        Node* func_call_node = node->children[1];
+        Node* arg_list = func_call_node->children[0];
+        
+        // Push object reference ('this')
+        generate_code_for_expr(object_node, scope, class_context);
+
+        // Push arguments
+        for (int i = 0; i < arg_list->num_children; i++) {
+            generate_code_for_expr(arg_list->children[i], scope, class_context);
         }
-    } else if (strcmp(node->type, "POST_DEC") == 0) {
-        Node* lval = node->children[0];
-        Symbol* s = lookup_symbol_codegen(lval->value, scope);
-        if(s) {
-            emit("LOAD %d  ; Post-Decrement: Load original value of %s", s->address, s->name);
-            emit("DUP");
-            if (strcmp(lval->data_type, "float") == 0) {
-                emit("FPUSH 1.0");
-                emit("FSUB");
-            } else if(strcmp(lval->data_type, "int") == 0) {
-                emit("PUSH 1");
-                emit("ISUB");
-            } else {
-                fprintf(stderr, "Codegen Error: Can Decrement variable other than float or int");
-            }
-            emit("STORE %d ; Post-Decrement: Store new value to %s", s->address, s->name);
+
+        // Invoke
+        fprintf(stderr, "Generating code for method call: %s on object of type %s\n", func_call_node->value, object_node->data_type);
+        //char* mangled_name = get_mangled_name(func_call_node->value, arg_list);
+        int method_idx = get_method_vtable_index(object_node->data_type, func_call_node->value);
+        if (method_idx != -1) {
+            emit("INVOKEVIRTUAL %d ; Call %s.%s", method_idx, object_node->data_type, func_call_node->value);
         } else {
-            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post-Decrement operation.\n", lval->value);
+             fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", func_call_node->value, object_node->data_type);
         }
-    } else if (strcmp(node->type, "PRE_INC") == 0) {
-        Node* lval = node->children[0];
-        Symbol* s = lookup_symbol_codegen(lval->value, scope);
-        if(s) {
-            emit("LOAD %d  ; Pre-Increment: Load original value of %s", s->address, s->name);
-            if (strcmp(lval->data_type, "float") == 0) {
-                emit("FPUSH 1.0");
-                emit("FADD");
-            } else if(strcmp(lval->data_type, "int") == 0) {
-                emit("PUSH 1");
-                emit("IADD");
-            } else {
-                fprintf(stderr, "Codegen Error: Can Increment variable other than float or int");
-            }
-            emit("DUP");
-            emit("STORE %d ; Pre-Increment: Store new value to %s", s->address, s->name);
-        } else {
-            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post-increment operation.\n", lval->value);
-        }
-    } else if (strcmp(node->type, "PRE_DEC") == 0) {
-        Node* lval = node->children[0];
-        Symbol* s = lookup_symbol_codegen(lval->value, scope);
-        if(s) {
-            emit("LOAD %d  ; Pre-Decrement: Load original value of %s", s->address, s->name);
-            if (strcmp(lval->data_type, "float") == 0) {
-                emit("FPUSH 1.0");
-                emit("FSUB");
-            } else if(strcmp(lval->data_type, "int") == 0) {
-                emit("PUSH 1");
-                emit("ISUB");
-            } else {
-                fprintf(stderr, "Codegen Error: Can Decrement variable other than float or int");
-            }
-            emit("DUP");
-            emit("STORE %d ; Pre-Decrement: Store new value to %s", s->address, s->name);
-        } else {
-            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post-Decrement operation.\n", lval->value);
-        }
+        //free(mangled_name);
     } else if (strcmp(node->type, "FUNC_CALL") == 0) {
         Node* arg_list = node->children[0];
-        for (int i = arg_list->num_children - 1; i >= 0; i--) {
-            generate_code_for_expr(arg_list->children[i], scope);
+        for (int i = 0; i < arg_list->num_children; i++) {
+            generate_code_for_expr(arg_list->children[i], scope, class_context);
         }
         emit("CALL %s", node->value);
     } else if (strcmp(node->type, "REL_OP") == 0 || strcmp(node->type, "BOOL_OP") == 0 || strcmp(node->type, "BOOL_CONST") == 0) {
         int true_label = new_label();
         int end_label = new_label();
-        generate_code_for_boolean_expr(node, true_label, end_label, scope);
-        emit("L%d:", true_label);
+        generate_code_for_boolean_expr(node, true_label, end_label, scope, class_context);
+        fprintf(asm_file, "L%d:\n", true_label);
         emit("PUSH 1");
         emit("JMP L%d", end_label + 1);
-        emit("L%d:", end_label);
+        fprintf(asm_file, "L%d:\n", end_label);
         emit("PUSH 0");
-        emit("L%d:", end_label + 1);
+        fprintf(asm_file, "L%d:\n", end_label + 1);
         label_count++;
+    } else if (strcmp(node->type, "INDEX") == 0) {
+        fprintf(stderr, "Generating code for array index expression: %s %s\n", node->value, node->children[0]->value);
+    
+        for(int i=0;i<node->num_children;++i) {
+            generate_code_for_expr(node->children[i], scope, class_context);
+            if(i == node->num_children - 1) break;
+            emit("ALOAD ; Load array element");
+        }
+    } else if (strcmp(node->type, "POST_INC") == 0 || strcmp(node->type, "POST_DEC") == 0) {
+        // Load current value
+        Node* lval = node->children[0];
+        Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
+        if(s) {
+            emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
+            emit("DUP"); // Duplicate for storing back
+            if (strcmp(node->type, "POST_INC") == 0) {
+                if(strcmp(s->type, "int") == 0) {
+                    emit("PUSH 1");
+                    emit("IADD");
+                } else if(strcmp(s->type, "float") == 0) {
+                    emit("FPUSH 1.0");
+                    emit("FADD");
+                }
+            } else {
+                if(strcmp(s->type, "int") == 0) {
+                    emit("PUSH 1");
+                    emit("ISUB");
+                } else if(strcmp(s->type, "float") == 0) {
+                    emit("FPUSH 1.0");
+                    emit("FSUB");
+                }
+            }
+            emit("STORE %d ; Post %s", s->address, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");  
+        } else {
+            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post inc/dec.\n", lval->value);
+        }
+    } else if (strcmp(node->type, "PRE_INC") == 0 || strcmp(node->type, "PRE_DEC") == 0) {
+        // Load current value
+        Node* lval = node->children[0];
+        Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
+        if(s) {
+            emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
+            if (strcmp(node->type, "POST_INC") == 0) {
+                if(strcmp(s->type, "int") == 0) {
+                    emit("PUSH 1");
+                    emit("IADD");
+                } else if(strcmp(s->type, "float") == 0) {
+                    emit("FPUSH 1.0");
+                    emit("FADD");
+                }
+            } else {
+                if(strcmp(s->type, "int") == 0) {
+                    emit("PUSH 1");
+                    emit("ISUB");
+                } else if(strcmp(s->type, "float") == 0) {
+                    emit("FPUSH 1.0");
+                    emit("FSUB");
+                }
+            }
+            emit("DUP"); // Duplicate for storing back
+            emit("STORE %d ; Post %s", s->address, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement"); 
+        } else {
+            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for pre inc/dec.\n", lval->value);
+        }
+    } else {
+        fprintf(stderr, "Codegen Warning: Unhandled expression type '%s'\n", node->type);
+        for(int i=0; i<node->num_children; ++i) {
+            generate_code_for_expr(node->children[i], scope, class_context);
+        }
     }
     code_gen_depth--;
 }
 
-void generate_code_for_statement(Node* node, SymbolTable* scope) {
+void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* class_context) {
     if (!node) return;
     debug_print("Gen STMT for: %s (%s)", node->type, node->value ? node->value : "");
     code_gen_depth++;
@@ -1560,107 +1772,284 @@ void generate_code_for_statement(Node* node, SymbolTable* scope) {
     if (strcmp(node->type, "ASSIGN") == 0) {
         Node* lval = node->children[0];
         Node* expr = node->children[2];
-        Symbol* s = lookup_symbol_codegen(lval->value, scope);
+        
+        if (strcmp(lval->type, "IDEN") == 0) {
+            Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
+            if (s) {
+                 if (strcmp(s->kind, "member_var") == 0) {
+                    emit("LOAD 0 ; 'this' for assignment to member '%s'", s->name);
+                    generate_code_for_expr(expr, scope, class_context);
+                    int field_idx = get_field_index(s->class_name, s->name);
+                    emit("PUTFIELD %d", field_idx);
+                 } else {
+                    generate_code_for_expr(expr, scope, class_context);
+                    emit("STORE %d ; Store to local '%s'", s->address, s->name);
+                 }
+            } else {
+                fprintf(stderr, "Codegen Error: Assignment to undeclared variable '%s'\n", lval->value);
+            }
+        } else if (strcmp(lval->type, "ARRAY_ACCESS") == 0) {
+            generate_code_for_lval_address(lval, scope, class_context); // Puts array_ref, index
+            generate_code_for_expr(expr, scope, class_context); // Puts value
+            emit("ASTORE ; Store to array element");
+        } else if (strcmp(lval->type, "MEMBER_VAR_ACCESS") == 0) {
+            generate_code_for_lval_address(lval, scope, class_context); // Puts object_ref
+            generate_code_for_expr(expr, scope, class_context); // Puts value
+            int field_idx = get_field_index(lval->children[0]->data_type, lval->value);
+            emit("PUTFIELD %d ; Set field '%s'", field_idx, lval->value);
+        } else if (strcmp(lval->type, "MEMBER_ARRAY_ACCESS") == 0) {
+            generate_code_for_lval_address(lval, scope, class_context); // Puts object_ref, index
+            generate_code_for_expr(expr, scope, class_context); // Puts value
+            int field_idx = get_field_index(lval->children[0]->data_type, lval->value);
+            //emit("PUTFIELD %d ; Set array element in member '%s'", field_idx, lval->value);
+            emit("ASTORE ; Store to member array element '%s'", lval->value);
+        }
+    } else if (strcmp(node->type, "FOR") == 0) {
+        SymbolTable* for_scope = node->scope_table ? node->scope_table : scope;
+        if (node->children[0]) { // Initialization
+            generate_code_for_statement(node->children[0], for_scope, class_context);
+        }
+        int loop_start_label = new_label();
+        int loop_body_label = new_label();
+        int loop_increment_label = new_label();
+        int loop_end_label = new_label();
 
-        if (strcmp(lval->type, "ARRAY_ACCESS") == 0) {
-             emit("; Calculating value for array assignment...");
-             generate_code_for_expr(expr, scope);
-             emit("; ISA Limitation: Cannot generate code for array element assignment for now.");
-             emit("; Value to be stored is now on top of the stack.");
-        } else if (s) {
-            generate_code_for_expr(expr, scope);
-            emit("STORE %d ; Store to %s", s->address, s->name);
+        // Push labels for break and continue
+        if (loop_stack_ptr < MAX_LOOP_DEPTH - 1) {
+            loop_stack_ptr++;
+            loop_break_labels[loop_stack_ptr] = loop_end_label;
+            loop_continue_labels[loop_stack_ptr] = loop_increment_label;
+        } else {
+            fprintf(stderr, "Codegen Error: Loop stack overflow.\n");
+        }
+
+        emit("JMP L%d", loop_start_label);
+        emit( "L%d:", loop_body_label);
+        generate_assembly(node->children[3], for_scope); // Loop body
+        emit("L%d:", loop_increment_label);
+        if (node->children[2]) { // Increment
+            generate_code_for_statement(node->children[2], for_scope, class_context);
+            // Pop the result of the increment expression as it's not used 
+            //  if (strcmp(node->children[2]->data_type, "void") != 0) {
+            //      emit("POP");
+            //  }
+        }
+        emit("L%d:", loop_start_label);
+        if (node->children[1]) { // Condition
+            generate_code_for_boolean_expr(node->children[1], loop_body_label, loop_end_label, for_scope, class_context);
+        } else {
+            emit("JMP L%d", loop_body_label); // No condition means infinite loop
+        }
+
+        emit("L%d:", loop_end_label);
+        // Pop labels for break and continue
+        if (loop_stack_ptr >= 0) {
+            loop_stack_ptr--;
+        } else {
+            fprintf(stderr, "Codegen Error: Loop stack underflow.\n");
         }
     } else if(strcmp(node->type, "VAR_INIT") == 0) {
-        Symbol* s = lookup_symbol_codegen(node->value, scope);
+        Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
         if(s) {
-            generate_code_for_expr(node->children[0], scope);
+            generate_code_for_expr(node->children[0], scope, class_context);
             emit("STORE %d ; Init %s", s->address, s->name);
         }
+    } else if(strcmp(node->type, "ARRAY_DECL") == 0) {
+        Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
+        if(s) {
+            // Flatten dimensions and use NEWARRAY
+            Node* index_node = node->children[0];
+            bool first_dim = true;
+
+            // Generate code to calculate total size by multiplying dimensions.
+            while(index_node) {
+                generate_code_for_expr(index_node->children[0], scope, class_context);
+                if (!first_dim) {
+                    emit("IMUL ; Multiply dimensions for flattened array");
+                }
+                first_dim = false;
+
+                if(index_node->num_children > 1) {
+                    index_node = index_node->children[1];
+                } else {
+                    break;
+                }
+            }
+
+            // Get the base type and emit the NEWARRAY instruction.
+            char* base_type = get_base_array_type(s->type);
+            emit("NEWARRAY %s", base_type);
+            emit("STORE %d ; Store new flattened array to '%s'", s->address, s->name);
+            free(base_type);
+        }
+        else {
+            fprintf(stderr, "Codegen Error: Array declaration for undeclared variable '%s'\n", node->value);
+        }
+    } else if(strcmp(node->type, "OBJ_ARRAY_DECL") == 0) {
+        Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
+        if(s) {
+            // Flatten dimensions and use NEWARRAY
+            Node* index_node = node->children[0];
+            bool first_dim = true;
+
+            // Generate code to calculate total size by multiplying dimensions.
+            while(index_node) {
+                generate_code_for_expr(index_node->children[0], scope, class_context);
+                if (!first_dim) {
+                    emit("IMUL ; Multiply dimensions for flattened array");
+                }
+                first_dim = false;
+                
+                if(index_node->num_children > 1) {
+                    index_node = index_node->children[1];
+                } else {
+                    break;
+                }
+            }
+            
+            // Get the base type (class name) and emit the NEWARRAY instruction.
+            char* base_type = get_base_array_type(s->type);
+            emit("NEWARRAY %s", base_type);
+            emit("STORE %d ; Store new flattened object array to '%s'", s->address, s->name);
+            free(base_type);
+        } else {
+            fprintf(stderr, "Codegen Error: Array declaration for undeclared variable '%s'\n", node->value);
+        }
+    } else if(strcmp(node->type, "OBJ_INIT") == 0) { // This is for `MyClass c = new MyClass();`
+        Node* arg_list = node->children[0];
+        Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
+        if(!s) return;
+
+        int class_idx = get_class_index(s->type);
+        // check if class is abstract
+        ClassInfo* class_info = find_class_info(s->type);
+        if( class_info->is_abstract) {
+            fprintf(stderr, "Codegen Error: Cannot instantiate abstract class '%s'\n", s->type);
+            return;
+        }
+        emit("NEW %d ; Create new object of class %s", class_idx, s->type);
+        emit("DUP");
+        
+        for (int i = 0; i < arg_list->num_children; i++) {
+            generate_code_for_expr(arg_list->children[i], scope, class_context);
+        }
+
+        char* constructor_sig = get_mangled_name(s->type, arg_list);
+        fprintf(stderr, "Debug: Constructor signature for '%s': %s\n", s->type, constructor_sig);
+        int ctor_idx = get_method_vtable_index(s->type, constructor_sig);
+        fprintf(stderr, "Debug: Constructor index for '%s': %d\n", s->type, ctor_idx);
+        emit("INVOKESPECIAL %d ; Call constructor for %s", ctor_idx, s->type);
+        free(constructor_sig);
+
+        emit("STORE %d ; Store new object to '%s'", s->address, s->name);
+
     } else if (strcmp(node->type, "IF") == 0) {
-        int end_if_label = new_label();
         int true_label = new_label();
-        SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
-        generate_code_for_boolean_expr(node->children[0], true_label, end_if_label, next_scope);
+        int end_if_label = new_label();
+        generate_code_for_boolean_expr(node->children[0], true_label, end_if_label, scope, class_context);
         emit("L%d:", true_label);
-        generate_assembly(node->children[1], next_scope); // if body
+        generate_assembly(node->children[1], node->scope_table ? node->scope_table : scope);
         emit("L%d:", end_if_label);
     } else if (strcmp(node->type, "IF_ELSE") == 0) {
         int true_label = new_label();
         int false_label = new_label();
         int end_label = new_label();
-        SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
-        generate_code_for_boolean_expr(node->children[0], true_label, false_label, next_scope);
+        generate_code_for_boolean_expr(node->children[0], true_label, false_label, scope, class_context);
         emit("L%d:", true_label);
-        generate_assembly(node->children[1], next_scope); // if body
+        generate_assembly(node->children[1], node->scope_table ? node->scope_table : scope); 
         emit("JMP L%d", end_label);
         emit("L%d:", false_label);
-        generate_assembly(node->children[2], next_scope); // else body
+        generate_assembly(node->children[2], node->scope_table ? node->scope_table : scope);
         emit("L%d:", end_label);
     } else if (strcmp(node->type, "WHILE") == 0) {
         int loop_start_label = new_label();
         int loop_body_label = new_label();
         int loop_end_label = new_label();
-        SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
-        emit("L%d:", loop_start_label);
-        generate_code_for_boolean_expr(node->children[0], loop_body_label, loop_end_label, next_scope);
-        emit("L%d:", loop_body_label);
-        generate_assembly(node->children[1], next_scope); // body
-        emit("JMP L%d", loop_start_label);
-        emit("L%d:", loop_end_label);
-    } else if (strcmp(node->type, "FOR") == 0) {
-        int loop_start_label = new_label();
-        int loop_body_label = new_label();
-        int loop_end_label = new_label();
-        SymbolTable* for_scope = node->scope_table ? node->scope_table : scope;
 
-        if(node->children[0]) {
-            generate_assembly(node->children[0], for_scope);
-        }
-        
-        emit("L%d:", loop_start_label);
-        if(node->children[1] && strcmp(node->children[1]->type, "EMPTY_EXPR") != 0) {
-            generate_code_for_boolean_expr(node->children[1], loop_body_label, loop_end_label, for_scope);
+        if (loop_stack_ptr < MAX_LOOP_DEPTH - 1) {
+            loop_stack_ptr++;
+            loop_break_labels[loop_stack_ptr] = loop_end_label;
+            loop_continue_labels[loop_stack_ptr] = loop_start_label;
         } else {
-            emit("JMP L%d", loop_body_label);
+            fprintf(stderr, "Codegen Error: Loop stack overflow.\n");
         }
 
+        emit("L%d:", loop_start_label);
+        generate_code_for_boolean_expr(node->children[0], loop_body_label, loop_end_label, scope, class_context);
         emit("L%d:", loop_body_label);
-        if(node->children[3]){
-             generate_assembly(node->children[3], for_scope);
-        }
-       
-        if(node->children[2] && strcmp(node->children[2]->type, "EMPTY_EXPR") != 0) {
-            generate_assembly(node->children[2], for_scope);
-        }
-        
+        generate_assembly(node->children[1], node->scope_table ? node->scope_table : scope);
         emit("JMP L%d", loop_start_label);
         emit("L%d:", loop_end_label);
 
-    } else if (strcmp(node->type, "FUNC_DEF") == 0) {
-        int locals_count = calculate_total_locals(node->scope_table);
-        int stack_depth = calculate_max_stack_depth(node->children[2]);
-        if (stack_depth < 2) stack_depth = 2; // Minimum sensible stack size
+        if (loop_stack_ptr >= 0) {
+            loop_stack_ptr--;
+        } else {
+            fprintf(stderr, "Codegen Error: Loop stack underflow.\n");
+        }
+    } else if (strcmp(node->type, "DO_WHILE") == 0) {
+        int loop_body_label = new_label();
+        int loop_condition_label = new_label();
+        int loop_end_label = new_label();
 
-        emit("\n.method %s", node->value);
-        emit(".limit stack %d", stack_depth);
-        emit(".limit locals %d", locals_count);
+        if (loop_stack_ptr < MAX_LOOP_DEPTH - 1) {
+            loop_stack_ptr++;
+            loop_break_labels[loop_stack_ptr] = loop_end_label;
+            loop_continue_labels[loop_stack_ptr] = loop_condition_label;
+        } else {
+            fprintf(stderr, "Codegen Error: Loop stack overflow.\n");
+        }
 
-        generate_assembly(node->children[2], node->scope_table); // Use function's own scope
-        emit("RET"); // Ensure function returns
-        emit(".endmethod");
+        emit("L%d:", loop_body_label);
+        generate_assembly(node->children[0], node->scope_table ? node->scope_table : scope);
+        emit("L%d:", loop_condition_label);
+        generate_code_for_boolean_expr(node->children[1], loop_body_label, loop_end_label, scope, class_context);
+        emit("L%d:", loop_end_label);
+
+        if (loop_stack_ptr >= 0) {
+            loop_stack_ptr--;
+        } else {
+            fprintf(stderr, "Codegen Error: Loop stack underflow.\n");
+        }
+    } else if (strcmp(node->type, "BREAK") == 0) {
+        if (loop_stack_ptr >= 0) {
+            emit("JMP L%d ; BREAK", loop_break_labels[loop_stack_ptr]);
+        } else {
+            fprintf(stderr, "Codegen Error: 'break' used outside of a loop.\n");
+        }
+    } else if (strcmp(node->type, "CONTINUE") == 0) {
+        if (loop_stack_ptr >= 0) {
+            emit("JMP L%d ; CONTINUE", loop_continue_labels[loop_stack_ptr]);
+        } else {
+            fprintf(stderr, "Codegen Error: 'continue' used outside of a loop.\n");
+        }
     } else if (strcmp(node->type, "RETURN") == 0) {
         if (node->num_children > 0) {
-            generate_code_for_expr(node->children[0], scope);
+            generate_code_for_expr(node->children[0], scope, class_context);
         }
         //emit("RET");
     } else if (strcmp(node->type, "EXPR_STMT") == 0) {
-        generate_code_for_expr(node->children[0], scope);
+        generate_code_for_expr(node->children[0], scope, class_context);
         // Discard result if not a function call
         if(strcmp(node->children[0]->data_type, "float") == 0) {
             emit("FPOP"); 
         } else if(strcmp(node->children[0]->data_type, "int") == 0 || strcmp(node->children[0]->data_type, "char") == 0) {
             emit("POP"); 
+        } else {
+            // For void functions or other types, no pop needed
+        }
+    } else if (strcmp(node->type, "DECL_LIST") == 0) {
+        for (int i = 0; i < node->num_children; i++) {
+            generate_assembly(node->children[i], node->scope_table ? node->scope_table : scope);
+        }
+    } else if (strcmp(node->type, "DECL_STMT") == 0) {
+        generate_assembly(node->children[1], node->scope_table ? node->scope_table : scope);
+    } else if (strcmp(node->type, "STATEMENTS") == 0) {
+        for (int i = 0; i < node->num_children; i++) {
+            generate_assembly(node->children[i], node->scope_table ? node->scope_table : scope);
+        }
+    } else {
+        for(int i=0; i<node->num_children; ++i) {
+            generate_assembly(node->children[i], node->scope_table ? node->scope_table : scope);
         }
     }
     code_gen_depth--;
@@ -1669,29 +2058,47 @@ void generate_code_for_statement(Node* node, SymbolTable* scope) {
 
 void generate_assembly(Node* node, SymbolTable* scope) {
     if (!node) return;
-    debug_print("Gen ASSEMBLY for: %s (%s)", node->type, node->value ? node->value : "");
+    debug_print("Gen ASM for: %s (%s)", node->type, node->value ? node->value : "");
     code_gen_depth++;
-    
-    SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
 
-    if (strcmp(node->type, "PROGRAM") == 0 || strcmp(node->type, "STATEMENTS") == 0 || strcmp(node->type, "DECL_LIST") == 0) {
+    SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
+    ClassInfo* class_context = find_class_info(current_class_name);
+
+    if (strcmp(node->type, "PROGRAM") == 0 || strcmp(node->type, "STATEMENTS") == 0 || strcmp(node->type, "DECL_LIST") == 0 || strcmp(node->type, "CLASS_BODY") == 0) {
         for (int i = 0; i < node->num_children; i++) {
             generate_assembly(node->children[i], next_scope);
         }
     } else if (strcmp(node->type, "CLASS_DECL") == 0) {
-        emit("\n.class %s", node->value);
-        generate_assembly(node->children[1], next_scope); // children[0] is inherit, [1] is body
-        emit(".endclass");
-    }
-    else if (strcmp(node->type, "CLASS_BODY") == 0) {
-        for (int i = 0; i < node->num_children; i++) {
-            generate_assembly(node->children[i], next_scope);
-        }
-    } else if (strcmp(node->type, "DECL_STMT") == 0 || strcmp(node->type, "MEMBER_DECL") == 0) {
-         generate_assembly(node->children[1], next_scope);
-    }
-    else {
-        generate_code_for_statement(node, next_scope);
+        current_class_name = node->value;
+        generate_assembly(node->children[1], next_scope); // Process CLASS_BODY
+        current_class_name = NULL;
+    } else if (strcmp(node->type, "FUNC_DEF") == 0) {
+        int locals = calculate_total_locals(node->scope_table);
+        int stack = calculate_max_stack_depth(node->children[2]);
+        if (stack < 4) stack = 4; // Ensure a minimum stack size
+
+        fprintf(asm_file, "\n.method %s\n", node->value);
+        emit(".limit stack %d", stack);
+        emit(".limit locals %d", locals);
+        generate_assembly(node->children[2], node->scope_table);
+        emit("RET");
+        fprintf(asm_file, ".endmethod\n");
+    } else if (strcmp(node->type, "CONSTRUCTOR") == 0) {
+         char mangled_name[512];
+         sprintf(mangled_name, "%s@constructor", node->value);
+         
+         int locals = calculate_total_locals(node->scope_table);
+         int stack = calculate_max_stack_depth(node->children[1]);
+         if (stack < 4) stack = 4;
+
+         fprintf(asm_file, "\n.method %s\n", mangled_name);
+         emit(".limit stack %d", stack);
+         emit(".limit locals %d", locals);
+         generate_assembly(node->children[1], node->scope_table);
+         emit("RET");
+         fprintf(asm_file, ".endmethod\n");
+    } else {
+        generate_code_for_statement(node, next_scope, class_context);
     }
     code_gen_depth--;
 }
@@ -1711,6 +2118,7 @@ int main(int argc, char **argv) {
     init_symbol_table();
     yyparse();
 
+    // After parsing, write metadata before code
     if (root) {
         FILE *output_file = fopen("parser_output.txt", "w");
         if (output_file) {
@@ -1719,41 +2127,46 @@ int main(int argc, char **argv) {
         }
         
         asm_file = fopen("code.asm", "w");
-        if(asm_file){
+        if(asm_file) {
             printf("\nGenerating assembly code in code.asm...\n");
-            generate_assembly(root, all_tables[0]);
 
-            if (string_pool_count > 0) {
+            // --- Emit Metadata Section ---
+            emit(".class_metadata");
+            emit("class_count %d", class_pool_count);
+            for (int i = 0; i < class_pool_count; i++) {
+                ClassInfo* cls = class_metadata_pool[i];
+                int super_idx = (cls->parent_count > 0) ? get_class_index(cls->parent_names[0]) : -1;
+                emit("class_begin %s %d", cls->name, super_idx);
+                
+                emit("field_count %d", cls->field_count);
+                for(int j=0; j<cls->field_count; ++j) {
+                    // Type 0 = int, 1 = float, 2=object_ref/array_ref
+                    emit("field %s %s %d", cls->fields[j].name, cls->fields[j].type, 0); 
+                }
+
+                emit("method_count %d", cls->method_count);
+                 for(int j=0; j<cls->method_count; ++j) {
+                    emit("method %s %s.%s", cls->methods[j].name, cls->name, cls->methods[j].name);
+                }
+                emit("class_end");
+            }
+            emit(".end_metadata");
+            emit("\n.code");
+
+            // --- Emit Code Section ---
+            generate_assembly(root, all_tables[0]);
+            if (string_pool_count > 0 || array_descriptor_count > 0) {
                 fprintf(asm_file, "\n.data\n");
                 for (int i = 0; i < string_pool_count; i++) {
                     fprintf(asm_file, "STR_%d: .word \"%s\"\n", i, string_pool[i]);
                     free(string_pool[i]);
                 }
-            }
-            
-            
-
-            // This metadata format is now superseded by the new directives.
-            // Commenting out to avoid duplicate/conflicting output.
-            /*
-            if (class_pool_count > 0) {
-                fprintf(asm_file, "\n.classmeta\n");
-                for (int i = 0; i < class_pool_count; i++) {
-                    ClassInfo* cls = class_metadata_pool[i];
-                    fprintf(asm_file, "CLASS_BEGIN %s\n", cls->name);
-                    fprintf(asm_file, "FIELD_COUNT %d\n", cls->field_count);
-                    for (int j = 0; j < cls->field_count; j++) {
-                        fprintf(asm_file, "FIELD %s %s %s\n", cls->fields[j].name, cls->fields[j].type, cls->fields[j].access_spec);
-                    }
-                    fprintf(asm_file, "METHOD_COUNT %d\n", cls->method_count);
-                    for (int j = 0; j < cls->method_count; j++) {
-                        fprintf(asm_file, "METHOD %s %s %s\n", cls->methods[j].name, cls->methods[j].return_type, cls->methods[j].access_spec);
-                    }
-                    fprintf(asm_file, "CLASS_END\n");
+                for (int i = 0; i < array_descriptor_count; i++) {
+                    fprintf(asm_file, "A%d: .word \"%s\"\n", i, array_descriptor_pool[i]);
+                    free(array_descriptor_pool[i]);
                 }
             }
-            */
-
+            
             fclose(asm_file);
         }
     }
