@@ -1,0 +1,62 @@
+class TestClass {
+    public int publicVar;
+    public void publicMethod() {
+            publicVar = 10;
+        }
+    public TestClass() {
+        int i=0;
+        for (i = 7; i < 10; i++) {
+           publicVar = publicVar + i;
+        }
+    };
+    public TestClass(int x) {
+        publicVar = x;
+    };
+};
+
+class AnotherClass : public TestClass {
+    public int anotherVar;
+    
+    public void anotherMethod() {
+            anotherVar = 20;
+        }
+     public void publicMethod() {
+            anotherVar = 15;
+        }
+    public void publicMethod(int x,int y) {
+            anotherVar = x + y;
+        }
+    public AnotherClass() {
+        int j=0;
+        for (j = 0; j < 5; j++) {
+           anotherVar = anotherVar + j;
+        }
+    };
+   
+};
+
+int main() {
+    TestClass obj = new TestClass(10);
+    obj.publicMethod();
+    obj.publicVar = 10;
+    AnotherClass obj2 = new AnotherClass();
+    obj2.publicMethod();
+    obj2.publicMethod(30,20);
+    int c = 0,d=0;
+    int k=0;
+    for (k = 0; k < 3; k++) {
+        if(k==2) {
+            break;
+        } else {
+            continue;
+        }
+        int c1 = 0;
+    }
+    return 0;
+}
+
+
+
+
+
+

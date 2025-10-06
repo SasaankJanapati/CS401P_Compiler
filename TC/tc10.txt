@@ -1,13 +1,17 @@
 class TestClass {
    public int publicVar;
-        public void publicMethod() {
+   public void publicMethod() {
             publicVar = 10;
         }
 
-    private int privateVar;
-
     protected int protectedVar;
 
+};
+
+class TestClass2 : public TestClass {
+    public void anotherMethod() {
+        protectedVar = 20;
+    }
 };
 
 /* This is a sample test case for the compiler.
@@ -15,7 +19,19 @@ class TestClass {
    control flow statements, and expressions.
 */
 
-// Single line comment example
+class AnotherClass {
+    public int anotherVar;
+    public void anotherMethod() {
+        anotherVar = 5;
+    }
+};
+
+class AnotherClass2 : public AnotherClass {
+    public void anotherMethod2() {
+        anotherVar = 15;
+    }
+};
+
 
 
 int compute_sum(int a, int b) {
@@ -24,20 +40,28 @@ int compute_sum(int a, int b) {
 }
 
 void main() {
-    int var1;
-    int var2 = 15; // var initialization
-    float gh = 20.5;
-    if(gh > 10.0) {
-        var1 = 100;
-    } else {
-        var1 = 200;
-        if(var2 < 20) {
-            var1 = 300;
-        }
+    TestClass obj = new TestClass();
+    AnotherClass anotherObj = new AnotherClass();
+    obj.publicMethod();
+    string s = "Hello, World!";
+    anotherObj.anotherMethod();
+    anotherObj.anotherVar = obj.publicVar + 10;
+    int i =0;
+    if( 5==5)
+    {
+        i = i + 1;
     }
-    string strVar = "Test HELLO";
-    char charVar = 'A';
-    int localVar = 5;
-    var1 = compute_sum(var2, gh);
-    localVar = localVar + 10;
+    else
+    {
+        i = i - 1;
+        
+    }
+    int c = compute_sum(3, 4);
+    int d = compute_sum(c,i);
+    int arr[5];
+    arr[4] = d;
+    c = arr[3] + 2;
+    TestClass arrObj[3];
+    arrObj[0] = new TestClass();
+    arrObj[0].publicVar = arr[4];
 }

@@ -1,0 +1,24 @@
+class TestClass {
+    public int publicVar;
+    protected int protectedVar;
+    public void publicMethod() {
+            int z = 15;
+            z = 20;
+            publicVar = 10;
+            protectedVar = publicVar + 16;
+        }
+    
+};
+
+int main() {
+    TestClass obj = new TestClass();
+    int n = 10;
+    int a[n+1][n-1];
+    TestClass b[5];
+    int x = 5;
+    a[x+2][5-2] = 11;
+    obj.publicMethod();
+    obj.publicVar = 10;
+    x = a[3][4] + 34;
+    return 0;
+}

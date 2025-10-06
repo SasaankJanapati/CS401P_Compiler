@@ -1,0 +1,37 @@
+// The abstract "blueprint" for any animal.
+// You cannot create a `new Animal()`.
+abstract class Animal {
+
+    // A concrete method, inherited by all children.
+    //public abstract void sleep() ;
+
+    // An abstract method, which acts as a contract.
+    // It has no body and MUST be implemented by any non-abstract child class.
+    public abstract void makeSound();
+};
+
+// A concrete class that inherits from Animal.
+class Dog : public Animal {
+    // It fulfills the contract by providing an implementation for makeSound().
+    public void makeSound() {
+       int i =0;
+       i++;
+    }
+};
+
+// Another concrete class that provides its own implementation.
+class Cat : public Animal {
+    public void makeSound() {
+        int ij = 0;
+        ij++;
+    }
+};
+
+int main() {
+    Animal a = new Animal(); // Error: Cannot instantiate an abstract class.
+    Dog d = new Dog();
+    d.makeSound(); // Outputs: Woof!
+    Cat c = new Cat();
+    c.makeSound(); // Outputs: Meow!
+    return 0;
+}

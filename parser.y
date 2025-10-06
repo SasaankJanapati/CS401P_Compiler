@@ -282,7 +282,7 @@ char* current_decl_type;
 %token <str_val> PASN MASN DASN SASN
 %token <str_val> OR AND EQ NE LE GE LT GT
 %token <str_val> INC DEC
-%token <str_val> CLASS PUBLIC PRIVATE PROTECTED ABSTRACT
+%token <str_val> CLASS PUBLIC PRIVATE PROTECTED ABSTRACT NEW
 %token MEOF
 
 /* Precedence and Associativity */
@@ -303,12 +303,13 @@ char* current_decl_type;
 %type <node> OPT_INHERIT INHERITLIST MODIFIER_DECL
 %type <node> ABSTRACTCLASS ABSTRACTBODY ABSTRACTMEMBER ABSTRACTFUNC
 %type <node> OPT_ASNEXPR OPT_BOOLEXPR OPT_EXPR
+%type <node> OBJECTDECLSTMT OBJDECL MEMBERACCESS
 
 %%
 
-S: STMNTS M  { $$ = create_node("PROGRAM", NULL); add_child($$, $1); root = $$; }
- |            { $$ = create_node("PROGRAM", "empty"); root = $$; }
- | error      { yyerrok; $$ = create_node("PROGRAM", "error"); root = $$; }
+S: STMNTS M { $$ = create_node("PROGRAM", NULL); add_child($$, $1); root = $$; }
+ |          { $$ = create_node("PROGRAM", "empty"); root = $$; }
+ | error    { yyerrok; $$ = create_node("PROGRAM", "error"); root = $$; }
  ;
 
 STMNTS: STMNTS M A { $$ = $1; if ($3 != NULL) add_child($$, $3); }
@@ -338,6 +339,7 @@ A: ASNEXPR ';'                  { $$ = $1; }
  | '{' '}'                      { $$ = create_node("BLOCK", "empty"); }
  | EXPR ';'                     { $$ = create_node("EXPR_STMT", NULL); add_child($$, $1); }
  | DECLSTATEMENT                { $$ = $1; }
+ | OBJECTDECLSTMT               { $$ = $1; }
  | FUNCDECL                     { $$ = $1; }
  | CLASSDECL                    { $$ = $1; }
  | ABSTRACTCLASS                { $$ = $1; }
@@ -381,23 +383,37 @@ FUNCDECL: /*TYPE IDEN '(' PARAMLIST ')' ';' {
               add_child($$, $4);
           }
         | */TYPE IDEN '(' {
-              insert_symbol($2, $1->value, current_class_name ? "member_func" : "function");
               current_function_return_type = $1->value;
               has_return_statement = 0;
               enter_scope();
+              in_class_func = false;
           } PARAMLIST ')' '{' STMNTS '}' {
               SymbolTable* func_scope = current_table;
               if (strcmp(current_function_return_type, "void") != 0 && !has_return_statement) {
                   fprintf(stderr, "Error at line %d: Missing return statement in non-void function '%s'.\n", yylineno, $2);
               }
               exit_scope();
-              current_function_return_type = NULL;
               
-              $$ = create_node("FUNC_DEF", $2);
-              add_child($$, $1);
-              add_child($$, $5);
-              add_child($$, $8);
+              char* mangled_name = get_mangled_name($2, $5);
+              insert_symbol($2, $1->value, current_class_name ? "member_func" : "function", NULL, NULL);
+              //fprintf(stderr, "Debug: Function '%s' with mangled name '%s' declared.\n", $2, mangled_name);
+              //fprintf(stderr, "Debug: Current class context: %s\n", current_class_name ? current_class_name : "None");
+              if (current_class_info) {
+                MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
+                method->name = strdup($2);
+                method->return_type = strdup($1->value);
+                method->signature = mangled_name;
+                method->vtable_index = current_class_info->method_count - 1; // Temporary, will be adjusted in check_for_override
+                method->access_spec = strdup(current_access_spec);
+                // TODO: Populate params
+              }
+              //fprintf(stderr, "Debug: Function '%s' with mangled name '%s' declared.\n", $2, mangled_name);
+
+              $$ = create_node("FUNC_DEF", mangled_name);
+              add_child($$, $1); add_child($$, $5); add_child($$, $8);
               $$->scope_table = func_scope;
+              current_function_return_type = NULL;
+              fprintf(stderr, "Debug: Functionend '%s' with mangled name '%s' declared.\n", $2, mangled_name);
           }
         ;
 
@@ -407,26 +423,38 @@ PARAMLIST: PARAM ',' PARAMLIST { $$ = create_node("PARAM_LIST", NULL); add_child
          ;
 
 PARAM: TYPE IDEN {
-        insert_symbol($2, $1->value, "variable");
-        $$ = create_node("PARAM", $2);
-        add_child($$, $1);
+        insert_symbol($2, $1->value, "parameter", NULL, NULL);
+        $$ = create_node("PARAM", $2); add_child($$, $1);
      }
      | TYPE IDEN INDEX {
         char* array_type = build_array_type($1->value, $3);
-        insert_symbol($2, array_type, "variable");
-        $$ = create_node("PARAM_ARRAY", $2);
-        add_child($$, $1);
-        add_child($$, $3);
+        insert_symbol($2, array_type, "parameter", NULL, $3);
+        $$ = create_node("PARAM_ARRAY", $2); add_child($$, $1); add_child($$, $3);
+        free(array_type);
+     }
+     | IDEN IDEN { // Object parameter
+        if (!find_class_info($1)) {
+            fprintf(stderr, "Error line %d: Unknown type '%s' for parameter '%s'\n", yylineno, $1, $2);
+        }
+        insert_symbol($2, $1, "parameter", NULL, NULL);
+        $$ = create_node("PARAM", $2); add_child($$, create_node("TYPE", $1));
+     }
+     | IDEN IDEN INDEX { // Object array parameter
+        if (!find_class_info($1)) {
+            fprintf(stderr, "Error line %d: Unknown type '%s' for parameter '%s'\n", yylineno, $1, $2);
+        }
+        char* array_type = build_array_type($1, $3);
+        insert_symbol($2, array_type, "parameter", NULL, $3);
+        $$ = create_node("PARAM_ARRAY", $2); add_child($$, create_node("TYPE", $1)); add_child($$, $3);
         free(array_type);
      }
      ;
 
 DECLSTATEMENT: TYPE DECLLIST ';' {
                  $$ = create_node("DECL_STMT", NULL);
-                 add_child($$, $1);
-                 add_child($$, $2);
+                 add_child($$, $1); add_child($$, $2);
                }
-            //  | TYPE DECLLIST error  { 
+               //  | TYPE DECLLIST error  { 
             //      yyerrok; 
             //      $$ = create_node("DECL_STMT_ERROR", NULL);
             //      add_child($$, $1);
@@ -439,296 +467,423 @@ DECLSTATEMENT: TYPE DECLLIST ';' {
 DECLLIST: DECL ',' DECLLIST { $$ = $3; add_child($$, $1); }
         | DECL              { $$ = create_node("DECL_LIST", NULL); add_child($$, $1); }
         ;
-
 DECL: IDEN {
-        insert_symbol($1, current_decl_type, current_class_name ? "member_var" : "variable");
+        insert_symbol($1, current_decl_type, current_class_name && in_class_func ? "member_var" : "variable", NULL, NULL);
         $$ = create_node("VAR_DECL", $1);
       }
     | IDEN '=' EXPR {
-        insert_symbol($1, current_decl_type, current_class_name ? "member_var" : "variable");
         if (!are_types_compatible(current_decl_type, $3->data_type)) {
             fprintf(stderr, "Error line %d: Incompatible types in initialization. Cannot assign '%s' to '%s'\n", yylineno, $3->data_type, current_decl_type);
         }
-        $$ = create_node("VAR_INIT", $1);
+        insert_symbol($1, current_decl_type, current_class_name && in_class_func ? "member_var" : "variable", $3, NULL);
+        $$ = create_node("VAR_INIT", $1); 
         add_child($$, $3);
       }
     | IDEN INDEX {
         char* array_type = build_array_type(current_decl_type, $2);
-        insert_symbol($1, array_type, current_class_name ? "member_var" : "variable");
-        $$ = create_node("ARRAY_DECL", $1);
+        insert_symbol($1, array_type, current_class_name && in_class_func ? "member_var" : "variable", NULL, $2);
+        $$ = create_node("ARRAY_DECL", $1); 
         add_child($$, $2);
         free(array_type);
       }
     | IDEN INDEX '=' '{' INITLIST '}' {
         char* array_type = build_array_type(current_decl_type, $2);
-        insert_symbol($1, array_type, current_class_name ? "member_var" : "variable");
+        insert_symbol($1, array_type, current_class_name && in_class_func ? "member_var" : "variable", $5, $2);
         check_init_list_types($5, current_decl_type);
-        $$ = create_node("ARRAY_INIT", $1);
-        add_child($$, $2);
+        $$ = create_node("ARRAY_INIT", $1); 
+        add_child($$, $2); 
         add_child($$, $5);
         free(array_type);
       }
     ;
-
 INITLIST: INITLIST ',' EXPR { $$ = $1; add_child($$, $3); }
         | EXPR              { $$ = create_node("INIT_LIST", NULL); add_child($$, $1); }
         ;
-
-INDEX: '[' EXPR ']' { $$ = create_node("INDEX", NULL); add_child($$, $2); }
-     | '[' EXPR ']' INDEX { $$ = create_node("INDEX", NULL); add_child($$, $2); add_child($$, $4); }
+INDEX: '[' EXPR ']' { $$ = create_node("INDEX", NULL); add_child($$, $2); if (strcmp($2->data_type, "int") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
+     | '[' EXPR ']' INDEX { $$ = create_node("INDEX", NULL); add_child($$, $2); add_child($$, $4); if (strcmp($2->data_type, "int") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
      ;
-
 TYPE: INT    { current_decl_type = "int"; $$ = create_node("TYPE", "int"); }
     | FLOAT  { current_decl_type = "float"; $$ = create_node("TYPE", "float"); }
     | CHAR   { current_decl_type = "char"; $$ = create_node("TYPE", "char"); }
     | VOID   { current_decl_type = "void"; $$ = create_node("TYPE", "void"); }
     | STRING { current_decl_type = "string"; $$ = create_node("TYPE", "string"); }
     ;
-
 ASSGN: '='  { $$ = create_node("ASSIGN_OP", "="); }
      | PASN { $$ = create_node("ASSIGN_OP", "+="); }
      | MASN { $$ = create_node("ASSIGN_OP", "-="); }
      | DASN { $$ = create_node("ASSIGN_OP", "/="); }
      | SASN { $$ = create_node("ASSIGN_OP", "*="); }
      ;
-
 LVAL: IDEN {
         Symbol* s = lookup_symbol($1);
-        if (s == NULL) {
+        if (!s) {
             fprintf(stderr, "Error line %d: Variable '%s' not defined\n", yylineno, $1);
             $$ = create_node("IDEN", $1);
+            $$->data_type = strdup("undefined");
         } else {
             $$ = create_node("IDEN", $1);
             $$->data_type = strdup(s->type);
         }
       }
     | IDEN INDEX {
-        Symbol* s = lookup_symbol($1);
-        char* current_type;
-        if (s == NULL) {
-            fprintf(stderr, "Error line %d: Array '%s' not defined\n", yylineno, $1);
-            current_type = strdup("undefined");
-        } else {
-            current_type = strdup(s->type);
-        }
-
-        Node* index_node = $2;
-        while (index_node != NULL) {
-            Node* expr_node = index_node->children[0];
-            if (strcmp(expr_node->data_type, "int") != 0) {
-                fprintf(stderr, "Error line %d: Array index for '%s' is not an integer (got '%s')\n", yylineno, $1, expr_node->data_type);
-            }
-            if (strncmp(current_type, "array(", 6) == 0) {
-                char* temp = strdup(current_type + 6);
-                temp[strlen(temp) - 1] = '\0';
-                free(current_type);
-                current_type = temp;
-            } else {
-                fprintf(stderr, "Error line %d: Too many dimensions for array '%s'. '%s' is not an array type.\n", yylineno, $1, current_type);
-                free(current_type);
-                current_type = strdup("undefined");
-                break;
-            }
-            if (index_node->num_children == 2) {
-                index_node = index_node->children[1];
-            } else {
-                index_node = NULL;
-            }
-        }
-        
         $$ = create_node("ARRAY_ACCESS", $1);
         add_child($$, $2);
-        $$->data_type = current_type;
+        Symbol* s = lookup_symbol($1);
+        if (!s) {
+            fprintf(stderr, "Error line %d: Array '%s' not defined\n", yylineno, $1);
+            $$->data_type = strdup("undefined");
+        } else {
+            // Traverse the type string to find the element type
+            char* type = strdup(s->type);
+            Node* temp_idx = $2;
+            while(temp_idx) {
+                if(strncmp(type, "[", 1) == 0) {
+                    char* inner = strdup(type + 1); // Skip the leading '['
+                    inner[strlen(inner)-1] = '\0';
+                    free(type);
+                    type = inner;
+                } else {
+                     fprintf(stderr, "Error line %d: Invalid indexing on non-array type for '%s'\n", yylineno, $1);
+                     free(type);
+                     type = strdup("undefined");
+                     break;
+                }
+                temp_idx = (temp_idx->num_children == 2) ? temp_idx->children[1] : NULL;
+            }
+            $$->data_type = type;
+        }
       }
+    | MEMBERACCESS { $$ = $1; }
     ;
-
 ASNEXPR: LVAL ASSGN EXPR {
            if (!are_types_compatible($1->data_type, $3->data_type)) {
                fprintf(stderr, "Error line %d: Type mismatch in assignment. Cannot assign '%s' to '%s'\n", yylineno, $3->data_type, $1->data_type);
            }
            $$ = create_node("ASSIGN", NULL);
-           add_child($$, $1);
-           add_child($$, $2);
-           add_child($$, $3);
+           add_child($$, $1); add_child($$, $2); add_child($$, $3);
          }
-       | EXPR { $$ = $1; }
+        | LVAL '=' NEW IDEN '(' ARGLIST ')'
+        {
+            ClassInfo* cls_info = find_class_info($4);
+            if (cls_info && cls_info->is_abstract) {
+                fprintf(stderr, "Error line %d: Cannot create an instance of abstract class '%s'\n", yylineno, $4);
+            }
+            $$ = create_node("NEW_OBJ_ASSIGN", NULL);
+            add_child($$, $1);
+            Node* new_node = create_node("NEW_OBJ", $4);
+            add_child(new_node, $6);
+            add_child($$, new_node);
+        }
        ;
-
-BOOLEXPR: BOOLEXPR OR M BOOLEXPR   { $$ = create_node("BOOL_OP", "||"); add_child($$, $1); add_child($$, $4); $$->data_type="bool"; }
-        | BOOLEXPR AND M BOOLEXPR  { $$ = create_node("BOOL_OP", "&&"); add_child($$, $1); add_child($$, $4); $$->data_type="bool"; }
-        | '!' BOOLEXPR             { $$ = create_node("BOOL_OP", "!"); add_child($$, $2); $$->data_type="bool"; }
+BOOLEXPR: BOOLEXPR OR M BOOLEXPR   { $$ = create_node("BOOL_OP", "||"); add_child($$, $1); add_child($$, $4); $$->data_type=strdup("bool"); }
+        | BOOLEXPR AND M BOOLEXPR  { $$ = create_node("BOOL_OP", "&&"); add_child($$, $1); add_child($$, $4); $$->data_type=strdup("bool"); }
+        | '!' '(' BOOLEXPR ')'     { $$ = create_node("BOOL_OP", "!"); add_child($$, $3); $$->data_type=strdup("bool"); }
         | '(' BOOLEXPR ')'         { $$ = $2; }
-        | EXPR LT EXPR             { $$ = create_node("REL_OP", "<"); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
-        | EXPR GT EXPR             { $$ = create_node("REL_OP", ">"); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
-        | EXPR EQ EXPR             { $$ = create_node("REL_OP", "=="); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
-        | EXPR NE EXPR             { $$ = create_node("REL_OP", "!="); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
-        | EXPR LE EXPR             { $$ = create_node("REL_OP", "<="); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
-        | EXPR GE EXPR             { $$ = create_node("REL_OP", ">="); add_child($$, $1); add_child($$, $3); $$->data_type="bool"; }
-        | TR                       { $$ = create_node("BOOL_CONST", "true"); $$->data_type="bool"; }
-        | FL                       { $$ = create_node("BOOL_CONST", "false"); $$->data_type="bool"; }
+        | EXPR LT EXPR             { $$ = create_node("REL_OP", "<"); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
+        | EXPR GT EXPR             { $$ = create_node("REL_OP", ">"); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
+        | EXPR EQ EXPR             { $$ = create_node("REL_OP", "=="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
+        | EXPR NE EXPR             { $$ = create_node("REL_OP", "!="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
+        | EXPR LE EXPR             { $$ = create_node("REL_OP", "<="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
+        | EXPR GE EXPR             { $$ = create_node("REL_OP", ">="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
+        | TR                       { $$ = create_node("BOOL_CONST", "true"); $$->data_type=strdup("bool"); }
+        | FL                       { $$ = create_node("BOOL_CONST", "false"); $$->data_type=strdup("bool"); }
         ;
-
-EXPR: EXPR '+' EXPR { $$ = create_node("BIN_OP", "+"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type); }
-    | EXPR '-' EXPR { $$ = create_node("BIN_OP", "-"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type); }
-    | EXPR '*' EXPR { $$ = create_node("BIN_OP", "*"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type); }
-    | EXPR '/' EXPR { $$ = create_node("BIN_OP", "/"); add_child($$, $1); add_child($$, $3); $$->data_type = get_promoted_type($1->data_type, $3->data_type); }
-    | EXPR '%' EXPR { $$ = create_node("BIN_OP", "%"); add_child($$, $1); add_child($$, $3); $$->data_type = "int"; }
-    | BOOLEXPR '?' EXPR ':' EXPR { $$ = create_node("TERNARY_OP", NULL); add_child($$, $1); add_child($$, $3); add_child($$, $5); $$->data_type = $3->data_type; }
+EXPR: EXPR '+' EXPR { $$ = create_node("BIN_OP", "+"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup(get_promoted_type($1->data_type, $3->data_type)); }
+    | EXPR '-' EXPR { $$ = create_node("BIN_OP", "-"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup(get_promoted_type($1->data_type, $3->data_type)); }
+    | EXPR '*' EXPR { $$ = create_node("BIN_OP", "*"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup(get_promoted_type($1->data_type, $3->data_type)); }
+    | EXPR '/' EXPR { $$ = create_node("BIN_OP", "/"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup(get_promoted_type($1->data_type, $3->data_type)); }
+    | EXPR '%' EXPR { $$ = create_node("BIN_OP", "%"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup("int"); }
+    | BOOLEXPR '?' EXPR ':' EXPR { $$ = create_node("TERNARY_OP", NULL); add_child($$, $1); add_child($$, $3); add_child($$, $5); $$->data_type = strdup($3->data_type); }
     | FUNC_CALL     { $$ = $1; }
     | TERM          { $$ = $1; }
     | '-' EXPR %prec UMINUS { $$ = create_node("UN_OP", "-"); add_child($$, $2); $$->data_type = strdup($2->data_type); }
     ;
-
 FUNC_CALL: IDEN '(' ARGLIST ')' {
             Symbol* s = lookup_symbol($1);
-            $$ = create_node("FUNC_CALL", $1);
+            // if(!s || (strcmp(s->type, "function") != 0 && strcmp(s->type, "member_func") != 0)) {
+            //      fprintf(stderr, "Error line %d: '%s' is not a function or is not defined. %s\n", yylineno, $1, s ? s->type : "undefined");
+            //      // print s
+            //         if(s) {
+            //             fprintf(stderr, "Debug: Symbol '%s' found with type '%s'\n", s->name, s->type);
+            //         } else {
+            //             fprintf(stderr, "Debug: Symbol '%s' not found in symbol table\n", $1);
+            //         }
+            // }
+            char* mangled_name = get_mangled_name($1, $3);
+            $$ = create_node("FUNC_CALL", mangled_name);
             add_child($$, $3);
-            if (s == NULL) {
-                fprintf(stderr, "Error line %d: Function '%s' is not defined.\n", yylineno, $1);
-                $$->data_type = "undefined";
-            } else {
-                $$->data_type = strdup(s->type);
-            }
+            $$->data_type = s ? strdup(s->type) : strdup("undefined");
          }
          ;
-
 ARGLIST: EXPR ',' ARGLIST { $$ = $3; add_child($$, $1); }
        | EXPR            { $$ = create_node("ARG_LIST", NULL); add_child($$, $1); }
        |                 { $$ = create_node("ARG_LIST", "empty"); }
        ;
-
 TERM: LVAL { $$ = $1; }
-    | NUM  { $$ = create_node("NUM", $1); $$->data_type = (strchr($1, '.') ? "float" : "int"); }
-    | STR  { $$ = create_node("STRING_LIT", $1); $$->data_type = "string"; }
-    | CHR  { $$ = create_node("CHAR_LIT", $1); $$->data_type = "char"; }
+    | NUM  { $$ = create_node("NUM", $1); $$->data_type = (strchr($1, '.')) ? strdup("float") : strdup("int"); }
+    | STR  { $$ = create_node("STRING_LIT", $1); $$->data_type = strdup("string"); }
+    | CHR  { $$ = create_node("CHAR_LIT", $1); $$->data_type = strdup("char"); }
     // | TR   { $$ = create_node("BOOL_CONST", "true"); $$->data_type="bool"; }
     // | FL   { $$ = create_node("BOOL_CONST", "false"); $$->data_type="bool"; }
     | '(' EXPR ')' { $$ = $2; }
-    | LVAL INC { $$ = create_node("POST_INC", "++"); add_child($$, $1); $$->data_type = $1->data_type; }
-    | LVAL DEC { $$ = create_node("POST_DEC", "--"); add_child($$, $1); $$->data_type = $1->data_type; }
-    | INC LVAL { $$ = create_node("PRE_INC", "++"); add_child($$, $2); $$->data_type = $2->data_type; }
-    | DEC LVAL { $$ = create_node("PRE_DEC", "--"); add_child($$, $2); $$->data_type = $2->data_type; }
+    | LVAL INC { $$ = create_node("POST_INC", "++"); add_child($$, $1); $$->data_type = strdup($1->data_type); }
+    | LVAL DEC { $$ = create_node("POST_DEC", "--"); add_child($$, $1); $$->data_type = strdup($1->data_type); }
+    | INC LVAL { $$ = create_node("PRE_INC", "++"); add_child($$, $2); $$->data_type = strdup($2->data_type); }
+    | DEC LVAL { $$ = create_node("PRE_DEC", "--"); add_child($$, $2); $$->data_type = strdup($2->data_type); }
     ;
-
-/* --- OOP Grammar --- */
-CLASSDECL: CLASS IDEN OPT_INHERIT '{' CLASSBODY '}' ';' {
+CLASSDECL: CLASS IDEN {
+                current_class_name = $2;
+                current_class_info = (ClassInfo*)calloc(1, sizeof(ClassInfo));
+                current_class_info->name = strdup($2);
+                class_metadata_pool[class_pool_count++] = current_class_info;
+                current_class_info->constructors_count = 0;
+                current_table->base_count++; // Reserve space for 'this' object
+                local_address_counter++; // Adjust local address counter
+                enter_scope();
+                current_class_info->symbol_table = current_table;
+           } OPT_INHERIT '{' CLASSBODY '}' ';' {
+            perform_diamond_check(current_class_info);
+            check_abstract_implementation(current_class_info);
             $$ = create_node("CLASS_DECL", $2);
-            add_child($$, $3); // OPT_INHERIT
-            add_child($$, $5); // CLASSBODY
+            add_child($$, $4); add_child($$, $6);
+            // Default Constructor(To be handled)
+            // if (current_class_info && current_class_info->constructors_count == 0) {
+            //     fprintf(stderr, "Debug: No constructor found for '%s'. Synthesizing a default constructor node.\n", current_class_info->name);
+
+            //     // 1. Create MethodInfo (same as before)
+            //     MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
+            //     method->name = strdup(current_class_info->name);
+            //     method->return_type = strdup("void");
+            //     method->signature = strdup(current_class_info->name);
+            //     method->access_spec = strdup("public");
+            //     method->is_abstract = false;
+            //     method->is_override = false;
+            //     method->vtable_index = current_class_info->method_count - 1;
+
+            //     // 2. Create a new CONSTRUCTOR node for the AST
+            //     Node* constructor_node = create_node("CONSTRUCTOR", current_class_info->name);
+                
+            //     // Create empty nodes for its children (param list and body)
+            //     Node* empty_params = create_node("PARAM_LIST", "empty");
+            //     Node* empty_body = create_node("STATEMENTS", "empty");
+
+            //     add_child(constructor_node, empty_params);
+            //     add_child(constructor_node, empty_body);
+
+            //     // 3. Add the new node to the class body in the AST
+            //     // $6 is the CLASSBODY node from the grammar rule
+            //     add_child($6, constructor_node);
+            // }
             $$->scope_table = current_table;
             exit_scope();
+            current_table->base_count--; // Release 'this' space
+            local_address_counter--; // Adjust local address counter
             current_class_name = NULL;
             current_class_info = NULL;
            };
-
-OPT_INHERIT: ':' INHERITLIST {
-                $$ = $2;
-             }
-           | /* empty */ {
-                // Actions for when a class is declared (before body)
-                // This is a bit tricky since IDEN is consumed before OPT_INHERIT
-                // We'll handle this in CLASSDECL before OPT_INHERIT is parsed.
-                // For now, just create an empty node.
-                $$ = create_node("NO_INHERITANCE", NULL);
-             }
+OPT_INHERIT: ':' INHERITLIST { $$ = $2; }
+           | /* empty */ { $$ = create_node("NO_INHERITANCE", NULL); }
            ;
-
 INHERITLIST: ACCESS IDEN {
+                if (current_class_info && current_class_info->parent_count < MAX_PARENTS) {
+                    current_class_info->parent_names[current_class_info->parent_count++] = strdup($2);
+                }
                 $$ = create_node("INHERIT_LIST", NULL);
-                Node* inherit_item = create_node("INHERIT_ITEM", $2);
-                add_child(inherit_item, $1);
-                add_child($$, inherit_item);
              }
            | ACCESS IDEN ',' INHERITLIST {
+                if (current_class_info && current_class_info->parent_count < MAX_PARENTS) {
+                    current_class_info->parent_names[current_class_info->parent_count++] = strdup($2);
+                }
                 $$ = $4;
-                Node* inherit_item = create_node("INHERIT_ITEM", $2);
-                add_child(inherit_item, $1);
-                add_child($$, inherit_item);
              }
            ;
-
-
 CLASSBODY: CLASSBODY CLASSMEMBER { $$ = $1; add_child($$, $2); }
          | CLASSMEMBER           { $$ = create_node("CLASS_BODY", NULL); add_child($$, $1); }
+         | /* empty */           { $$ = create_node("CLASS_BODY", "empty"); }
          ;
-
-CLASSMEMBER: ACCESS MODIFIER_DECL { 
-                current_access_spec = $1->value; 
-                $$ = $2; 
-             }
-           | ACCESS FUNCDECL { 
-                current_access_spec = $1->value; 
-                $$ = $2; 
-             }
-           | ACCESS ABSTRACTFUNC {
-                current_access_spec = $1->value;
-                $$ = $2;
-             }
-           | ACCESS CONSTRUCTOR { 
-                current_access_spec = $1->value; 
-                $$ = $2; 
-             }
-           | ACCESS DESTRUCTOR { 
-                current_access_spec = $1->value; 
-                $$ = $2; 
-             }
+CLASSMEMBER: ACCESS  MODIFIER_DECL { $$ = $2; in_class_func = false; }
+           | ACCESS  FUNCDECL { $$ = $2; in_class_func = false; }
+           | ACCESS  ABSTRACTFUNC { $$ = $2; in_class_func = false;}
+           | ACCESS  CONSTRUCTOR { $$ = $2; in_class_func = false; }
+           | ACCESS  DESTRUCTOR { $$ = $2; in_class_func = false; }
+           | ACCESS  ABSTRACTMEMBER { $$ = $2; in_class_func = false; }
+           | ACCESS  OBJECTDECLSTMT { $$ = $2; in_class_func = false;}
            ;
-
-ACCESS: PUBLIC    { $$ = create_node("ACCESS", "public"); }
-      | PRIVATE   { $$ = create_node("ACCESS", "private"); }
-      | PROTECTED { $$ = create_node("ACCESS", "protected"); }
-      | /* empty */ { $$ = create_node("ACCESS", "private"); /* Default access */ }
+ACCESS: PUBLIC    { $$ = create_node("ACCESS", "public"); current_access_spec = "public"; in_class_func = true; }
+      | PRIVATE   { $$ = create_node("ACCESS", "private"); current_access_spec = "private"; in_class_func = true; }
+      | PROTECTED { $$ = create_node("ACCESS", "protected"); current_access_spec = "protected"; in_class_func = true; }
+      //     | /* empty */ { $$ = create_node("ACCESS", "private"); /* Default access */ }
       ;
-
-MODIFIER_DECL: TYPE DECLLIST ';' {
-                $$ = create_node("MEMBER_DECL", NULL);
-                add_child($$, $1);
-                add_child($$, $2);
-              }
-              ;
-
-CONSTRUCTOR: IDEN '(' PARAMLIST ')' '{' STMNTS '}' ';' {
-                if (strcmp($1, current_class_name) != 0) {
-                    fprintf(stderr, "Error line %d: Constructor name '%s' must match class name '%s'.\n", yylineno, $1, current_class_name);
-                }
-                $$ = create_node("CONSTRUCTOR", $1);
-                add_child($$, $3);
-                add_child($$, $6);
-             }
-             ;
-
-DESTRUCTOR: '~' IDEN '(' ')' '{' STMNTS '}' ';' {
-                if (strcmp($2, current_class_name) != 0) {
-                    fprintf(stderr, "Error line %d: Destructor name '~%s' must match class name '%s'.\n", yylineno, $2, current_class_name);
-                }
-                $$ = create_node("DESTRUCTOR", $2);
-                add_child($$, $6);
+MODIFIER_DECL: TYPE DECLLIST ';' { 
+               $$ = create_node("MEMBER_DECL", NULL); 
+               add_child($$, $1); 
+               add_child($$, $2); 
             }
-            ;
-
-ABSTRACTCLASS: ABSTRACT CLASS IDEN OPT_INHERIT '{' ABSTRACTBODY '}' ';' {
-                $$ = create_node("ABSTRACT_CLASS", $3);
-                add_child($$, $4);
-                add_child($$, $6);
+              ;
+CONSTRUCTOR: IDEN '(' { 
+                enter_scope();
+                if (!current_class_name || strcmp($1, current_class_name) != 0) {
+                    fprintf(stderr, "Error line %d: Constructor name '%s' does not match class name '%s'\n", yylineno, $1, current_class_name ? current_class_name : "None");
+                }
+            } PARAMLIST ')' {in_class_func = false;} '{' STMNTS '}' ';' {
                 exit_scope();
-                current_class_name = NULL;
+                char* mangled_name = get_mangled_name($1, $4);
+                insert_symbol($1, "constructor", "member_func", NULL, NULL);
+                current_class_info->constructors_count++;
+                if (current_class_info) {
+                    MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
+                    method->name = strdup($1);
+                    method->return_type = strdup("void");
+                    method->signature = mangled_name;
+                    method->vtable_index = current_class_info->method_count - 1; // Constructors do not go in vtable
+                    method->access_spec = strdup(current_access_spec);
+                    fprintf(stderr, "---------------Debug: Constructor index for '%s': %d\n", $1, method->vtable_index);
+                }
+
+                fprintf(stderr, "---------------Debug: Constructor signature for '%s': %s\n", $1, mangled_name);
+                
+                $$ = create_node("CONSTRUCTOR", $1);
+                add_child($$, $4); add_child($$, $8);
+                $$->scope_table = current_table;
              }
              ;
-
+DESTRUCTOR: '~' IDEN '(' ')' {in_class_func = false;} '{' STMNTS '}' ';' { $$ = create_node("DESTRUCTOR", $2); add_child($$, $7); }
+            ;
+ABSTRACTCLASS: ABSTRACT CLASS IDEN {
+                 current_class_name = $3;
+                 current_class_info = (ClassInfo*)calloc(1, sizeof(ClassInfo));
+                 current_class_info->name = strdup($3);
+                 current_class_info->is_abstract = true; // Set the flag immediately
+                 class_metadata_pool[class_pool_count++] = current_class_info;
+                 current_class_info->constructors_count = 0;
+                 enter_scope();
+                 current_class_info->symbol_table = current_table;
+             } OPT_INHERIT '{' ABSTRACTBODY '}' ';' {
+                 perform_diamond_check(current_class_info);
+                 $$ = create_node("ABSTRACT_CLASS", $3);
+                 add_child($$, $5); // OPT_INHERIT
+                 add_child($$, $7); // ABSTRACTBODY
+                 $$->scope_table = current_table;
+                 exit_scope();
+                 current_class_name = NULL;
+                 current_class_info = NULL;
+             }
+             ;
 ABSTRACTBODY: ABSTRACTBODY ABSTRACTMEMBER { $$ = $1; add_child($$, $2); }
             | ABSTRACTMEMBER             { $$ = create_node("ABSTRACT_BODY", NULL); add_child($$, $1); }
             ;
-
-ABSTRACTMEMBER: ACCESS ABSTRACTFUNC { current_access_spec = $1->value; $$ = $2; }
+ABSTRACTMEMBER: ACCESS ABSTRACTFUNC { $$ = $2; }
               ;
-
-ABSTRACTFUNC: TYPE IDEN '(' PARAMLIST ')' ';' {
-                insert_symbol($2, $1->value, "abstract_method");
-                $$ = create_node("ABSTRACT_FUNC", $2);
+ABSTRACTFUNC: ABSTRACT TYPE IDEN '(' PARAMLIST ')' ';' {
+                if (current_class_info) {
+                    MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
+                    method->name = strdup($3);
+                    method->return_type = strdup($2->value);
+                    method->signature = get_mangled_name($3, $5);
+                    method->access_spec = strdup(current_access_spec);
+                    method->is_abstract = true; // Set the abstract flag
+                    method->is_override = false; // Override check can be done later
+                    method->vtable_index = -1; // V-table index is for concrete methods
+                }
+                $$ = create_node("ABSTRACT_FUNC", $3); add_child($$, $2); add_child($$, $5); 
+            }
+              ;
+OBJECTDECLSTMT: OBJDECL ';' { $$ = $1; }
+               ;
+OBJDECL: IDEN IDEN { 
+            insert_symbol($2, $1, current_class_name && in_class_func ? "member_obj" : "object", NULL, NULL);
+            $$ = create_node("OBJ_DECL", $2);
+            $$->data_type = strdup($1);
+        }
+        | IDEN IDEN '=' NEW IDEN '(' ARGLIST ')' { 
+            ClassInfo* cls_info = find_class_info($1);
+            if( cls_info && cls_info->is_abstract ) {
+                fprintf(stderr, "Error line %d: Cannot instantiate abstract class '%s'\n", yylineno, $1);
+            } else if (!cls_info) {
+                fprintf(stderr, "Error line %d: Unknown class type '%s' for object '%s'\n", yylineno, $1, $2);
+            }
+            insert_symbol($2, $1, current_class_name && in_class_func ? "member_obj" : "object", NULL, NULL); // Initializer handled by ASNEXPR
+            $$ = create_node("OBJ_INIT", $2); 
+            add_child($$, $7); 
+            $$->data_type = strdup($1);
+        }
+        | IDEN IDEN INDEX { 
+            char* array_type = build_array_type($1, $3);
+            insert_symbol($2, array_type, current_class_name && in_class_func ? "member_obj" : "object", NULL, $3);
+            $$ = create_node("OBJ_ARRAY_DECL", $2);
+            add_child($$, $3);
+            $$->data_type = array_type;
+        }
+         ;
+MEMBERACCESS: LVAL '.' IDEN { 
+                $$ = create_node("MEMBER_VAR_ACCESS", $3);
                 add_child($$, $1);
-                add_child($$, $4);
-              }
-              ;
+                ClassInfo* cls_info = find_class_info($1->data_type);
+                if(!cls_info) {
+                    fprintf(stderr, "Error line %d: Member access on non-class type '%s'\n", yylineno, $1->data_type);
+                    $$->data_type = strdup("undefined");
+                } else {
+                    FieldInfo* field = find_field_in_hierarchy($3, cls_info);
+                    if(!field) {
+                         fprintf(stderr, "Error line %d: Class '%s' has no member named '%s'\n", yylineno, cls_info->name, $3);
+                         $$->data_type = strdup("undefined");
+                    } else {
+                        $$->data_type = strdup(field->type);
+                    }
+                }
+            }
+            | LVAL '.' IDEN INDEX {
+               // Similar logic to MEMBER_VAR_ACCESS but for arrays
+               $$ = create_node("MEMBER_ARRAY_ACCESS", $3);
+               add_child($$, $1); add_child($$, $4);
+               ClassInfo* cls_info = find_class_info($1->data_type);
+               if(!cls_info) {
+                fprintf(stderr, "Error line %d: Member access on non-class type '%s'\n", yylineno, $1->data_type);
+                $$->data_type = strdup("undefined");
+               } else {
+                   FieldInfo* field = find_field_in_hierarchy($3, cls_info);
+                   if(!field) {
+                        fprintf(stderr, "Error line %d: Class '%s' has no member named '%s'\n", yylineno, cls_info->name, $3);
+                        $$->data_type = strdup("undefined");
+                   } else {
+                       // Traverse the type string to find the element type
+                       char* type = strdup(field->type);
+                       Node* temp_idx = $4;
+                       while(temp_idx) {
+                           if(strncmp(type, "[", 1) == 0) {
+                               char* inner = strdup(type + 1);
+                               inner[strlen(inner)-1] = '\0';
+                               type = inner;
+                           } else {
+                                fprintf(stderr, "Error line %d: Invalid indexing on non-array type for member '%s'\n", yylineno, $3);
+                                type = strdup("undefined");
+                                break;
+                           }
+                           temp_idx = (temp_idx->num_children == 2) ? temp_idx->children[1] : NULL;
+                       }
+                       $$->data_type = type;
+                   }
+               }
+            }
+            | LVAL '.' FUNC_CALL {
+               $$ = create_node("MEMBER_FUNC_ACCESS", NULL);
+               add_child($$, $1); add_child($$, $3);
+               ClassInfo* cls_info = find_class_info($1->data_type);
+               if(!cls_info) {
+                   fprintf(stderr, "Error line %d: Method call on non-class type '%s'\n", yylineno, $1->data_type);
+                   $$->data_type = strdup("undefined");
+               } else {
+                   MethodInfo* method = find_method_in_hierarchy(NULL, $3->value, cls_info);
+                   if(!method) {
+                        fprintf(stderr, "Error line %d: Class '%s' has no method with signature '%s'\n", yylineno, cls_info->name, $3->value);
+                        $$->data_type = strdup("undefined");
+                   } else {
+                       $$->data_type = strdup(method->return_type);
+                   }
+               }
+            }
+           ;
+
 /* --- End OOP Grammar --- */
 
 
