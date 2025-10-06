@@ -65,6 +65,7 @@ SymbolTable* current_table;
 SymbolTable* all_tables[TABLE_SIZE * 10];
 int table_count = 0;
 int local_address_counter = 0; // For assigning local variable addresses
+int params = 0; // Count of parameters in the current function
 
 // --- Data Structures for Class Metadata ---
 #define MAX_PARENTS 10
@@ -253,7 +254,7 @@ void exit_scope() {
     if (current_table->parent != NULL) {
         fprintf(stderr, "Debug: Exited to scope %d %d\n",local_address_counter,current_table->scope);
         current_table = current_table->parent;
-        local_address_counter = current_table->base_count; // Restore local address counter
+        //local_address_counter = current_table->base_count; // Restore local address counter
         fprintf(stderr, "Debug: Exited to scope %d %d\n",local_address_counter,current_table->scope);
     }
 }
@@ -284,8 +285,10 @@ void insert_symbol(char* name, char* type, char* kind, Node* initializer, Node* 
     s->access_spec = strdup(current_access_spec);
     s->class_name = current_class_name ? strdup(current_class_name) : NULL;
     s->dimension_info = index_node; // Store dimension info for arrays
-    if(strcmp(kind, "variable") == 0 || strcmp(kind, "parameter") == 0 || strcmp(kind, "object") == 0) {
+    if(strcmp(kind, "variable") == 0 || strcmp(kind, "object") == 0) {
         s->address = local_address_counter++;
+    } else if(strcmp(kind, "parameter") == 0) {
+        s->address = params++; // Parameters get addresses starting from 0
     } else {
         s->address = -1; // Not a stack-allocatable local variable
     }
@@ -731,6 +734,7 @@ FUNCDECL: /*TYPE IDEN '(' PARAMLIST ')' ';' {
               has_return_statement = 0;
               enter_scope();
               in_class_func = false;
+              params = current_class_name ? 1 : 0; // Reserve slot 0 for 'this' in member functions
           } PARAMLIST ')' '{' STMNTS '}' {
               SymbolTable* func_scope = current_table;
               if (strcmp(current_function_return_type, "void") != 0 && !has_return_statement) {
@@ -1622,8 +1626,10 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
                  fprintf(stderr, "Looking up field index for member object '%s' in class '%s'\n", s->name, s->class_name);
                  int field_idx = get_field_index(s->class_name, s->name);
                  emit("GETFIELD %d", field_idx);
+            } else if (strcmp(s->kind, "parameter") == 0) {
+                 emit("LOAD_ARG %d  ; Load parameter '%s'", s->address, s->name);
             } else {
-                 emit("LOAD %d  ; Load local var/param %s", s->address, s->name);
+                 emit("LOAD %d  ; Load local var %s", s->address, s->name);
             }
         } else {
             fprintf(stderr, "Codegen Error: Undefined symbol '%s' for expression.\n", node->value);
@@ -1777,7 +1783,7 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
             Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
             if (s) {
                  if (strcmp(s->kind, "member_var") == 0) {
-                    emit("LOAD 0 ; 'this' for assignment to member '%s'", s->name);
+                    emit("LOAD_ARG 0 ; 'this' for assignment to member '%s'", s->name);
                     generate_code_for_expr(expr, scope, class_context);
                     int field_idx = get_field_index(s->class_name, s->name);
                     emit("PUTFIELD %d", field_idx);
