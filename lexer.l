@@ -28,6 +28,7 @@ extern int yylineno;
 
 "int"           { yylval.str_val = strdup(yytext); return INT; }
 "float"         { yylval.str_val = strdup(yytext); return FLOAT; }
+"double"        { yylval.str_val = strdup(yytext); return FLOAT; }
 "char"          { yylval.str_val = strdup(yytext); return CHAR; }
 "void"          { yylval.str_val = strdup(yytext); return VOID; }
 "string"        { yylval.str_val = strdup(yytext); return STRING; }
@@ -83,6 +84,7 @@ extern int yylineno;
 <COMMENT>\n     { yylineno++; }
 <COMMENT>.      ; /* skip all characters in comment */
 \n              { yylineno++; }
+<<EOF>>         { return MEOF; }
 .               { /* ignore other characters */ }
 %%
 
