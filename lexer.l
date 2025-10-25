@@ -39,6 +39,8 @@ extern int yylineno;
 "sys_read"     { return SYS_READ; }
 "sys_write"    { return SYS_WRITE; }
 
+"import"        { return IMPORT; }
+
 "true"          { yylval.str_val = "1"; return TR; }
 "false"         { yylval.str_val = "0"; return FL; }
 

@@ -721,6 +721,7 @@ char* current_decl_type;
 %token <str_val> INC DEC
 %token <str_val> CLASS PUBLIC PRIVATE PROTECTED ABSTRACT NEW
 %token <str_val> SYS_OPEN SYS_CLOSE SYS_READ SYS_WRITE
+%token IMPORT
 %token MEOF
 
 /* Precedence and Associativity */
@@ -743,13 +744,19 @@ char* current_decl_type;
 %type <node> OPT_ASNEXPR OPT_BOOLEXPR OPT_EXPR
 %type <node> OBJECTDECLSTMT OBJDECL MEMBERACCESS
 %type <node> SYSCALL
+%type <node> IMPORTDECLS
 
 %%
 
 S: STMNTS M  { $$ = create_node("PROGRAM", NULL); add_child($$, $1); root = $$; }
+ | IMPORTDECLS STMNTS M { $$ = create_node("PROGRAM", NULL); add_child($$, $1); add_child($$, $2); root = $$; }
  |      { $$ = create_node("PROGRAM", "empty"); root = $$; }
  | error    { yyerrok; $$ = create_node("PROGRAM", "error"); root = $$; }
  ;
+
+IMPORTDECLS: IMPORT IDEN ';' { $$ = create_node("IMPORT", $2); }
+            | IMPORTDECLS IMPORT IDEN ';' { $$ = $1; add_child($$, create_node("IMPORT", $3)); }
+          ;
 
 STMNTS: STMNTS M A { $$ = $1; if ($3 != NULL) add_child($$, $3); }
       | A M        { $$ = create_node("STATEMENTS", NULL); if ($1 != NULL) add_child($$, $1); }
@@ -2295,6 +2302,15 @@ void generate_assembly(Node* node, SymbolTable* scope) {
          generate_assembly(node->children[1], node->scope_table);
          emit("RET");
          fprintf(asm_file, ".endmethod\n");
+    } else if (strcmp(node->type, "IMPORT") == 0) {
+        while(node) {
+            emit("IMPORT %s", node->value);
+            if (node->num_children > 0) {
+                node = node->children[0];
+            } else {
+                break;
+            }
+        }
     } else {
         generate_code_for_statement(node, next_scope, class_context);
     }
