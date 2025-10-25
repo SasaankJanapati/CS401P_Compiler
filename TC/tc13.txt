@@ -7,6 +7,17 @@ class TestClass {
             publicVar = 10;
             protectedVar = publicVar + 16;
         }
+    public void initializer( int a1[][6][5]) {
+        publicVar = 5;
+        protectedVar = 10;
+        int i, j;
+        for (i = 0; i < 4; i++) {
+            for (j = 0; j < 4; j++) {
+                a1[i][j][0] = i + j;
+            }
+        }
+
+    }
     
 };
 
@@ -16,6 +27,7 @@ int main() {
     int a[n+1][n-1];
     TestClass b[5];
     int x = 5;
+    string s = "Hello, World!";
     a[x+2][5-2] = 11;
     obj.publicMethod();
     obj.publicVar = 10;

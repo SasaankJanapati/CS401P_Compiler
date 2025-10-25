@@ -150,6 +150,7 @@ ClassInfo* find_class_info(const char* class_name);
 
 // Helper function to recursively build a nested type string for multi-dimensional arrays
 char* build_array_type(const char* base_type, Node* index_node) {
+    printf("Debug: Building array type for base type '%s' and index node '%s'\n", base_type, index_node ? index_node->type : "NULL");
     if (index_node == NULL) {
         if (strcmp(base_type,"int")==0) return "I";
         else if (strcmp(base_type,"float")==0) return "F";
@@ -163,18 +164,24 @@ char* build_array_type(const char* base_type, Node* index_node) {
     char* inner_type;
     // Recursively call for the rest of the dimensions
     if (index_node->num_children == 2) { // case: '[' EXPR ']' INDEX
-        inner_type = build_array_type(base_type, index_node->children[1]);
-    } else { // base case: '[' EXPR ']'
+        inner_type = strdup(build_array_type(base_type, index_node->children[1]));
+    } else if (index_node->num_children == 1) { // case: '[' ']' INDEX
+        if (strcmp(index_node->type, "INDEX_EMPTY") == 0) {
+            inner_type = strdup(build_array_type(base_type, index_node->children[0]));
+        } else { // base case: '[' EXPR ']'
         inner_type = strdup(base_type);
         if (strcmp(base_type,"int")==0) inner_type = strdup("I");
         else if (strcmp(base_type,"float")==0) inner_type = strdup("F");
         else if (strcmp(base_type,"char")==0) inner_type = strdup("C");
         else { 
-            char* obj_type = malloc(strlen(base_type) + 3); // L + type + ; + \0
-            sprintf(obj_type, "L%s;", base_type);
-            inner_type = obj_type;
+                char* obj_type = malloc(strlen(base_type) + 3); // L + type + ; + \0
+                sprintf(obj_type, "L%s;", base_type);
+                inner_type = obj_type;
+            }
         }
-    }
+    } else if (index_node->num_children == 0) { // case: '[' ']' 
+        inner_type = strdup(build_array_type(base_type, NULL));
+    } 
     char* final_type = malloc(strlen(inner_type) + 10);
     sprintf(final_type, "[%s", inner_type);
     free(inner_type);
@@ -192,13 +199,56 @@ void check_init_list_types(Node* list_node, const char* base_type) {
     }
 }
 
-int are_types_compatible(char* lval_type, char* rval_type) {
-    if (strcmp(lval_type, "undefined") == 0 || strcmp(rval_type, "undefined") == 0) return 1;
-    if (strcmp(lval_type, rval_type) == 0) return 1;
-    if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "int") == 0) return 1;
-    if (strncmp(lval_type, "[", 1) == 0 && strcmp(rval_type, "int") == 0) return 1; // Allow assigning 0 (null) to arrays
-    if (find_class_info(lval_type) != NULL && strcmp(rval_type, "int") == 0) return 1; // Allow assigning 0 (null) to objects
+// int are_types_compatible(char* lval_type, char* rval_type) {
+//     if (strcmp(lval_type, "undefined") == 0 || strcmp(rval_type, "undefined") == 0) return 1;
+//     if (strcmp(lval_type, rval_type) == 0) return 1;
+//     if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "int") == 0) return 1;
+//     if (strncmp(lval_type, "[", 1) == 0 && strcmp(rval_type, "int") == 0) return 1; // Allow assigning 0 (null) to arrays
+//     if (find_class_info(lval_type) != NULL && strcmp(rval_type, "int") == 0) return 1; // Allow assigning 0 (null) to objects
 
+//     return 0;
+// }
+int are_types_compatible(char* lval_type, char* rval_type) {
+    // Rule 0: Avoid crashing on null or undefined types to prevent cascading errors.
+    if (lval_type == NULL || rval_type == NULL) return 1;
+    if (strcmp(lval_type, "undefined") == 0 || strcmp(rval_type, "undefined") == 0) return 1;
+
+    // Rule 1: Types are compatible if they are identical.
+    if (strcmp(lval_type, rval_type) == 0) return 1;
+
+    // Rule 2: Allow widening conversion from int to float.
+    if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "int") == 0) return 1;
+    if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "int") == 0) return 1;
+    if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "I") == 0) return 1;
+    if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "I") == 0) return 1;
+
+
+    // Rule 3: Allow assigning 'null' (represented by rval_type "int" from literal 0)
+    // to any object or array type.
+    if (strcmp(rval_type, "int") == 0 || strcmp(rval_type, "I") == 0) {
+        // Check if lval is an array type (e.g., "[I", "[[F", "[LMyClass;", or single-dimension "I", "F", "C")
+        if (lval_type[0] == '[' || (strlen(lval_type) == 1 && strchr("IFC", lval_type[0]))) {
+            return 1;
+        }
+        // Check if lval is a class type
+        if (find_class_info(lval_type) != NULL) {
+            return 1;
+        }
+    }
+
+    // Rule 4: Check for inheritance compatibility (subclass to superclass assignment).
+    ClassInfo* rval_class = find_class_info(rval_type);
+    ClassInfo* lval_class = find_class_info(lval_type);
+    if (rval_class != NULL && lval_class != NULL) {
+        // Traverse parent classes of the rval_class to see if lval_class is an ancestor.
+        for (int i = 0; i < rval_class->parent_count; i++) {
+            if (rval_class->parents[i] && strcmp(lval_type, rval_class->parents[i]->name) == 0) {
+                return 1; // rval is a direct child of lval
+            }
+        }
+    }
+
+    // If none of the above rules match, the types are not compatible.
     return 0;
 }
 
@@ -245,17 +295,17 @@ void enter_scope() {
     new_table->base_count = local_address_counter; // Save count for restoring local_address_counter on exit
     current_table = new_table;
     all_tables[table_count++] = new_table;
-    fprintf(stderr, "Debug: Entered new scope %d %d\n", new_table->scope, local_address_counter);
+    //fprintf(stderr, "Debug: Entered new scope %d %d\n", new_table->scope, local_address_counter);
     // Reset local address counter only when entering a function-level scope
     
 }
 
 void exit_scope() {
     if (current_table->parent != NULL) {
-        fprintf(stderr, "Debug: Exited to scope %d %d\n",local_address_counter,current_table->scope);
+        //fprintf(stderr, "Debug: Exited to scope %d %d\n",local_address_counter,current_table->scope);
         current_table = current_table->parent;
         //local_address_counter = current_table->base_count; // Restore local address counter
-        fprintf(stderr, "Debug: Exited to scope %d %d\n",local_address_counter,current_table->scope);
+        //fprintf(stderr, "Debug: Exited to scope %d %d\n",local_address_counter,current_table->scope);
     }
 }
 
@@ -283,7 +333,8 @@ void insert_symbol(char* name, char* type, char* kind, Node* initializer, Node* 
     s->kind = strdup(kind);
     s->line_declared = yylineno;
     s->access_spec = strdup(current_access_spec);
-    s->class_name = current_class_name ? strdup(current_class_name) : NULL;
+    s->class_name = current_class_name && in_class_func ? strdup(current_class_name) : NULL;
+    //fprintf(stderr, "Debug: Inserting symbol '%s' of kind '%s' into scope %d %s %s\n", s->name, s->kind, current_table->scope, s->class_name ? s->class_name : "N/A", in_class_func ? "true" : "false");
     s->dimension_info = index_node; // Store dimension info for arrays
     if(strcmp(kind, "variable") == 0 || strcmp(kind, "object") == 0) {
         s->address = local_address_counter++;
@@ -523,9 +574,9 @@ char* get_mangled_name(const char* func_name, Node* arg_list_node) {
         while (arg_list_node && strcmp(arg_list_node->type, "PARAM_LIST") == 0) {
             if (arg_list_node->num_children == 0) break;
             for (int i = 0; i < arg_list_node->num_children; i++) {
-                //fprintf(stderr, "Debug: Processing child %d of '%s'\n", i, arg_list_node->type);
+                fprintf(stderr, "Debug: Processing child %d of '%s'\n", i, arg_list_node->type ? arg_list_node->type : "NULL");
                 Node* expr_or_param = arg_list_node->children[i];
-                //fprintf(stderr, "Debug: Child type: '%s' '%s'\n", expr_or_param->type,mangled_name);
+                fprintf(stderr, "Debug: Child type: '%s' '%s'\n", expr_or_param->type ? expr_or_param->type : "NULL", mangled_name);
 
                 // Param lists have a different structure than arg lists
                 if(strcmp(expr_or_param->type, "PARAM_LIST") == 0) {
@@ -536,6 +587,45 @@ char* get_mangled_name(const char* func_name, Node* arg_list_node) {
                 } else if(strcmp(expr_or_param->type, "PARAM") == 0) {
                     strcat(mangled_name, "@");
                     strcat(mangled_name, expr_or_param->children[0]->value);
+                    if(arg_list_node->num_children == 1) {
+                        arg_list_node = NULL; // End of list
+                        break;
+                    }
+                } else if(strcmp(expr_or_param->type, "PARAM_ARRAY") == 0) {
+                    // Build array type descriptor: count dimensions and append base type
+                    Node* index_node = expr_or_param->children[1];
+                    int dim_count = 0;
+                    Node* temp = index_node;
+                    // assuming well-formed INDEX node structure for param arrays is type var [][]
+                    while(temp) {
+                        dim_count++;
+                        if(temp->num_children == 2) {
+                            temp = temp->children[1];
+                        } else if(temp->num_children == 1) {
+                            if(strcmp(temp->type, "INDEX_EMPTY") == 0) {
+                                temp = temp->children[0];
+                            } else {
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    // Add '[' for each dimension
+                    strcat(mangled_name, "@");
+                    for(int d = 0; d < dim_count; d++) {
+                        strcat(mangled_name, "[");
+                    }
+                    // Add base type from TYPE node
+                    char* base_type = expr_or_param->children[0]->value;
+                    fprintf(stderr, "Debug: Mangling param/arg of array type '%s' with %d dimensions\n", base_type, dim_count);
+                    if(strcmp(base_type, "int") == 0) strcat(mangled_name, "I");
+                    else if(strcmp(base_type, "float") == 0) strcat(mangled_name, "F");
+                    else if(strcmp(base_type, "char") == 0) strcat(mangled_name, "C");
+                    else { // Object type
+                        strcat(mangled_name, "L");
+                        strcat(mangled_name, base_type);
+                    }
                     if(arg_list_node->num_children == 1) {
                         arg_list_node = NULL; // End of list
                         break;
@@ -624,12 +714,13 @@ char* current_decl_type;
 
 /* Tokens */
 %token <str_val> IDEN NUM STR CHR
-%token <str_val> INT FLOAT CHAR VOID STRING
+%token <str_val> INT FLOAT CHAR VOID STRING BOOL
 %token <str_val> IF ELSE WHILE FOR DO RETURN BREAK CONTINUE TR FL
 %token <str_val> PASN MASN DASN SASN
 %token <str_val> OR AND EQ NE LE GE LT GT
 %token <str_val> INC DEC
 %token <str_val> CLASS PUBLIC PRIVATE PROTECTED ABSTRACT NEW
+%token <str_val> SYS_OPEN SYS_CLOSE SYS_READ SYS_WRITE
 %token MEOF
 
 /* Precedence and Associativity */
@@ -651,11 +742,12 @@ char* current_decl_type;
 %type <node> ABSTRACTCLASS ABSTRACTBODY ABSTRACTMEMBER ABSTRACTFUNC
 %type <node> OPT_ASNEXPR OPT_BOOLEXPR OPT_EXPR
 %type <node> OBJECTDECLSTMT OBJDECL MEMBERACCESS
+%type <node> SYSCALL
 
 %%
 
-S: STMNTS M { $$ = create_node("PROGRAM", NULL); add_child($$, $1); root = $$; }
- |          { $$ = create_node("PROGRAM", "empty"); root = $$; }
+S: STMNTS M  { $$ = create_node("PROGRAM", NULL); add_child($$, $1); root = $$; }
+ |      { $$ = create_node("PROGRAM", "empty"); root = $$; }
  | error    { yyerrok; $$ = create_node("PROGRAM", "error"); root = $$; }
  ;
 
@@ -829,6 +921,7 @@ DECL: IDEN {
       }
     | IDEN INDEX {
         char* array_type = build_array_type(current_decl_type, $2);
+        fprintf(stderr, "Debug: Declaring array '%s' of type '%s'\n", $1, array_type);
         insert_symbol($1, array_type, current_class_name && in_class_func ? "member_var" : "variable", NULL, $2);
         $$ = create_node("ARRAY_DECL", $1); 
         add_child($$, $2);
@@ -849,6 +942,8 @@ INITLIST: INITLIST ',' EXPR { $$ = $1; add_child($$, $3); }
         ;
 INDEX: '[' EXPR ']' { $$ = create_node("INDEX", NULL); add_child($$, $2); if (strcmp($2->data_type, "int") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
      | '[' EXPR ']' INDEX { $$ = create_node("INDEX", NULL); add_child($$, $2); add_child($$, $4); if (strcmp($2->data_type, "int") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
+     | '[' ']'        { $$ = create_node("INDEX_EMPTY", NULL);  }
+     | '[' ']' INDEX { $$ = create_node("INDEX_EMPTY", NULL); add_child($$, $3); }
      ;
 TYPE: INT    { current_decl_type = "int"; $$ = create_node("TYPE", "int"); }
     | FLOAT  { current_decl_type = "float"; $$ = create_node("TYPE", "float"); }
@@ -885,9 +980,9 @@ LVAL: IDEN {
             char* type = strdup(s->type);
             Node* temp_idx = $2;
             while(temp_idx) {
+                printf("Debug: Processing index node for array access on '%s'\n", type);
                 if(strncmp(type, "[", 1) == 0) {
                     char* inner = strdup(type + 1); // Skip the leading '['
-                    inner[strlen(inner)-1] = '\0';
                     free(type);
                     type = inner;
                 } else {
@@ -899,6 +994,7 @@ LVAL: IDEN {
                 temp_idx = (temp_idx->num_children == 2) ? temp_idx->children[1] : NULL;
             }
             $$->data_type = type;
+            printf("Debug: Array access '%s' has element type '%s'\n", $1, $$->data_type);
         }
       }
     | MEMBERACCESS { $$ = $1; }
@@ -943,6 +1039,7 @@ EXPR: EXPR '+' EXPR { $$ = create_node("BIN_OP", "+"); add_child($$, $1); add_ch
     | EXPR '%' EXPR { $$ = create_node("BIN_OP", "%"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup("int"); }
     | BOOLEXPR '?' EXPR ':' EXPR { $$ = create_node("TERNARY_OP", NULL); add_child($$, $1); add_child($$, $3); add_child($$, $5); $$->data_type = strdup($3->data_type); }
     | FUNC_CALL     { $$ = $1; }
+    | SYSCALL       { $$ = $1; }
     | TERM          { $$ = $1; }
     | '-' EXPR %prec UMINUS { $$ = create_node("UN_OP", "-"); add_child($$, $2); $$->data_type = strdup($2->data_type); }
     ;
@@ -979,6 +1076,36 @@ TERM: LVAL { $$ = $1; }
     | INC LVAL { $$ = create_node("PRE_INC", "++"); add_child($$, $2); $$->data_type = strdup($2->data_type); }
     | DEC LVAL { $$ = create_node("PRE_DEC", "--"); add_child($$, $2); $$->data_type = strdup($2->data_type); }
     ;
+
+SYSCALL: SYS_OPEN '(' EXPR ',' EXPR ',' EXPR ')' ';' {  // filename flags permissions
+            $$ = create_node("SYS_CALL", "open");
+            add_child($$, $3);
+            add_child($$, $5);
+            add_child($$, $7);
+            $$->data_type = strdup("int");
+         }
+        | SYS_CLOSE '(' EXPR ')' ';' {  // fd
+            $$ = create_node("SYS_CALL", "close");
+            add_child($$, $3);
+            $$->data_type = strdup("int");
+         }
+        | SYS_READ '(' EXPR ',' EXPR ',' EXPR ')' ';' {  // fd buffer size
+            $$ = create_node("SYS_CALL", "read");
+            add_child($$, $3);
+            add_child($$, $5);
+            add_child($$, $7);
+            $$->data_type = strdup("int");
+         }
+        | SYS_WRITE '(' EXPR ',' EXPR ',' EXPR ')' ';' { // fd buffer size
+            $$ = create_node("SYS_CALL", "write");
+            add_child($$, $3);
+            add_child($$, $5);
+            add_child($$, $7);
+            $$->data_type = strdup("int");
+         }
+        ;
+
+
 CLASSDECL: CLASS IDEN {
                 current_class_name = $2;
                 current_class_info = (ClassInfo*)calloc(1, sizeof(ClassInfo));
@@ -1074,6 +1201,7 @@ CONSTRUCTOR: IDEN '(' {
                     fprintf(stderr, "Error line %d: Constructor name '%s' does not match class name '%s'\n", yylineno, $1, current_class_name ? current_class_name : "None");
                 }
             } PARAMLIST ')' {in_class_func = false;} '{' STMNTS '}' ';' {
+                SymbolTable* ctor_scope = current_table;
                 exit_scope();
                 char* mangled_name = get_mangled_name($1, $4);
                 insert_symbol($1, "constructor", "member_func", NULL, NULL);
@@ -1090,9 +1218,9 @@ CONSTRUCTOR: IDEN '(' {
 
                 fprintf(stderr, "---------------Debug: Constructor signature for '%s': %s\n", $1, mangled_name);
                 
-                $$ = create_node("CONSTRUCTOR", $1);
+                $$ = create_node("CONSTRUCTOR", mangled_name);
                 add_child($$, $4); add_child($$, $8);
-                $$->scope_table = current_table;
+                $$->scope_table = ctor_scope;
              }
              ;
 DESTRUCTOR: '~' IDEN '(' ')' {in_class_func = false;} '{' STMNTS '}' ';' { $$ = create_node("DESTRUCTOR", $2); add_child($$, $7); }
@@ -1528,34 +1656,50 @@ void generate_code_for_lval_address(Node* node, SymbolTable* scope, ClassInfo* c
 
         // Push the base array reference onto the stack
         if (s->class_name) {
-            emit("LOAD 0 ; Load 'this' to access member array '%s'", s->name);
+            emit("LOAD_ARG 0 ; Load 'this' to access member array '%s'", s->name);
             int field_idx = get_field_index(s->class_name, s->name);
             emit("GETFIELD %d", field_idx);
         } else {
             // Local variable or parameter
-            emit("LOAD %d ; Load base array ref '%s'", s->address, s->name);
+            if (strcmp(s->kind, "variable") == 0 ) {
+                emit("LOAD %d ; Load array variable '%s'", s->address, s->name);
+            } else if (strcmp(s->kind, "parameter") == 0) {
+                emit("LOAD_ARG %d ; Load array parameter '%s'", s->address, s->name);
+            } else {
+                fprintf(stderr, "Codegen Error: Symbol '%s' is not an array.\n", s->name);
+                return;
+            }
         }
 
         Node* access_idx_list = node->children[0];
-        Node* decl_dim_list = s->dimension_info > 1 ? s->dimension_info->children[1] : NULL;
+        Node* decl_dim_list = s->dimension_info;
 
-        // First index
+        // First index calculation
         generate_code_for_expr(access_idx_list->children[0], scope, class_context);
+        access_idx_list = (access_idx_list->num_children > 1) ? access_idx_list->children[1] : NULL;
+        decl_dim_list = (decl_dim_list->num_children > 1) ? decl_dim_list->children[1] : ((decl_dim_list->num_children == 1 && strcmp(decl_dim_list->type, "INDEX_EMPTY") == 0) ? decl_dim_list->children[0] : NULL);
 
-        while (decl_dim_list) {
-            // Multiply by the size of the next dimension
-            generate_code_for_expr(decl_dim_list->children[0], scope, class_context);
-            emit("IMUL");
-            // Move to the next index in access list
-            access_idx_list = access_idx_list->num_children > 1 ? access_idx_list->children[1] : NULL;
-            if (access_idx_list) {
-                generate_code_for_expr(access_idx_list->children[0], scope, class_context);
-                emit("IADD");
-            } else {
+        while (decl_dim_list || access_idx_list) {
+            
+                                               
+            if (strcmp(decl_dim_list->type, "INDEX_EMPTY") == 0) {
+                // This is a case like `int a[][5]`, which is invalid for a local variable.
+                // For parameters, it means the size is unknown. We can't calculate a flat index.
+                // The logic here assumes we won't proceed if sizes aren't known.
+                fprintf(stderr, "Codegen Warning: Encountered unsized dimension during index calculation for '%s'.\n", s->name);
                 break;
             }
-            // Move to the next dimension in declaration list
-            decl_dim_list = decl_dim_list->num_children > 1 ? decl_dim_list->children[1] : NULL;
+
+            // Standard case: Multiply by next dimension's size and add next index.
+            fprintf(stderr, "Generating code for standard dimension of array '%s'\n", s->name);
+            generate_code_for_expr(decl_dim_list->children[0], scope, class_context);
+            emit("IMUL");
+            generate_code_for_expr(access_idx_list->children[0], scope, class_context);
+            emit("IADD");
+
+            // Move to the next dimension/index.
+            decl_dim_list = (decl_dim_list->num_children > 1) ? decl_dim_list->children[1] : NULL;
+            access_idx_list = (access_idx_list->num_children > 1) ? access_idx_list->children[1] : NULL;
         }
 
     } else if (strcmp(node->type, "MEMBER_VAR_ACCESS") == 0) {
@@ -1772,7 +1916,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
 
 void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* class_context) {
     if (!node) return;
-    debug_print("Gen STMT for: %s (%s)", node->type, node->value ? node->value : "");
+    debug_print("Gen STMT for: %s (%s) Scope: %d", node->type, node->value ? node->value : "", scope->scope);
     code_gen_depth++;
 
     if (strcmp(node->type, "ASSIGN") == 0) {
@@ -1856,10 +2000,14 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         }
     } else if(strcmp(node->type, "VAR_INIT") == 0) {
         Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
+        // fprintf(stderr, "scope number: %d\n", scope->scope);
+        // fprintf(stderr, "Debug: Variable initialization for '%s'\n", node->value);
         if(s) {
             generate_code_for_expr(node->children[0], scope, class_context);
             emit("STORE %d ; Init %s", s->address, s->name);
+            //fprintf(stderr, "Debug: Completed variable initialization for '%s'\n", node->value);    
         }
+        //fprintf(stderr, "Debug: Completed variable initialization for '%s'\n", node->value);    
     } else if(strcmp(node->type, "ARRAY_DECL") == 0) {
         Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
         if(s) {
@@ -1933,8 +2081,8 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
             fprintf(stderr, "Codegen Error: Cannot instantiate abstract class '%s'\n", s->type);
             return;
         }
-        emit("NEW %d ; Create new object of class %s", class_idx, s->type);
-        emit("DUP");
+        emit("NEW %s ; Create new object of class %s", class_info->name, s->type);
+        //emit("DUP");
         
         for (int i = 0; i < arg_list->num_children; i++) {
             generate_code_for_expr(arg_list->children[i], scope, class_context);
@@ -2033,6 +2181,46 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
             generate_code_for_expr(node->children[0], scope, class_context);
         }
         //emit("RET");
+    } else if (strcmp(node->type, "SYS_CALL") == 0) {
+        if (strcmp(node->value, "open") == 0) {
+            // Stack: ..., filename, mode -> ..., file_handle
+            // Grammar args: filename, flags, permissions. We'll use flags as the mode.
+            generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: filename
+            generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: mode/flags
+            generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: permissions
+            emit("OPEN ; open");
+        } else if (strcmp(node->value, "read") == 0 || strcmp(node->value, "write") == 0) {
+            // Stack: ..., localidx, size, file_handle -> ...
+            // Grammar args: fd, buffer, size
+            
+            // Handle the 'buffer' argument (child 1) specially to get its local index
+            Node* buffer_expr = node->children[1];
+            if (strcmp(buffer_expr->type, "IDEN") == 0) {
+                Symbol* s = lookup_symbol_codegen(buffer_expr->value, scope, class_context);
+                if (s && (strcmp(s->kind, "variable") == 0 || strcmp(s->kind, "object") == 0)) {
+                    emit("PUSH %d ; Push local index for buffer '%s'", s->address, s->name);
+                } else {
+                    fprintf(stderr, "Codegen Error: Syscall buffer argument '%s' must be a local variable.\n", buffer_expr->value);
+                    generate_code_for_expr(buffer_expr, scope, class_context); // Fallback
+                }
+            } else {
+                 fprintf(stderr, "Codegen Error: Syscall buffer argument must be a simple variable identifier.\n");
+                 generate_code_for_expr(buffer_expr, scope, class_context); // Fallback
+            }
+
+            generate_code_for_expr(node->children[2], scope, class_context); // size
+            generate_code_for_expr(node->children[0], scope, class_context); // fd (file_handle)
+
+            if (strcmp(node->value, "read") == 0) {
+                emit("READ ; read");
+            } else { // write
+                emit("WRITE ; write");
+            }
+        } else if (strcmp(node->value, "close") == 0) {
+            // The grammar for SYS_CLOSE only has one argument: the file descriptor
+            generate_code_for_expr(node->children[0], scope, class_context); // fd
+            emit("CLOSE ; close"); 
+        }
     } else if (strcmp(node->type, "EXPR_STMT") == 0) {
         generate_code_for_expr(node->children[0], scope, class_context);
         // Discard result if not a function call
@@ -2064,7 +2252,7 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
 
 void generate_assembly(Node* node, SymbolTable* scope) {
     if (!node) return;
-    debug_print("Gen ASM for: %s (%s)", node->type, node->value ? node->value : "");
+    debug_print("Gen ASM for: %s (%s) Scope: %d", node->type, node->value ? node->value : "", scope->scope);
     code_gen_depth++;
 
     SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
@@ -2083,7 +2271,11 @@ void generate_assembly(Node* node, SymbolTable* scope) {
         int stack = calculate_max_stack_depth(node->children[2]);
         if (stack < 4) stack = 4; // Ensure a minimum stack size
 
-        fprintf(asm_file, "\n.method %s\n", node->value);
+        if(current_class_name) {
+            fprintf(asm_file, "\n.method %s.%s\n", current_class_name, node->value);
+        } else {
+            fprintf(asm_file, "\n.method %s\n", node->value);
+        }
         emit(".limit stack %d", stack);
         emit(".limit locals %d", locals);
         generate_assembly(node->children[2], node->scope_table);

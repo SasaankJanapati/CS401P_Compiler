@@ -5,7 +5,7 @@ y.tab.c: parser.y
 lex.yy.c: lexer.l
 	lex lexer.l
 clean: 
-	rm -f parser y.tab.c y.tab.h lex.yy.c y.output
+	rm -f parser y.tab.c y.tab.h lex.yy.c y.output  error.log
 grammar: Grammar.y
 	lex lexer.l
 	yacc --debug -v -d -t --verbose Grammar.y
