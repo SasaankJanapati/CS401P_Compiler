@@ -2360,7 +2360,7 @@ int main(int argc, char **argv) {
 
                 emit("method_count %d", cls->method_count);
                  for(int j=0; j<cls->method_count; ++j) {
-                    emit("method %s %s.%s", cls->methods[j].name, cls->name, cls->methods[j].name);
+                    emit("method %s %s.%s", cls->methods[j].name, cls->name, cls->methods[j].signature);
                 }
                 emit("class_end");
             }
