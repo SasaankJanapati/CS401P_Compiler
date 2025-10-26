@@ -1845,11 +1845,40 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         }
         //free(mangled_name);
     } else if (strcmp(node->type, "FUNC_CALL") == 0) {
-        Node* arg_list = node->children[0];
-        for (int i = 0; i < arg_list->num_children; i++) {
-            generate_code_for_expr(arg_list->children[i], scope, class_context);
+        // check if it is a method in the current class context
+        if (class_context) {
+            MethodInfo* method = find_method_in_hierarchy(NULL, node->value, class_context);
+            if (method) {
+                int method_idx = get_method_vtable_index(class_context->name, node->value);
+                if (method_idx != -1) {
+                    emit("LOAD_ARG 0 ; Load 'this' for method call");
+                    Node* arg_list = node->children[0];
+                    for (int i = 0; i < arg_list->num_children; i++) {
+                        generate_code_for_expr(arg_list->children[i], scope, class_context);
+                    }
+                    emit("INVOKEVIRTUAL %d ; Call %s.%s", method_idx, class_context->name, node->value);
+                } else {
+                    fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", node->value, class_context->name);
+                }
+            } else {
+                Node* arg_list = node->children[0];
+                for (int i = 0; i < arg_list->num_children; i++) {
+                    generate_code_for_expr(arg_list->children[i], scope, class_context);
+                }
+                char* mangled_name = get_mangled_name(node->value, arg_list);
+                emit("CALL %s", mangled_name);
+                free(mangled_name);
+            }
         }
-        emit("CALL %s", node->value);
+        else {
+            Node* arg_list = node->children[0];
+            for (int i = 0; i < arg_list->num_children; i++) {
+                generate_code_for_expr(arg_list->children[i], scope, class_context);
+            }
+            char* mangled_name = get_mangled_name(node->value, arg_list);
+            emit("CALL %s", mangled_name);
+            free(mangled_name);
+        }
     } else if (strcmp(node->type, "REL_OP") == 0 || strcmp(node->type, "BOOL_OP") == 0 || strcmp(node->type, "BOOL_CONST") == 0) {
         int true_label = new_label();
         int end_label = new_label();
