@@ -2328,7 +2328,7 @@ void generate_assembly(Node* node, SymbolTable* scope) {
         fprintf(asm_file, ".endmethod\n");
     } else if (strcmp(node->type, "CONSTRUCTOR") == 0) {
          char mangled_name[512];
-         sprintf(mangled_name, "%s", node->value);
+          sprintf(mangled_name, "%s.%s", current_class_name, node->value);
          
          int locals = calculate_total_locals(node->scope_table);
          int stack = calculate_max_stack_depth(node->children[1]);
