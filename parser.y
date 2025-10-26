@@ -7,7 +7,7 @@
 
 extern FILE* yyin;
 extern int yylineno; 
-int yydebug = 0;
+int yydebug = 1;
 
 // Forward declarations
 void yyerror(const char* s);
@@ -254,12 +254,13 @@ int are_types_compatible(char* lval_type, char* rval_type) {
 
 int is_numeric(char* type) {
     if (type == NULL) return 0;
-    return strcmp(type, "int") == 0 || strcmp(type, "float") == 0;
+    return strcmp(type, "int") == 0 || strcmp(type, "float") == 0 || strcmp(type, "char") == 0;
 }
 
 char* get_promoted_type(char* type1, char* type2) {
     if (!is_numeric(type1) || !is_numeric(type2)) return "undefined";
     if (strcmp(type1, "float") == 0 || strcmp(type2, "float") == 0) return "float";
+    if (strcmp(type1, "char") == 0 || strcmp(type2, "char") == 0) return "char";
     return "int";
 }
 
@@ -784,7 +785,7 @@ A: ASNEXPR ';'                  { $$ = $1; }
  | '{' { enter_scope(); } STMNTS '}' { $$ = $3; $$->scope_table = current_table; exit_scope(); }
  | '{' '}'                      { $$ = create_node("BLOCK", "empty"); }
  | EXPR ';'                     { $$ = create_node("EXPR_STMT", NULL); add_child($$, $1); }
- | DECLSTATEMENT                { $$ = $1; }
+ | DECLSTATEMENT ';'            { $$ = $1; }
  | OBJECTDECLSTMT               { $$ = $1; }
  | FUNCDECL                     { $$ = $1; }
  | CLASSDECL                    { $$ = $1; }
@@ -792,6 +793,13 @@ A: ASNEXPR ';'                  { $$ = $1; }
  | RETURN EXPR ';'              {
                                     has_return_statement = 1;
                                     $$ = create_node("RETURN", NULL); add_child($$, $2);
+                                    if (current_function_return_type && !are_types_compatible(current_function_return_type, $2->data_type)) {
+                                        fprintf(stderr, "Error line %d: Incompatible return type. Function expects '%s' but got '%s'.\n", yylineno, current_function_return_type, $2->data_type);
+                                    }
+                                }
+ | RETURN BOOLEXPR ';'          {
+                                    has_return_statement = 1;
+                                    $$ = create_node("RETURN_BOOL", NULL); add_child($$, $2);
                                     if (current_function_return_type && !are_types_compatible(current_function_return_type, $2->data_type)) {
                                         fprintf(stderr, "Error line %d: Incompatible return type. Function expects '%s' but got '%s'.\n", yylineno, current_function_return_type, $2->data_type);
                                     }
@@ -897,7 +905,7 @@ PARAM: TYPE IDEN {
      }
      ;
 
-DECLSTATEMENT: TYPE DECLLIST ';' {
+DECLSTATEMENT: TYPE DECLLIST {
                  $$ = create_node("DECL_STMT", NULL);
                  add_child($$, $1); add_child($$, $2);
                }
@@ -956,7 +964,7 @@ TYPE: INT    { current_decl_type = "int"; $$ = create_node("TYPE", "int"); }
     | FLOAT  { current_decl_type = "float"; $$ = create_node("TYPE", "float"); }
     | CHAR   { current_decl_type = "char"; $$ = create_node("TYPE", "char"); }
     | VOID   { current_decl_type = "void"; $$ = create_node("TYPE", "void"); }
-    | STRING { current_decl_type = "string"; $$ = create_node("TYPE", "string"); }
+    | BOOL   { current_decl_type = "bool"; $$ = create_node("TYPE", "bool"); }
     ;
 ASSGN: '='  { $$ = create_node("ASSIGN_OP", "="); }
      | PASN { $$ = create_node("ASSIGN_OP", "+="); }
@@ -1634,6 +1642,9 @@ void generate_code_for_boolean_expr(Node* node, int true_label, int false_label,
             generate_code_for_boolean_expr(node->children[1], true_label, false_label, scope, class_context);
         }
     } else { 
+        if (node->num_children > 0) {
+            generate_code_for_expr(node->children[0], scope, class_context);
+        }
         generate_code_for_expr(node, scope, class_context);
         emit("JNZ L%d", true_label);
         emit("JMP L%d", false_label);
@@ -1796,8 +1807,10 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         generate_code_for_expr(node->children[0], scope, class_context);
         generate_code_for_expr(node->children[1], scope, class_context);
         if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "int") == 0) emit("IADD");
+        else if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "char") == 0) emit("IADD");
         else if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "float") == 0) emit("FADD");
         else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "int") == 0) emit("ISUB");
+        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "char") == 0) emit("ISUB");
         else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "float") == 0) emit("FSUB");
         else if (strcmp(node->value, "*") == 0 && strcmp(node->data_type, "int") == 0) emit("IMUL");
         else if (strcmp(node->value, "*") == 0 && strcmp(node->data_type, "float") == 0) emit("FMUL");
@@ -1832,11 +1845,40 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         }
         //free(mangled_name);
     } else if (strcmp(node->type, "FUNC_CALL") == 0) {
-        Node* arg_list = node->children[0];
-        for (int i = 0; i < arg_list->num_children; i++) {
-            generate_code_for_expr(arg_list->children[i], scope, class_context);
+        // check if it is a method in the current class context
+        if (class_context) {
+            MethodInfo* method = find_method_in_hierarchy(NULL, node->value, class_context);
+            if (method) {
+                int method_idx = get_method_vtable_index(class_context->name, node->value);
+                if (method_idx != -1) {
+                    emit("LOAD_ARG 0 ; Load 'this' for method call");
+                    Node* arg_list = node->children[0];
+                    for (int i = 0; i < arg_list->num_children; i++) {
+                        generate_code_for_expr(arg_list->children[i], scope, class_context);
+                    }
+                    emit("INVOKEVIRTUAL %d ; Call %s.%s", method_idx, class_context->name, node->value);
+                } else {
+                    fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", node->value, class_context->name);
+                }
+            } else {
+                Node* arg_list = node->children[0];
+                for (int i = 0; i < arg_list->num_children; i++) {
+                    generate_code_for_expr(arg_list->children[i], scope, class_context);
+                }
+                char* mangled_name = get_mangled_name(node->value, arg_list);
+                emit("CALL %s", mangled_name);
+                free(mangled_name);
+            }
         }
-        emit("CALL %s", node->value);
+        else {
+            Node* arg_list = node->children[0];
+            for (int i = 0; i < arg_list->num_children; i++) {
+                generate_code_for_expr(arg_list->children[i], scope, class_context);
+            }
+            char* mangled_name = get_mangled_name(node->value, arg_list);
+            emit("CALL %s", mangled_name);
+            free(mangled_name);
+        }
     } else if (strcmp(node->type, "REL_OP") == 0 || strcmp(node->type, "BOOL_OP") == 0 || strcmp(node->type, "BOOL_CONST") == 0) {
         int true_label = new_label();
         int end_label = new_label();
@@ -1985,7 +2027,7 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         generate_assembly(node->children[3], for_scope); // Loop body
         emit("L%d:", loop_increment_label);
         if (node->children[2]) { // Increment
-            generate_code_for_statement(node->children[2], for_scope, class_context);
+            generate_code_for_expr(node->children[2], for_scope, class_context);
             // Pop the result of the increment expression as it's not used 
             //  if (strcmp(node->children[2]->data_type, "void") != 0) {
             //      emit("POP");
@@ -2187,7 +2229,29 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         if (node->num_children > 0) {
             generate_code_for_expr(node->children[0], scope, class_context);
         }
-        //emit("RET");
+        emit("RET");
+    } else if (strcmp(node->type, "RETURN_BOOL") == 0) {
+        if (node->num_children > 0) {
+            int true_label = new_label();
+            int false_label = new_label();
+            int end_label = new_label();
+
+            // generate_code_for_boolean_expr will generate jumps to true/false labels
+            generate_code_for_boolean_expr(node->children[0], true_label, false_label, scope, class_context);
+
+            // At the true label, push 1 and jump to the end
+            emit("L%d: ; Return true", true_label);
+            emit("PUSH 1");
+            emit("JMP L%d", end_label);
+
+            // At the false label, push 0
+            emit("L%d: ; Return false", false_label);
+            emit("PUSH 0");
+
+            // The end label where both paths converge
+            emit("L%d:", end_label);
+        }
+        emit("RET");
     } else if (strcmp(node->type, "SYS_CALL") == 0) {
         if (strcmp(node->value, "open") == 0) {
             // Stack: ..., filename, mode -> ..., file_handle
@@ -2286,11 +2350,14 @@ void generate_assembly(Node* node, SymbolTable* scope) {
         emit(".limit stack %d", stack);
         emit(".limit locals %d", locals);
         generate_assembly(node->children[2], node->scope_table);
-        emit("RET");
+        // emit ret for only void functions
+        if (strcmp(node->data_type, "void") == 0) {
+            emit("RET");
+        }
         fprintf(asm_file, ".endmethod\n");
     } else if (strcmp(node->type, "CONSTRUCTOR") == 0) {
          char mangled_name[512];
-         sprintf(mangled_name, "%s@constructor", node->value);
+          sprintf(mangled_name, "%s.%s", current_class_name, node->value);
          
          int locals = calculate_total_locals(node->scope_table);
          int stack = calculate_max_stack_depth(node->children[1]);
