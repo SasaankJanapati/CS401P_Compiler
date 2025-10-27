@@ -1,0 +1,85 @@
+
+--- Scope: 0 (Parent Scope: -1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 1 (Parent Scope: 0) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+swap                 | void            | member_func  | public       | N/A             | -1           | 8
+swap                 | void            | member_func  | public       | N/A             | -1           | 15
+swap2                | void            | member_func  | public       | N/A             | -1           | 22
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+a                    | I               | parameter    | public       | N/A             | 1            | 4
+b                    | I               | parameter    | public       | N/A             | 2            | 4
+temp                 | I               | variable     | public       | N/A             | 1            | 5
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+a                    | F               | parameter    | public       | N/A             | 1            | 11
+b                    | F               | parameter    | public       | N/A             | 2            | 11
+temp                 | F               | variable     | public       | N/A             | 2            | 12
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+a                    | C               | parameter    | public       | N/A             | 1            | 18
+b                    | C               | parameter    | public       | N/A             | 2            | 18
+temp                 | C               | variable     | public       | N/A             | 3            | 19
+
+--- Scope: 1 (Parent Scope: 0) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+util                 | Utility         | member_obj   | public       | Algorithms      | -1           | 28
+insert               | void            | member_func  | public       | N/A             | -1           | 46
+sort                 | void            | member_func  | public       | N/A             | -1           | 70
+reverse              | void            | member_func  | public       | N/A             | -1           | 82
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+arr                  | [I              | parameter    | public       | N/A             | 1            | 31
+n                    | I               | parameter    | public       | N/A             | 2            | 31
+pos                  | I               | parameter    | public       | N/A             | 3            | 31
+value                | I               | parameter    | public       | N/A             | 4            | 31
+i                    | I               | variable     | public       | N/A             | 4            | 34
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+arr                  | [I              | parameter    | public       | N/A             | 1            | 58
+n                    | I               | parameter    | public       | N/A             | 2            | 58
+i                    | I               | variable     | public       | N/A             | 5            | 59
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+j                    | I               | variable     | public       | N/A             | 6            | 61
+
+--- Scope: 4 (Parent Scope: 3) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 5 (Parent Scope: 4) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+arr                  | [I              | parameter    | public       | N/A             | 1            | 74
+n                    | I               | parameter    | public       | N/A             | 2            | 74
+start                | I               | variable     | public       | N/A             | 7            | 75
+end                  | I               | variable     | public       | N/A             | 8            | 76
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------

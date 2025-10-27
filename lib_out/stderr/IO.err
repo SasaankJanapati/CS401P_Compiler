@@ -1,0 +1,692 @@
+Debug: Building array type for base type 'C' and index node 'INDEX'
+Debug: Declaring array 'c' of type '[C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'c' has element type 'C'
+Debug: Functionend 'readChar' with mangled name 'readChar' declared.
+Debug: Building array type for base type 'C' and index node 'INDEX'
+Debug: Declaring array 'arr' of type '[C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'writeChar'
+Debug: Functionend 'writeChar' with mangled name 'writeChar@C' declared.
+Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
+Debug: Building array type for base type 'C' and index node 'NULL'
+mangled name: readChar
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_ARRAY' 'readString'
+Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'readString@[C'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'readString@[C'
+Debug: Functionend 'readString' with mangled name 'readString@[C@I' declared.
+Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
+Debug: Building array type for base type 'C' and index node 'NULL'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Error line 40: Type mismatch in assignment. Cannot assign 'C' to 'I'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_ARRAY' 'stringToInt'
+Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Functionend 'stringToInt' with mangled name 'stringToInt@[C' declared.
+Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
+Debug: Building array type for base type 'C' and index node 'NULL'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'intToString'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'intToString@I'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_ARRAY' 'intToString@I'
+Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Functionend 'intToString' with mangled name 'intToString@I@[C' declared.
+Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
+Debug: Building array type for base type 'C' and index node 'NULL'
+Debug: Building array type for base type 'C' and index node 'INDEX'
+Debug: Declaring array 'intBuf' of type '[C'
+mangled name: intToString
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: intToString
+Debug: Child type: 'IDEN'
+Debug: Processing child 1 of 'ARG_LIST'
+mangled name: intToString@I
+Debug: Child type: 'IDEN'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'intBuf' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'intBuf' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'doubleToString'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'doubleToString@F'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_ARRAY' 'doubleToString@F'
+Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Functionend 'doubleToString' with mangled name 'doubleToString@F@[C' declared.
+Debug: Building array type for base type 'C' and index node 'INDEX'
+Debug: Declaring array 'buf' of type '[C'
+mangled name: readString
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: readString
+Debug: Child type: 'IDEN'
+Debug: Processing child 1 of 'ARG_LIST'
+mangled name: readString@[C
+Debug: Child type: 'NUM'
+mangled name: stringToInt
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: stringToInt
+Debug: Child type: 'IDEN'
+Debug: Functionend 'readInt' with mangled name 'readInt' declared.
+Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
+Debug: Building array type for base type 'C' and index node 'NULL'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+Debug: Processing index node for array access on '[C'
+Debug: Array access 'arr' has element type 'C'
+mangled name: writeChar
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: writeChar
+Debug: Child type: 'ARRAY_ACCESS'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_ARRAY' 'printString'
+Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Functionend 'printString' with mangled name 'printString@[C' declared.
+Debug: Building array type for base type 'C' and index node 'INDEX'
+Debug: Declaring array 'buf' of type '[C'
+mangled name: intToString
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: intToString
+Debug: Child type: 'IDEN'
+Debug: Processing child 1 of 'ARG_LIST'
+mangled name: intToString@I
+Debug: Child type: 'IDEN'
+mangled name: printString
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: printString
+Debug: Child type: 'IDEN'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'printInt'
+Debug: Functionend 'printInt' with mangled name 'printInt@I' declared.
+Debug: Building array type for base type 'C' and index node 'INDEX'
+Debug: Declaring array 'buf' of type '[C'
+mangled name: doubleToString
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: doubleToString
+Debug: Child type: 'IDEN'
+Debug: Processing child 1 of 'ARG_LIST'
+mangled name: doubleToString@F
+Debug: Child type: 'IDEN'
+mangled name: printString
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: printString
+Debug: Child type: 'IDEN'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'printDouble'
+Debug: Functionend 'printDouble' with mangled name 'printDouble@F' declared.
+Gen ASM for: PROGRAM () Scope: 0
+  Gen ASM for: STATEMENTS () Scope: 0
+    Gen ASM for: CLASS_DECL (IOHandler) Scope: 0
+      Gen ASM for: CLASS_BODY () Scope: 1
+        Gen ASM for: FUNC_DEF (readChar) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: ARRAY_DECL (c) Scope: 2
+                    Gen STMT for: ARRAY_DECL (c) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: SYS_CALL (read)
+Codegen Warning: Unhandled expression type 'SYS_CALL'
+                  Gen EXPR for: NUM (0)
+                  Gen EXPR for: IDEN (c)
+                  Gen EXPR for: NUM (1)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_DECL (ans) Scope: 2
+                    Gen STMT for: VAR_DECL (ans) Scope: 2
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen EXPR for: ARRAY_ACCESS (c)
+                  Gen LVAL ADDR for: ARRAY_ACCESS (c)
+                    Gen EXPR for: NUM (0)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (ans)
+        Gen ASM for: FUNC_DEF (writeChar@C) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: ARRAY_DECL (arr) Scope: 2
+                    Gen STMT for: ARRAY_DECL (arr) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                  Gen EXPR for: NUM (0)
+                Gen EXPR for: IDEN (c)
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: SYS_CALL (write)
+Codegen Warning: Unhandled expression type 'SYS_CALL'
+                  Gen EXPR for: NUM (1)
+                  Gen EXPR for: IDEN (arr)
+                  Gen EXPR for: NUM (1)
+        Gen ASM for: FUNC_DEF (readString@[C@I) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (i) Scope: 2
+                    Gen STMT for: VAR_INIT (i) Scope: 2
+                      Gen EXPR for: NUM (0)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_DECL (c) Scope: 2
+                    Gen STMT for: VAR_DECL (c) Scope: 2
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (i)
+                  Gen EXPR for: BIN_OP (-)
+                    Gen EXPR for: IDEN (size)
+                    Gen EXPR for: NUM (1)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: FUNC_CALL (readChar)
+                  Gen ASM for: IF () Scope: 3
+                    Gen STMT for: IF () Scope: 3
+                      Gen BOOL EXPR for: BOOL_OP (||)
+                        Gen BOOL EXPR for: REL_OP (==)
+                          Gen EXPR for: IDEN (c)
+                          Gen EXPR for: CHAR_LIT ('\n')
+                        Gen BOOL EXPR for: REL_OP (==)
+                          Gen EXPR for: IDEN (c)
+                          Gen EXPR for: CHAR_LIT ('\r')
+                      Gen ASM for: BREAK () Scope: 3
+                        Gen STMT for: BREAK () Scope: 3
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                        Gen EXPR for: IDEN (i)
+                      Gen EXPR for: IDEN (c)
+                  Gen ASM for: EXPR_STMT () Scope: 3
+                    Gen STMT for: EXPR_STMT () Scope: 3
+                      Gen EXPR for: POST_INC (++)
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                  Gen EXPR for: IDEN (i)
+                Gen EXPR for: CHAR_LIT ('\0')
+        Gen ASM for: FUNC_DEF (stringToInt@[C) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (sign) Scope: 2
+                    Gen STMT for: VAR_INIT (sign) Scope: 2
+                      Gen EXPR for: NUM (1)
+                  Gen ASM for: VAR_INIT (num) Scope: 2
+                    Gen STMT for: VAR_INIT (num) Scope: 2
+                      Gen EXPR for: NUM (0)
+                  Gen ASM for: VAR_INIT (i) Scope: 2
+                    Gen STMT for: VAR_INIT (i) Scope: 2
+                      Gen EXPR for: NUM (0)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (==)
+                  Gen EXPR for: ARRAY_ACCESS (arr)
+                    Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                      Gen EXPR for: NUM (0)
+                  Gen EXPR for: CHAR_LIT ('-')
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: UN_OP (-)
+                        Gen EXPR for: NUM (1)
+                  Gen ASM for: EXPR_STMT () Scope: 3
+                    Gen STMT for: EXPR_STMT () Scope: 3
+                      Gen EXPR for: POST_INC (++)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (!=)
+                  Gen EXPR for: ARRAY_ACCESS (arr)
+                    Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                      Gen EXPR for: IDEN (i)
+                  Gen EXPR for: CHAR_LIT ('\0')
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: IF_ELSE () Scope: 3
+                    Gen STMT for: IF_ELSE () Scope: 3
+                      Gen BOOL EXPR for: BOOL_OP (&&)
+                        Gen BOOL EXPR for: REL_OP (>=)
+                          Gen EXPR for: ARRAY_ACCESS (arr)
+                            Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                              Gen EXPR for: IDEN (i)
+                          Gen EXPR for: CHAR_LIT ('0')
+                        Gen BOOL EXPR for: REL_OP (<=)
+                          Gen EXPR for: ARRAY_ACCESS (arr)
+                            Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                              Gen EXPR for: IDEN (i)
+                          Gen EXPR for: CHAR_LIT ('9')
+                      Gen ASM for: STATEMENTS () Scope: 3
+                        Gen ASM for: ASSIGN () Scope: 4
+                          Gen STMT for: ASSIGN () Scope: 4
+                            Gen EXPR for: BIN_OP (+)
+                              Gen EXPR for: BIN_OP (*)
+                                Gen EXPR for: IDEN (num)
+                                Gen EXPR for: NUM (10)
+                              Gen EXPR for: BIN_OP (-)
+                                Gen EXPR for: ARRAY_ACCESS (arr)
+                                  Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                                    Gen EXPR for: IDEN (i)
+                                Gen EXPR for: CHAR_LIT ('0')
+                      Gen ASM for: BREAK () Scope: 3
+                        Gen STMT for: BREAK () Scope: 3
+                  Gen ASM for: EXPR_STMT () Scope: 3
+                    Gen STMT for: EXPR_STMT () Scope: 3
+                      Gen EXPR for: POST_INC (++)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: BIN_OP (*)
+                  Gen EXPR for: IDEN (sign)
+                  Gen EXPR for: IDEN (num)
+        Gen ASM for: FUNC_DEF (intToString@I@[C) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (i) Scope: 2
+                    Gen STMT for: VAR_INIT (i) Scope: 2
+                      Gen EXPR for: NUM (0)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (isNeg) Scope: 2
+                    Gen STMT for: VAR_INIT (isNeg) Scope: 2
+                      Gen EXPR for: NUM (0)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (==)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                        Gen EXPR for: POST_INC (++)
+                      Gen EXPR for: CHAR_LIT ('0')
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                        Gen EXPR for: IDEN (i)
+                      Gen EXPR for: CHAR_LIT ('\0')
+                  Gen ASM for: RETURN (empty) Scope: 3
+                    Gen STMT for: RETURN (empty) Scope: 3
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: NUM (1)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: UN_OP (-)
+                        Gen EXPR for: IDEN (x)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                        Gen EXPR for: POST_INC (++)
+                      Gen EXPR for: BIN_OP (+)
+                        Gen EXPR for: BIN_OP (%)
+                          Gen EXPR for: IDEN (x)
+                          Gen EXPR for: NUM (10)
+                        Gen EXPR for: CHAR_LIT ('0')
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: NUM (10)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (==)
+                  Gen EXPR for: IDEN (isNeg)
+                  Gen EXPR for: NUM (1)
+                Gen ASM for: ASSIGN () Scope: 2
+                  Gen STMT for: ASSIGN () Scope: 2
+                    Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                      Gen EXPR for: POST_INC (++)
+                    Gen EXPR for: CHAR_LIT ('-')
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                  Gen EXPR for: IDEN (i)
+                Gen EXPR for: CHAR_LIT ('\0')
+            Gen ASM for: FOR () Scope: 2
+              Gen STMT for: FOR () Scope: 3
+                Gen STMT for: DECL_STMT () Scope: 3
+                  Gen ASM for: DECL_LIST () Scope: 3
+                    Gen ASM for: VAR_INIT (j) Scope: 3
+                      Gen STMT for: VAR_INIT (j) Scope: 3
+                        Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 3
+                  Gen ASM for: DECL_STMT () Scope: 4
+                    Gen STMT for: DECL_STMT () Scope: 4
+                      Gen ASM for: DECL_LIST () Scope: 4
+                        Gen ASM for: VAR_INIT (temp) Scope: 4
+                          Gen STMT for: VAR_INIT (temp) Scope: 4
+                            Gen EXPR for: ARRAY_ACCESS (arr)
+                              Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                                Gen EXPR for: IDEN (j)
+                  Gen ASM for: ASSIGN () Scope: 4
+                    Gen STMT for: ASSIGN () Scope: 4
+                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                        Gen EXPR for: IDEN (j)
+                      Gen EXPR for: ARRAY_ACCESS (arr)
+                        Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                          Gen EXPR for: BIN_OP (-)
+                            Gen EXPR for: BIN_OP (-)
+                              Gen EXPR for: IDEN (i)
+                              Gen EXPR for: IDEN (j)
+                            Gen EXPR for: NUM (1)
+                  Gen ASM for: ASSIGN () Scope: 4
+                    Gen STMT for: ASSIGN () Scope: 4
+                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                        Gen EXPR for: BIN_OP (-)
+                          Gen EXPR for: BIN_OP (-)
+                            Gen EXPR for: IDEN (i)
+                            Gen EXPR for: IDEN (j)
+                          Gen EXPR for: NUM (1)
+                      Gen EXPR for: IDEN (temp)
+                Gen EXPR for: POST_INC (++)
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (j)
+                  Gen EXPR for: BIN_OP (/)
+                    Gen EXPR for: IDEN (i)
+                    Gen EXPR for: NUM (2)
+        Gen ASM for: FUNC_DEF (doubleToString@F@[C) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (neg) Scope: 2
+                    Gen STMT for: VAR_INIT (neg) Scope: 2
+                      Gen EXPR for: NUM (0)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (val)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: NUM (1)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: UN_OP (-)
+                        Gen EXPR for: IDEN (val)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (intPart) Scope: 2
+                    Gen STMT for: VAR_INIT (intPart) Scope: 2
+                      Gen EXPR for: NUM (0)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (temp) Scope: 2
+                    Gen STMT for: VAR_INIT (temp) Scope: 2
+                      Gen EXPR for: IDEN (val)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>=)
+                  Gen EXPR for: IDEN (temp)
+                  Gen EXPR for: NUM (1.0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (-)
+                        Gen EXPR for: IDEN (temp)
+                        Gen EXPR for: NUM (1.0)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (+)
+                        Gen EXPR for: IDEN (intPart)
+                        Gen EXPR for: NUM (1)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (frac) Scope: 2
+                    Gen STMT for: VAR_INIT (frac) Scope: 2
+                      Gen EXPR for: BIN_OP (-)
+                        Gen EXPR for: IDEN (val)
+                        Gen EXPR for: IDEN (intPart)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: ARRAY_DECL (intBuf) Scope: 2
+                    Gen STMT for: ARRAY_DECL (intBuf) Scope: 2
+                      Gen EXPR for: NUM (50)
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: FUNC_CALL (intToString@I@[C)
+                  Gen EXPR for: IDEN (intPart)
+                  Gen EXPR for: IDEN (intBuf)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (j) Scope: 2
+                    Gen STMT for: VAR_INIT (j) Scope: 2
+                      Gen EXPR for: NUM (0)
+                  Gen ASM for: VAR_INIT (i) Scope: 2
+                    Gen STMT for: VAR_INIT (i) Scope: 2
+                      Gen EXPR for: NUM (0)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (==)
+                  Gen EXPR for: IDEN (neg)
+                  Gen EXPR for: NUM (1)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                        Gen EXPR for: POST_INC (++)
+                      Gen EXPR for: CHAR_LIT ('-')
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (!=)
+                  Gen EXPR for: ARRAY_ACCESS (intBuf)
+                    Gen LVAL ADDR for: ARRAY_ACCESS (intBuf)
+                      Gen EXPR for: IDEN (j)
+                  Gen EXPR for: CHAR_LIT ('\0')
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                        Gen EXPR for: POST_INC (++)
+                      Gen EXPR for: ARRAY_ACCESS (intBuf)
+                        Gen LVAL ADDR for: ARRAY_ACCESS (intBuf)
+                          Gen EXPR for: POST_INC (++)
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                  Gen EXPR for: POST_INC (++)
+                Gen EXPR for: CHAR_LIT ('.')
+            Gen ASM for: FOR () Scope: 2
+              Gen STMT for: FOR () Scope: 3
+                Gen STMT for: DECL_STMT () Scope: 3
+                  Gen ASM for: DECL_LIST () Scope: 3
+                    Gen ASM for: VAR_INIT (k) Scope: 3
+                      Gen STMT for: VAR_INIT (k) Scope: 3
+                        Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 3
+                  Gen ASM for: ASSIGN () Scope: 4
+                    Gen STMT for: ASSIGN () Scope: 4
+                      Gen EXPR for: BIN_OP (*)
+                        Gen EXPR for: IDEN (frac)
+                        Gen EXPR for: NUM (10.0)
+                  Gen ASM for: DECL_STMT () Scope: 4
+                    Gen STMT for: DECL_STMT () Scope: 4
+                      Gen ASM for: DECL_LIST () Scope: 4
+                        Gen ASM for: VAR_INIT (digit) Scope: 4
+                          Gen STMT for: VAR_INIT (digit) Scope: 4
+                            Gen EXPR for: NUM (0)
+                  Gen ASM for: WHILE () Scope: 4
+                    Gen STMT for: WHILE () Scope: 4
+                      Gen BOOL EXPR for: REL_OP (>=)
+                        Gen EXPR for: IDEN (frac)
+                        Gen EXPR for: NUM (1.0)
+                      Gen ASM for: STATEMENTS () Scope: 4
+                        Gen ASM for: ASSIGN () Scope: 5
+                          Gen STMT for: ASSIGN () Scope: 5
+                            Gen EXPR for: BIN_OP (-)
+                              Gen EXPR for: IDEN (frac)
+                              Gen EXPR for: NUM (1.0)
+                        Gen ASM for: ASSIGN () Scope: 5
+                          Gen STMT for: ASSIGN () Scope: 5
+                            Gen EXPR for: BIN_OP (+)
+                              Gen EXPR for: IDEN (digit)
+                              Gen EXPR for: NUM (1)
+                  Gen ASM for: ASSIGN () Scope: 4
+                    Gen STMT for: ASSIGN () Scope: 4
+                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                        Gen EXPR for: POST_INC (++)
+                      Gen EXPR for: BIN_OP (+)
+                        Gen EXPR for: CHAR_LIT ('0')
+                        Gen EXPR for: IDEN (digit)
+                Gen EXPR for: POST_INC (++)
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (k)
+                  Gen EXPR for: NUM (6)
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                  Gen EXPR for: IDEN (i)
+                Gen EXPR for: CHAR_LIT ('\0')
+        Gen ASM for: FUNC_DEF (readInt) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: ARRAY_DECL (buf) Scope: 2
+                    Gen STMT for: ARRAY_DECL (buf) Scope: 2
+                      Gen EXPR for: NUM (50)
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: FUNC_CALL (readString@[C@I)
+                  Gen EXPR for: IDEN (buf)
+                  Gen EXPR for: NUM (50)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: FUNC_CALL (stringToInt@[C)
+                  Gen EXPR for: IDEN (buf)
+        Gen ASM for: FUNC_DEF (printString@[C) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (i) Scope: 2
+                    Gen STMT for: VAR_INIT (i) Scope: 2
+                      Gen EXPR for: NUM (0)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (!=)
+                  Gen EXPR for: ARRAY_ACCESS (arr)
+                    Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                      Gen EXPR for: IDEN (i)
+                  Gen EXPR for: CHAR_LIT ('\0')
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: EXPR_STMT () Scope: 3
+                    Gen STMT for: EXPR_STMT () Scope: 3
+                      Gen EXPR for: FUNC_CALL (writeChar@C)
+                        Gen EXPR for: ARRAY_ACCESS (arr)
+                          Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                            Gen EXPR for: IDEN (i)
+                  Gen ASM for: EXPR_STMT () Scope: 3
+                    Gen STMT for: EXPR_STMT () Scope: 3
+                      Gen EXPR for: POST_INC (++)
+        Gen ASM for: FUNC_DEF (printInt@I) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: ARRAY_DECL (buf) Scope: 2
+                    Gen STMT for: ARRAY_DECL (buf) Scope: 2
+                      Gen EXPR for: NUM (50)
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: FUNC_CALL (intToString@I@[C)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: IDEN (buf)
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: FUNC_CALL (printString@[C)
+                  Gen EXPR for: IDEN (buf)
+        Gen ASM for: FUNC_DEF (printDouble@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: ARRAY_DECL (buf) Scope: 2
+                    Gen STMT for: ARRAY_DECL (buf) Scope: 2
+                      Gen EXPR for: NUM (100)
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: FUNC_CALL (doubleToString@F@[C)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: IDEN (buf)
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: FUNC_CALL (printString@[C)
+                  Gen EXPR for: IDEN (buf)

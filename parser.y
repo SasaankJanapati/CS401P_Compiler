@@ -7,7 +7,7 @@
 
 extern FILE* yyin;
 extern int yylineno; 
-int yydebug = 1;
+int yydebug = 0;
 
 // Forward declarations
 void yyerror(const char* s);
@@ -150,11 +150,11 @@ ClassInfo* find_class_info(const char* class_name);
 
 // Helper function to recursively build a nested type string for multi-dimensional arrays
 char* build_array_type(const char* base_type, Node* index_node) {
-    printf("Debug: Building array type for base type '%s' and index node '%s'\n", base_type, index_node ? index_node->type : "NULL");
+    fprintf(stderr, "Debug: Building array type for base type '%s' and index node '%s'\n", base_type, index_node ? index_node->type : "NULL");
     if (index_node == NULL) {
-        if (strcmp(base_type,"int")==0) return "I";
-        else if (strcmp(base_type,"float")==0) return "F";
-        else if (strcmp(base_type,"char")==0) return "C";
+        if (strcmp(base_type,"I")==0) return "I";
+        else if (strcmp(base_type,"F")==0) return "F";
+        else if (strcmp(base_type,"C")==0) return "C";
         else { 
             char* obj_type = malloc(strlen(base_type) + 3); // L + type + ; + \0
             sprintf(obj_type, "L%s;", base_type);
@@ -170,9 +170,9 @@ char* build_array_type(const char* base_type, Node* index_node) {
             inner_type = strdup(build_array_type(base_type, index_node->children[0]));
         } else { // base case: '[' EXPR ']'
         inner_type = strdup(base_type);
-        if (strcmp(base_type,"int")==0) inner_type = strdup("I");
-        else if (strcmp(base_type,"float")==0) inner_type = strdup("F");
-        else if (strcmp(base_type,"char")==0) inner_type = strdup("C");
+        if (strcmp(base_type,"I")==0) inner_type = strdup("I");
+        else if (strcmp(base_type,"F")==0) inner_type = strdup("F");
+        else if (strcmp(base_type,"C")==0) inner_type = strdup("C");
         else { 
                 char* obj_type = malloc(strlen(base_type) + 3); // L + type + ; + \0
                 sprintf(obj_type, "L%s;", base_type);
@@ -202,9 +202,9 @@ void check_init_list_types(Node* list_node, const char* base_type) {
 // int are_types_compatible(char* lval_type, char* rval_type) {
 //     if (strcmp(lval_type, "undefined") == 0 || strcmp(rval_type, "undefined") == 0) return 1;
 //     if (strcmp(lval_type, rval_type) == 0) return 1;
-//     if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "int") == 0) return 1;
-//     if (strncmp(lval_type, "[", 1) == 0 && strcmp(rval_type, "int") == 0) return 1; // Allow assigning 0 (null) to arrays
-//     if (find_class_info(lval_type) != NULL && strcmp(rval_type, "int") == 0) return 1; // Allow assigning 0 (null) to objects
+//     if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "I") == 0) return 1;
+//     if (strncmp(lval_type, "[", 1) == 0 && strcmp(rval_type, "I") == 0) return 1; // Allow assigning 0 (null) to arrays
+//     if (find_class_info(lval_type) != NULL && strcmp(rval_type, "I") == 0) return 1; // Allow assigning 0 (null) to objects
 
 //     return 0;
 // }
@@ -217,15 +217,26 @@ int are_types_compatible(char* lval_type, char* rval_type) {
     if (strcmp(lval_type, rval_type) == 0) return 1;
 
     // Rule 2: Allow widening conversion from int to float.
-    if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "int") == 0) return 1;
-    if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "int") == 0) return 1;
-    if (strcmp(lval_type, "float") == 0 && strcmp(rval_type, "I") == 0) return 1;
+    if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "I") == 0) return 1;
+    if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "I") == 0) return 1;
+    if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "I") == 0) return 1;
     if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "I") == 0) return 1;
 
+    // Rule 2a: Allow char and C interchangeably
+    if (strcmp(lval_type, "C") == 0 && strcmp(rval_type, "C") == 0) return 1;
+    if (strcmp(lval_type, "C") == 0 && strcmp(rval_type, "C") == 0) return 1;
 
-    // Rule 3: Allow assigning 'null' (represented by rval_type "int" from literal 0)
+    // Rule 2b: Allow float and F interchangeably
+    if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "F") == 0) return 1;
+    if (strcmp(lval_type, "F") == 0 && strcmp(rval_type, "F") == 0) return 1;
+
+    // Rule 2c: Allow int and I interchangeably
+    if (strcmp(lval_type, "I") == 0 && strcmp(rval_type, "I") == 0) return 1;
+    if (strcmp(lval_type, "I") == 0 && strcmp(rval_type, "I") == 0) return 1;
+
+    // Rule 3: Allow assigning 'null' (represented by rval_type "I" from literal 0)
     // to any object or array type.
-    if (strcmp(rval_type, "int") == 0 || strcmp(rval_type, "I") == 0) {
+    if (strcmp(rval_type, "I") == 0 || strcmp(rval_type, "I") == 0) {
         // Check if lval is an array type (e.g., "[I", "[[F", "[LMyClass;", or single-dimension "I", "F", "C")
         if (lval_type[0] == '[' || (strlen(lval_type) == 1 && strchr("IFC", lval_type[0]))) {
             return 1;
@@ -254,14 +265,14 @@ int are_types_compatible(char* lval_type, char* rval_type) {
 
 int is_numeric(char* type) {
     if (type == NULL) return 0;
-    return strcmp(type, "int") == 0 || strcmp(type, "float") == 0 || strcmp(type, "char") == 0;
+    return strcmp(type, "I") == 0 || strcmp(type, "F") == 0 || strcmp(type, "C") == 0;
 }
 
 char* get_promoted_type(char* type1, char* type2) {
     if (!is_numeric(type1) || !is_numeric(type2)) return "undefined";
-    if (strcmp(type1, "float") == 0 || strcmp(type2, "float") == 0) return "float";
-    if (strcmp(type1, "char") == 0 || strcmp(type2, "char") == 0) return "char";
-    return "int";
+    if (strcmp(type1, "F") == 0 || strcmp(type2, "F") == 0) return "F";
+    if (strcmp(type1, "C") == 0 || strcmp(type2, "C") == 0) return "C";
+    return "I";
 }
 
 
@@ -620,9 +631,9 @@ char* get_mangled_name(const char* func_name, Node* arg_list_node) {
                     // Add base type from TYPE node
                     char* base_type = expr_or_param->children[0]->value;
                     fprintf(stderr, "Debug: Mangling param/arg of array type '%s' with %d dimensions\n", base_type, dim_count);
-                    if(strcmp(base_type, "int") == 0) strcat(mangled_name, "I");
-                    else if(strcmp(base_type, "float") == 0) strcat(mangled_name, "F");
-                    else if(strcmp(base_type, "char") == 0) strcat(mangled_name, "C");
+                    if(strcmp(base_type, "I") == 0) strcat(mangled_name, "I");
+                    else if(strcmp(base_type, "F") == 0) strcat(mangled_name, "F");
+                    else if(strcmp(base_type, "C") == 0) strcat(mangled_name, "C");
                     else { // Object type
                         strcat(mangled_name, "L");
                         strcat(mangled_name, base_type);
@@ -638,13 +649,13 @@ char* get_mangled_name(const char* func_name, Node* arg_list_node) {
             }
         }
     } else if (arg_list_node && strcmp(arg_list_node->type, "ARG_LIST") == 0) {
-        //fprintf(stderr, "mangled name: %s\n", mangled_name);
+        fprintf(stderr, "mangled name: %s\n", mangled_name);
         for (int i = 0; i < arg_list_node->num_children; i++) {
 
-            //fprintf(stderr, "Debug: Processing child %d of '%s'\n", i, arg_list_node->type);
-            //fprintf(stderr, "mangled name: %s\n", mangled_name);
+            fprintf(stderr, "Debug: Processing child %d of '%s'\n", i, arg_list_node->type);
+            fprintf(stderr, "mangled name: %s\n", mangled_name);
             Node* expr_or_param = arg_list_node->children[i];
-            //fprintf(stderr, "Debug: Child type: '%s'\n", expr_or_param->type);
+            fprintf(stderr, "Debug: Child type: '%s'\n", expr_or_param->type);
             strcat(mangled_name, "@");
             // Arg lists have a different structure than param lists
             strcat(mangled_name, expr_or_param->data_type ? expr_or_param->data_type : "unknown");
@@ -955,16 +966,16 @@ DECL: IDEN {
 INITLIST: INITLIST ',' EXPR { $$ = $1; add_child($$, $3); }
         | EXPR              { $$ = create_node("INIT_LIST", NULL); add_child($$, $1); }
         ;
-INDEX: '[' EXPR ']' { $$ = create_node("INDEX", NULL); add_child($$, $2); if (strcmp($2->data_type, "int") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
-     | '[' EXPR ']' INDEX { $$ = create_node("INDEX", NULL); add_child($$, $2); add_child($$, $4); if (strcmp($2->data_type, "int") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
+INDEX: '[' EXPR ']' { $$ = create_node("INDEX", NULL); add_child($$, $2); if (strcmp($2->data_type, "I") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
+     | '[' EXPR ']' INDEX { $$ = create_node("INDEX", NULL); add_child($$, $2); add_child($$, $4); if (strcmp($2->data_type, "I") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
      | '[' ']'        { $$ = create_node("INDEX_EMPTY", NULL);  }
      | '[' ']' INDEX { $$ = create_node("INDEX_EMPTY", NULL); add_child($$, $3); }
      ;
-TYPE: INT    { current_decl_type = "int"; $$ = create_node("TYPE", "int"); }
-    | FLOAT  { current_decl_type = "float"; $$ = create_node("TYPE", "float"); }
-    | CHAR   { current_decl_type = "char"; $$ = create_node("TYPE", "char"); }
+TYPE: INT    { current_decl_type = "I"; $$ = create_node("TYPE", "I"); }
+    | FLOAT  { current_decl_type = "F"; $$ = create_node("TYPE", "F"); }
+    | CHAR   { current_decl_type = "C"; $$ = create_node("TYPE", "C"); }
     | VOID   { current_decl_type = "void"; $$ = create_node("TYPE", "void"); }
-    | BOOL   { current_decl_type = "bool"; $$ = create_node("TYPE", "bool"); }
+    | BOOL   { current_decl_type = "B"; $$ = create_node("TYPE", "B"); }
     ;
 ASSGN: '='  { $$ = create_node("ASSIGN_OP", "="); }
      | PASN { $$ = create_node("ASSIGN_OP", "+="); }
@@ -995,7 +1006,7 @@ LVAL: IDEN {
             char* type = strdup(s->type);
             Node* temp_idx = $2;
             while(temp_idx) {
-                printf("Debug: Processing index node for array access on '%s'\n", type);
+                fprintf(stderr,"Debug: Processing index node for array access on '%s'\n", type);
                 if(strncmp(type, "[", 1) == 0) {
                     char* inner = strdup(type + 1); // Skip the leading '['
                     free(type);
@@ -1009,7 +1020,7 @@ LVAL: IDEN {
                 temp_idx = (temp_idx->num_children == 2) ? temp_idx->children[1] : NULL;
             }
             $$->data_type = type;
-            printf("Debug: Array access '%s' has element type '%s'\n", $1, $$->data_type);
+            fprintf(stderr, "Debug: Array access '%s' has element type '%s'\n", $1, $$->data_type);
         }
       }
     | MEMBERACCESS { $$ = $1; }
@@ -1034,24 +1045,24 @@ ASNEXPR: LVAL ASSGN EXPR {
             add_child($$, new_node);
         }
        ;
-BOOLEXPR: BOOLEXPR OR M BOOLEXPR   { $$ = create_node("BOOL_OP", "||"); add_child($$, $1); add_child($$, $4); $$->data_type=strdup("bool"); }
-        | BOOLEXPR AND M BOOLEXPR  { $$ = create_node("BOOL_OP", "&&"); add_child($$, $1); add_child($$, $4); $$->data_type=strdup("bool"); }
-        | '!' '(' BOOLEXPR ')'     { $$ = create_node("BOOL_OP", "!"); add_child($$, $3); $$->data_type=strdup("bool"); }
+BOOLEXPR: BOOLEXPR OR M BOOLEXPR   { $$ = create_node("BOOL_OP", "||"); add_child($$, $1); add_child($$, $4); $$->data_type=strdup("B"); }
+        | BOOLEXPR AND M BOOLEXPR  { $$ = create_node("BOOL_OP", "&&"); add_child($$, $1); add_child($$, $4); $$->data_type=strdup("B"); }
+        | '!' '(' BOOLEXPR ')'     { $$ = create_node("BOOL_OP", "!"); add_child($$, $3); $$->data_type=strdup("B"); }
         | '(' BOOLEXPR ')'         { $$ = $2; }
-        | EXPR LT EXPR             { $$ = create_node("REL_OP", "<"); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
-        | EXPR GT EXPR             { $$ = create_node("REL_OP", ">"); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
-        | EXPR EQ EXPR             { $$ = create_node("REL_OP", "=="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
-        | EXPR NE EXPR             { $$ = create_node("REL_OP", "!="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
-        | EXPR LE EXPR             { $$ = create_node("REL_OP", "<="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
-        | EXPR GE EXPR             { $$ = create_node("REL_OP", ">="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("bool"); }
-        | TR                       { $$ = create_node("BOOL_CONST", "true"); $$->data_type=strdup("bool"); }
-        | FL                       { $$ = create_node("BOOL_CONST", "false"); $$->data_type=strdup("bool"); }
+        | EXPR LT EXPR             { $$ = create_node("REL_OP", "<"); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("B"); }
+        | EXPR GT EXPR             { $$ = create_node("REL_OP", ">"); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("B"); }
+        | EXPR EQ EXPR             { $$ = create_node("REL_OP", "=="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("B"); }
+        | EXPR NE EXPR             { $$ = create_node("REL_OP", "!="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("B"); }
+        | EXPR LE EXPR             { $$ = create_node("REL_OP", "<="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("B"); }
+        | EXPR GE EXPR             { $$ = create_node("REL_OP", ">="); add_child($$, $1); add_child($$, $3); $$->data_type=strdup("B"); }
+        | TR                       { $$ = create_node("BOOL_CONST", "true"); $$->data_type=strdup("B"); }
+        | FL                       { $$ = create_node("BOOL_CONST", "false"); $$->data_type=strdup("B"); }
         ;
 EXPR: EXPR '+' EXPR { $$ = create_node("BIN_OP", "+"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup(get_promoted_type($1->data_type, $3->data_type)); }
     | EXPR '-' EXPR { $$ = create_node("BIN_OP", "-"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup(get_promoted_type($1->data_type, $3->data_type)); }
     | EXPR '*' EXPR { $$ = create_node("BIN_OP", "*"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup(get_promoted_type($1->data_type, $3->data_type)); }
     | EXPR '/' EXPR { $$ = create_node("BIN_OP", "/"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup(get_promoted_type($1->data_type, $3->data_type)); }
-    | EXPR '%' EXPR { $$ = create_node("BIN_OP", "%"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup("int"); }
+    | EXPR '%' EXPR { $$ = create_node("BIN_OP", "%"); add_child($$, $1); add_child($$, $3); $$->data_type = strdup("I"); }
     | BOOLEXPR '?' EXPR ':' EXPR { $$ = create_node("TERNARY_OP", NULL); add_child($$, $1); add_child($$, $3); add_child($$, $5); $$->data_type = strdup($3->data_type); }
     | FUNC_CALL     { $$ = $1; }
     | SYSCALL       { $$ = $1; }
@@ -1075,16 +1086,16 @@ FUNC_CALL: IDEN '(' ARGLIST ')' {
             $$->data_type = s ? strdup(s->type) : strdup("undefined");
          }
          ;
-ARGLIST: EXPR ',' ARGLIST { $$ = $3; add_child($$, $1); }
+ARGLIST: ARGLIST ',' EXPR { $$ = $1; add_child($$, $3); }
        | EXPR            { $$ = create_node("ARG_LIST", NULL); add_child($$, $1); }
        |                 { $$ = create_node("ARG_LIST", "empty"); }
        ;
 TERM: LVAL { $$ = $1; }
-    | NUM  { $$ = create_node("NUM", $1); $$->data_type = (strchr($1, '.')) ? strdup("float") : strdup("int"); }
+    | NUM  { $$ = create_node("NUM", $1); $$->data_type = (strchr($1, '.')) ? strdup("F") : strdup("I"); }
     | STR  { $$ = create_node("STRING_LIT", $1); $$->data_type = strdup("string"); }
-    | CHR  { $$ = create_node("CHAR_LIT", $1); $$->data_type = strdup("char"); }
-    // | TR   { $$ = create_node("BOOL_CONST", "true"); $$->data_type="bool"; }
-    // | FL   { $$ = create_node("BOOL_CONST", "false"); $$->data_type="bool"; }
+    | CHR  { $$ = create_node("CHAR_LIT", $1); $$->data_type = strdup("C"); }
+    // | TR   { $$ = create_node("BOOL_CONST", "true"); $$->data_type="B"; }
+    // | FL   { $$ = create_node("BOOL_CONST", "false"); $$->data_type="B"; }
     | '(' EXPR ')' { $$ = $2; }
     | LVAL INC { $$ = create_node("POST_INC", "++"); add_child($$, $1); $$->data_type = strdup($1->data_type); }
     | LVAL DEC { $$ = create_node("POST_DEC", "--"); add_child($$, $1); $$->data_type = strdup($1->data_type); }
@@ -1097,26 +1108,26 @@ SYSCALL: SYS_OPEN '(' EXPR ',' EXPR ',' EXPR ')' ';' {  // filename flags permis
             add_child($$, $3);
             add_child($$, $5);
             add_child($$, $7);
-            $$->data_type = strdup("int");
+            $$->data_type = strdup("I");
          }
         | SYS_CLOSE '(' EXPR ')' ';' {  // fd
             $$ = create_node("SYS_CALL", "close");
             add_child($$, $3);
-            $$->data_type = strdup("int");
+            $$->data_type = strdup("I");
          }
         | SYS_READ '(' EXPR ',' EXPR ',' EXPR ')' ';' {  // fd buffer size
             $$ = create_node("SYS_CALL", "read");
             add_child($$, $3);
             add_child($$, $5);
             add_child($$, $7);
-            $$->data_type = strdup("int");
+            $$->data_type = strdup("I");
          }
         | SYS_WRITE '(' EXPR ',' EXPR ',' EXPR ')' ';' { // fd buffer size
             $$ = create_node("SYS_CALL", "write");
             add_child($$, $3);
             add_child($$, $5);
             add_child($$, $7);
-            $$->data_type = strdup("int");
+            $$->data_type = strdup("I");
          }
         ;
 
@@ -1582,9 +1593,9 @@ char* get_base_array_type(const char* mangled_type) {
     const char* last_bracket = strrchr(mangled_type, '[');
     char type_char = *(last_bracket + 1);
     switch (type_char) {
-        case 'I': return strdup("int");
-        case 'F': return strdup("float");
-        case 'C': return strdup("char");
+        case 'I': return strdup("I");
+        case 'F': return strdup("F");
+        case 'C': return strdup("C");
         case 'L': { // Object type like LMyClass;
             char* base_type = strdup(last_bracket + 2); // Skip 'L'
             char* semicolon = strchr(base_type, ';');
@@ -1605,17 +1616,17 @@ void generate_code_for_boolean_expr(Node* node, int true_label, int false_label,
     if (strcmp(node->type, "REL_OP") == 0) {
         generate_code_for_expr(node->children[0], scope, class_context);
         generate_code_for_expr(node->children[1], scope, class_context);
-        if (strcmp(node->value, "<") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_LT");
+        if (strcmp(node->value, "<") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_LT");
         else if (strcmp(node->value, "<") == 0) emit("ICMP_LT");
-        else if (strcmp(node->value, "<=") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_LE");
+        else if (strcmp(node->value, "<=") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_LE");
         else if (strcmp(node->value, "<=") == 0) emit("ICMP_LE");
-        else if (strcmp(node->value, "!=") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_NEQ");
+        else if (strcmp(node->value, "!=") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_NEQ");
         else if (strcmp(node->value, "!=") == 0) emit("ICMP_NEQ");
-        else if (strcmp(node->value, ">=") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_GE");
+        else if (strcmp(node->value, ">=") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_GE");
         else if (strcmp(node->value, ">=") == 0) emit("ICMP_GE");        else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
-        else if (strcmp(node->value, "==") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_EQ");
+        else if (strcmp(node->value, "==") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_EQ");
         else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
-        else if (strcmp(node->value, ">") == 0 && strcmp(node->children[0]->data_type, "float") == 0 && strcmp(node->children[1]->data_type, "float") == 0) emit("FCMP_GT");
+        else if (strcmp(node->value, ">") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_GT");
         else if (strcmp(node->value, ">") == 0) emit("ICMP_GT");
         else {
             fprintf(stderr, "Codegen Error: Unsupported relational operator '%s'\n", node->value);
@@ -1764,9 +1775,9 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
     debug_print("Gen EXPR for: %s (%s)", node->type, node->value ? node->value : "");
     code_gen_depth++;
 
-    if (strcmp(node->type, "NUM") == 0 && strcmp(node->data_type, "int") == 0) {
+    if (strcmp(node->type, "NUM") == 0 && strcmp(node->data_type, "I") == 0) {
         emit("PUSH %s", node->value);
-    } else if(strcmp(node->type, "NUM") == 0 && strcmp(node->data_type, "float") == 0) {
+    } else if(strcmp(node->type, "NUM") == 0 && strcmp(node->data_type, "F") == 0) {
         emit("FPUSH %s", node->value); // Assuming FPUSH for floats
     } else if (strcmp(node->type, "STRING_LIT") == 0) {
         int index = get_string_label_index(node->value);
@@ -1806,21 +1817,21 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
     } else if (strcmp(node->type, "BIN_OP") == 0) {
         generate_code_for_expr(node->children[0], scope, class_context);
         generate_code_for_expr(node->children[1], scope, class_context);
-        if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "int") == 0) emit("IADD");
-        else if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "char") == 0) emit("IADD");
-        else if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "float") == 0) emit("FADD");
-        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "int") == 0) emit("ISUB");
-        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "char") == 0) emit("ISUB");
-        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "float") == 0) emit("FSUB");
-        else if (strcmp(node->value, "*") == 0 && strcmp(node->data_type, "int") == 0) emit("IMUL");
-        else if (strcmp(node->value, "*") == 0 && strcmp(node->data_type, "float") == 0) emit("FMUL");
-        else if (strcmp(node->value, "/") == 0 && strcmp(node->data_type, "int") == 0) emit("IDIV");
-        else if (strcmp(node->value, "/") == 0 && strcmp(node->data_type, "float") == 0) emit("FDIV");
-        else if (strcmp(node->value, "%") == 0 && strcmp(node->data_type, "int") == 0) emit("IMOD");
+        if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "I") == 0) emit("IADD");
+        else if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "C") == 0) emit("IADD");
+        else if (strcmp(node->value, "+") == 0 && strcmp(node->data_type, "F") == 0) emit("FADD");
+        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "I") == 0) emit("ISUB");
+        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "C") == 0) emit("ISUB");
+        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "F") == 0) emit("FSUB");
+        else if (strcmp(node->value, "*") == 0 && strcmp(node->data_type, "I") == 0) emit("IMUL");
+        else if (strcmp(node->value, "*") == 0 && strcmp(node->data_type, "F") == 0) emit("FMUL");
+        else if (strcmp(node->value, "/") == 0 && strcmp(node->data_type, "I") == 0) emit("IDIV");
+        else if (strcmp(node->value, "/") == 0 && strcmp(node->data_type, "F") == 0) emit("FDIV");
+        else if (strcmp(node->value, "%") == 0 && strcmp(node->data_type, "I") == 0) emit("IMOD");
     } else if (strcmp(node->type, "UN_OP") == 0) {
         generate_code_for_expr(node->children[0], scope, class_context);
-        if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "int") == 0) emit("INEG");
-        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "float") == 0) emit("FNEG");
+        if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "I") == 0) emit("INEG");
+        else if (strcmp(node->value, "-") == 0 && strcmp(node->data_type, "F") == 0) emit("FNEG");
     } else if (strcmp(node->type, "MEMBER_FUNC_ACCESS") == 0) {
         Node* object_node = node->children[0];
         Node* func_call_node = node->children[1];
@@ -1865,9 +1876,9 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
                 for (int i = 0; i < arg_list->num_children; i++) {
                     generate_code_for_expr(arg_list->children[i], scope, class_context);
                 }
-                char* mangled_name = get_mangled_name(node->value, arg_list);
-                emit("CALL %s", mangled_name);
-                free(mangled_name);
+                //char* mangled_name = get_mangled_name(node->value, arg_list);
+                emit("CALL %s", node->value);
+                //free(mangled_name);
             }
         }
         else {
@@ -1875,9 +1886,9 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             for (int i = 0; i < arg_list->num_children; i++) {
                 generate_code_for_expr(arg_list->children[i], scope, class_context);
             }
-            char* mangled_name = get_mangled_name(node->value, arg_list);
-            emit("CALL %s", mangled_name);
-            free(mangled_name);
+            //char* mangled_name = get_mangled_name(node->value, arg_list);
+            emit("CALL %s", node->value);
+            //free(mangled_name);
         }
     } else if (strcmp(node->type, "REL_OP") == 0 || strcmp(node->type, "BOOL_OP") == 0 || strcmp(node->type, "BOOL_CONST") == 0) {
         int true_label = new_label();
@@ -1906,18 +1917,18 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
             emit("DUP"); // Duplicate for storing back
             if (strcmp(node->type, "POST_INC") == 0) {
-                if(strcmp(s->type, "int") == 0) {
+                if(strcmp(s->type, "I") == 0) {
                     emit("PUSH 1");
                     emit("IADD");
-                } else if(strcmp(s->type, "float") == 0) {
+                } else if(strcmp(s->type, "F") == 0) {
                     emit("FPUSH 1.0");
                     emit("FADD");
                 }
             } else {
-                if(strcmp(s->type, "int") == 0) {
+                if(strcmp(s->type, "I") == 0) {
                     emit("PUSH 1");
                     emit("ISUB");
-                } else if(strcmp(s->type, "float") == 0) {
+                } else if(strcmp(s->type, "F") == 0) {
                     emit("FPUSH 1.0");
                     emit("FSUB");
                 }
@@ -1933,18 +1944,18 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         if(s) {
             emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
             if (strcmp(node->type, "POST_INC") == 0) {
-                if(strcmp(s->type, "int") == 0) {
+                if(strcmp(s->type, "I") == 0) {
                     emit("PUSH 1");
                     emit("IADD");
-                } else if(strcmp(s->type, "float") == 0) {
+                } else if(strcmp(s->type, "F") == 0) {
                     emit("FPUSH 1.0");
                     emit("FADD");
                 }
             } else {
-                if(strcmp(s->type, "int") == 0) {
+                if(strcmp(s->type, "I") == 0) {
                     emit("PUSH 1");
                     emit("ISUB");
-                } else if(strcmp(s->type, "float") == 0) {
+                } else if(strcmp(s->type, "F") == 0) {
                     emit("FPUSH 1.0");
                     emit("FSUB");
                 }
@@ -2295,9 +2306,9 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
     } else if (strcmp(node->type, "EXPR_STMT") == 0) {
         generate_code_for_expr(node->children[0], scope, class_context);
         // Discard result if not a function call
-        if(strcmp(node->children[0]->data_type, "float") == 0) {
+        if(strcmp(node->children[0]->data_type, "F") == 0) {
             emit("FPOP"); 
-        } else if(strcmp(node->children[0]->data_type, "int") == 0 || strcmp(node->children[0]->data_type, "char") == 0) {
+        } else if(strcmp(node->children[0]->data_type, "I") == 0 || strcmp(node->children[0]->data_type, "C") == 0) {
             emit("POP"); 
         } else {
             // For void functions or other types, no pop needed

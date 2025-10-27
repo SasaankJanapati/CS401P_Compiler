@@ -1,0 +1,150 @@
+Debug: Adding member variable 'clflag' to class 'Termios'
+---------------Debug: Constructor index for 'Termios': 0
+---------------Debug: Constructor signature for 'Termios': Termios
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'copyFrom'
+Debug: Functionend 'copyFrom' with mangled name 'copyFrom@Termios' declared.
+mangled name: tcsetattr
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: tcsetattr
+Debug: Child type: 'NUM'
+Debug: Processing child 1 of 'ARG_LIST'
+mangled name: tcsetattr@I
+Debug: Child type: 'NUM'
+Debug: Processing child 2 of 'ARG_LIST'
+mangled name: tcsetattr@I@I
+Debug: Child type: 'IDEN'
+Debug: Functionend 'disableRawMode' with mangled name 'disableRawMode' declared.
+mangled name: tcgetattr
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: tcgetattr
+Debug: Child type: 'NUM'
+Debug: Processing child 1 of 'ARG_LIST'
+mangled name: tcgetattr@I
+Debug: Child type: 'IDEN'
+mangled name: copyFrom
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: copyFrom
+Debug: Child type: 'IDEN'
+mangled name: tcsetattr
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: tcsetattr
+Debug: Child type: 'NUM'
+Debug: Processing child 1 of 'ARG_LIST'
+mangled name: tcsetattr@I
+Debug: Child type: 'NUM'
+Debug: Processing child 2 of 'ARG_LIST'
+mangled name: tcsetattr@I@I
+Debug: Child type: 'IDEN'
+Debug: Functionend 'enableRawMode' with mangled name 'enableRawMode' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'tcgetattr'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'tcgetattr@I'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'tcgetattr@I'
+Debug: Functionend 'tcgetattr' with mangled name 'tcgetattr@I@Termios' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'tcsetattr'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'tcsetattr@I'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'tcsetattr@I'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'tcsetattr@I@I'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'tcsetattr@I@I'
+Debug: Functionend 'tcsetattr' with mangled name 'tcsetattr@I@I@Termios' declared.
+Gen ASM for: PROGRAM () Scope: 0
+  Gen ASM for: STATEMENTS () Scope: 0
+    Gen ASM for: CLASS_DECL (Termios) Scope: 0
+      Gen ASM for: CLASS_BODY () Scope: 1
+        Gen ASM for: MEMBER_DECL () Scope: 1
+          Gen STMT for: MEMBER_DECL () Scope: 1
+            Gen ASM for: TYPE (I) Scope: 1
+              Gen STMT for: TYPE (I) Scope: 1
+            Gen ASM for: DECL_LIST () Scope: 1
+              Gen ASM for: VAR_DECL (clflag) Scope: 1
+                Gen STMT for: VAR_DECL (clflag) Scope: 1
+        Gen ASM for: CONSTRUCTOR (Termios) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen EXPR for: NUM (0)
+        Gen ASM for: FUNC_DEF (copyFrom@Termios) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen EXPR for: MEMBER_VAR_ACCESS (clflag)
+                  Gen LVAL ADDR for: MEMBER_VAR_ACCESS (clflag)
+                    Gen EXPR for: IDEN (src)
+    Gen ASM for: CLASS_DECL (TerminalHandler) Scope: 0
+      Gen ASM for: CLASS_BODY () Scope: 1
+        Gen ASM for: OBJ_DECL (Eorigtermios) Scope: 1
+          Gen STMT for: OBJ_DECL (Eorigtermios) Scope: 1
+        Gen ASM for: FUNC_DEF (disableRawMode) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: FUNC_CALL (tcsetattr@I@I@Termios)
+                  Gen EXPR for: NUM (0)
+                  Gen EXPR for: NUM (2)
+                  Gen EXPR for: IDEN (Eorigtermios)
+Looking up field index for member object 'Eorigtermios' in class 'TerminalHandler'
+        Gen ASM for: FUNC_DEF (enableRawMode) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: FUNC_CALL (tcgetattr@I@Termios)
+                  Gen EXPR for: NUM (0)
+                  Gen EXPR for: IDEN (Eorigtermios)
+Looking up field index for member object 'Eorigtermios' in class 'TerminalHandler'
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: SYS_CALL (write)
+Codegen Warning: Unhandled expression type 'SYS_CALL'
+                  Gen EXPR for: NUM (1)
+                  Gen EXPR for: STRING_LIT ("Raw mode enabled.\n")
+                  Gen EXPR for: NUM (18)
+            Gen ASM for: OBJ_DECL (raw) Scope: 2
+              Gen STMT for: OBJ_DECL (raw) Scope: 2
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: MEMBER_FUNC_ACCESS ()
+                  Gen EXPR for: IDEN (raw)
+                  Gen EXPR for: IDEN (Eorigtermios)
+Looking up field index for member object 'Eorigtermios' in class 'TerminalHandler'
+Generating code for method call: copyFrom@Termios on object of type Termios
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen LVAL ADDR for: MEMBER_VAR_ACCESS (clflag)
+                  Gen EXPR for: IDEN (raw)
+                Gen EXPR for: BIN_OP (*)
+                  Gen EXPR for: BIN_OP (/)
+                    Gen EXPR for: MEMBER_VAR_ACCESS (clflag)
+                      Gen LVAL ADDR for: MEMBER_VAR_ACCESS (clflag)
+                        Gen EXPR for: IDEN (raw)
+                    Gen EXPR for: NUM (4)
+                  Gen EXPR for: NUM (4)
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: FUNC_CALL (tcsetattr@I@I@Termios)
+                  Gen EXPR for: NUM (0)
+                  Gen EXPR for: NUM (2)
+                  Gen EXPR for: IDEN (raw)
+        Gen ASM for: FUNC_DEF (tcgetattr@I@Termios) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: ASSIGN () Scope: 2
+              Gen STMT for: ASSIGN () Scope: 2
+                Gen LVAL ADDR for: MEMBER_VAR_ACCESS (clflag)
+                  Gen EXPR for: IDEN (t)
+                Gen EXPR for: NUM (1)
+        Gen ASM for: FUNC_DEF (tcsetattr@I@I@Termios) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: EXPR_STMT () Scope: 2
+              Gen STMT for: EXPR_STMT () Scope: 2
+                Gen EXPR for: SYS_CALL (write)
+Codegen Warning: Unhandled expression type 'SYS_CALL'
+                  Gen EXPR for: NUM (1)
+                  Gen EXPR for: STRING_LIT ("Termios attributes set.\n")
+                  Gen EXPR for: NUM (25)

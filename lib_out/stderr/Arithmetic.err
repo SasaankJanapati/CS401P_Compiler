@@ -1,0 +1,588 @@
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'abs'
+Debug: Functionend 'abs' with mangled name 'abs@I' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'abs'
+Debug: Functionend 'abs' with mangled name 'abs@F' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'abs'
+Debug: Functionend 'abs' with mangled name 'abs@F' declared.
+mangled name: abs
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: abs
+Debug: Child type: 'BIN_OP'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'sqrt'
+Debug: Functionend 'sqrt' with mangled name 'sqrt@F' declared.
+mangled name: abs
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: abs
+Debug: Child type: 'BIN_OP'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'sqrt'
+Debug: Functionend 'sqrt' with mangled name 'sqrt@F' declared.
+mangled name: abs
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: abs
+Debug: Child type: 'IDEN'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'exp'
+Debug: Functionend 'exp' with mangled name 'exp@F' declared.
+mangled name: abs
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: abs
+Debug: Child type: 'IDEN'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'exp'
+Debug: Functionend 'exp' with mangled name 'exp@F' declared.
+mangled name: power
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: power
+Debug: Child type: 'IDEN'
+Debug: Processing child 1 of 'ARG_LIST'
+mangled name: power@F
+Debug: Child type: 'UN_OP'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'power'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'power@F'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'power@F'
+Debug: Functionend 'power' with mangled name 'power@F@I' declared.
+mangled name: power
+Debug: Processing child 0 of 'ARG_LIST'
+mangled name: power
+Debug: Child type: 'IDEN'
+Debug: Processing child 1 of 'ARG_LIST'
+mangled name: power@F
+Debug: Child type: 'UN_OP'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'power'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'power@F'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'power@F'
+Debug: Functionend 'power' with mangled name 'power@F@I' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'max'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'max@I'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'max@I'
+Debug: Functionend 'max' with mangled name 'max@I@I' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'max'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'max@F'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'max@F'
+Debug: Functionend 'max' with mangled name 'max@F@F' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'max'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'max@F'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'max@F'
+Debug: Functionend 'max' with mangled name 'max@F@F' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'min'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'min@I'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'min@I'
+Debug: Functionend 'min' with mangled name 'min@I@I' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'min'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'min@F'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'min@F'
+Debug: Functionend 'min' with mangled name 'min@F@F' declared.
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'min'
+Debug: Processing child 1 of 'PARAM_LIST'
+Debug: Child type: 'PARAM_LIST' 'min@F'
+Debug: Processing child 0 of 'PARAM_LIST'
+Debug: Child type: 'PARAM' 'min@F'
+Debug: Functionend 'min' with mangled name 'min@F@F' declared.
+Gen ASM for: PROGRAM () Scope: 0
+  Gen ASM for: STATEMENTS () Scope: 0
+    Gen ASM for: CLASS_DECL (Arithmetic) Scope: 0
+      Gen ASM for: CLASS_BODY () Scope: 1
+        Gen ASM for: FUNC_DEF (abs@I) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: RETURN () Scope: 3
+                    Gen STMT for: RETURN () Scope: 3
+                      Gen EXPR for: UN_OP (-)
+                        Gen EXPR for: IDEN (x)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (x)
+        Gen ASM for: FUNC_DEF (abs@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: RETURN () Scope: 3
+                    Gen STMT for: RETURN () Scope: 3
+                      Gen EXPR for: UN_OP (-)
+                        Gen EXPR for: IDEN (x)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (x)
+        Gen ASM for: FUNC_DEF (abs@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: RETURN () Scope: 3
+                    Gen STMT for: RETURN () Scope: 3
+                      Gen EXPR for: UN_OP (-)
+                        Gen EXPR for: IDEN (x)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (x)
+        Gen ASM for: FUNC_DEF (sqrt@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: RETURN () Scope: 2
+                  Gen STMT for: RETURN () Scope: 2
+                    Gen EXPR for: UN_OP (-)
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: BOOL_OP (||)
+                  Gen BOOL EXPR for: REL_OP (==)
+                    Gen EXPR for: IDEN (x)
+                    Gen EXPR for: NUM (0)
+                  Gen BOOL EXPR for: REL_OP (==)
+                    Gen EXPR for: IDEN (x)
+                    Gen EXPR for: NUM (1)
+                Gen ASM for: RETURN () Scope: 2
+                  Gen STMT for: RETURN () Scope: 2
+                    Gen EXPR for: IDEN (x)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (guess) Scope: 2
+                    Gen STMT for: VAR_INIT (guess) Scope: 2
+                      Gen EXPR for: IDEN (x)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (eps) Scope: 2
+                    Gen STMT for: VAR_INIT (eps) Scope: 2
+                      Gen EXPR for: NUM (0.0000000001)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: BOOL_CONST (true)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: DECL_STMT () Scope: 3
+                    Gen STMT for: DECL_STMT () Scope: 3
+                      Gen ASM for: DECL_LIST () Scope: 3
+                        Gen ASM for: VAR_INIT (newGuess) Scope: 3
+                          Gen STMT for: VAR_INIT (newGuess) Scope: 3
+                            Gen EXPR for: BIN_OP (*)
+                              Gen EXPR for: NUM (0.5)
+                              Gen EXPR for: BIN_OP (+)
+                                Gen EXPR for: IDEN (guess)
+                                Gen EXPR for: BIN_OP (/)
+                                  Gen EXPR for: IDEN (x)
+                                  Gen EXPR for: IDEN (guess)
+                  Gen ASM for: IF () Scope: 3
+                    Gen STMT for: IF () Scope: 3
+                      Gen BOOL EXPR for: REL_OP (<)
+                        Gen EXPR for: FUNC_CALL (abs@F)
+                          Gen EXPR for: BIN_OP (-)
+                            Gen EXPR for: IDEN (newGuess)
+                            Gen EXPR for: IDEN (guess)
+                        Gen EXPR for: IDEN (eps)
+                      Gen ASM for: BREAK () Scope: 3
+                        Gen STMT for: BREAK () Scope: 3
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: IDEN (newGuess)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (guess)
+        Gen ASM for: FUNC_DEF (sqrt@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (x)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: RETURN () Scope: 2
+                  Gen STMT for: RETURN () Scope: 2
+                    Gen EXPR for: UN_OP (-)
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: BOOL_OP (||)
+                  Gen BOOL EXPR for: REL_OP (==)
+                    Gen EXPR for: IDEN (x)
+                    Gen EXPR for: NUM (0)
+                  Gen BOOL EXPR for: REL_OP (==)
+                    Gen EXPR for: IDEN (x)
+                    Gen EXPR for: NUM (1)
+                Gen ASM for: RETURN () Scope: 2
+                  Gen STMT for: RETURN () Scope: 2
+                    Gen EXPR for: IDEN (x)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (guess) Scope: 2
+                    Gen STMT for: VAR_INIT (guess) Scope: 2
+                      Gen EXPR for: IDEN (x)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (eps) Scope: 2
+                    Gen STMT for: VAR_INIT (eps) Scope: 2
+                      Gen EXPR for: NUM (0.0000000001)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: BOOL_CONST (true)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: DECL_STMT () Scope: 3
+                    Gen STMT for: DECL_STMT () Scope: 3
+                      Gen ASM for: DECL_LIST () Scope: 3
+                        Gen ASM for: VAR_INIT (newGuess) Scope: 3
+                          Gen STMT for: VAR_INIT (newGuess) Scope: 3
+                            Gen EXPR for: BIN_OP (*)
+                              Gen EXPR for: NUM (0.5)
+                              Gen EXPR for: BIN_OP (+)
+                                Gen EXPR for: IDEN (guess)
+                                Gen EXPR for: BIN_OP (/)
+                                  Gen EXPR for: IDEN (x)
+                                  Gen EXPR for: IDEN (guess)
+                  Gen ASM for: IF () Scope: 3
+                    Gen STMT for: IF () Scope: 3
+                      Gen BOOL EXPR for: REL_OP (<)
+                        Gen EXPR for: FUNC_CALL (abs@F)
+                          Gen EXPR for: BIN_OP (-)
+                            Gen EXPR for: IDEN (newGuess)
+                            Gen EXPR for: IDEN (guess)
+                        Gen EXPR for: IDEN (eps)
+                      Gen ASM for: BREAK () Scope: 3
+                        Gen STMT for: BREAK () Scope: 3
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: IDEN (newGuess)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (guess)
+        Gen ASM for: FUNC_DEF (exp@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (term) Scope: 2
+                    Gen STMT for: VAR_INIT (term) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (sum) Scope: 2
+                    Gen STMT for: VAR_INIT (sum) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (n) Scope: 2
+                    Gen STMT for: VAR_INIT (n) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (eps) Scope: 2
+                    Gen STMT for: VAR_INIT (eps) Scope: 2
+                      Gen EXPR for: NUM (0.0000000000001)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: FUNC_CALL (abs@F)
+                    Gen EXPR for: IDEN (term)
+                  Gen EXPR for: IDEN (eps)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (/)
+                        Gen EXPR for: BIN_OP (*)
+                          Gen EXPR for: IDEN (term)
+                          Gen EXPR for: IDEN (x)
+                        Gen EXPR for: IDEN (n)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (+)
+                        Gen EXPR for: IDEN (sum)
+                        Gen EXPR for: IDEN (term)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (+)
+                        Gen EXPR for: IDEN (n)
+                        Gen EXPR for: NUM (1)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (sum)
+        Gen ASM for: FUNC_DEF (exp@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (term) Scope: 2
+                    Gen STMT for: VAR_INIT (term) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (sum) Scope: 2
+                    Gen STMT for: VAR_INIT (sum) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (n) Scope: 2
+                    Gen STMT for: VAR_INIT (n) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (eps) Scope: 2
+                    Gen STMT for: VAR_INIT (eps) Scope: 2
+                      Gen EXPR for: NUM (0.0000000000001)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: FUNC_CALL (abs@F)
+                    Gen EXPR for: IDEN (term)
+                  Gen EXPR for: IDEN (eps)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (/)
+                        Gen EXPR for: IDEN (x)
+                        Gen EXPR for: IDEN (n)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: IDEN (term)
+                  Gen ASM for: EXPR_STMT () Scope: 3
+                    Gen STMT for: EXPR_STMT () Scope: 3
+                      Gen EXPR for: POST_INC (++)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (sum)
+        Gen ASM for: FUNC_DEF (power@F@I) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (==)
+                  Gen EXPR for: IDEN (exponent)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: RETURN () Scope: 2
+                  Gen STMT for: RETURN () Scope: 2
+                    Gen EXPR for: NUM (1)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (exponent)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: RETURN () Scope: 2
+                  Gen STMT for: RETURN () Scope: 2
+                    Gen EXPR for: BIN_OP (/)
+                      Gen EXPR for: NUM (1)
+                      Gen EXPR for: FUNC_CALL (power@F@I)
+                        Gen EXPR for: IDEN (base)
+                        Gen EXPR for: UN_OP (-)
+                          Gen EXPR for: IDEN (exponent)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (result) Scope: 2
+                    Gen STMT for: VAR_INIT (result) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: IDEN (exponent)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: IF () Scope: 3
+                    Gen STMT for: IF () Scope: 3
+                      Gen BOOL EXPR for: REL_OP (==)
+                        Gen EXPR for: BIN_OP (%)
+                          Gen EXPR for: IDEN (exponent)
+                          Gen EXPR for: NUM (2)
+                        Gen EXPR for: NUM (1)
+                      Gen ASM for: ASSIGN () Scope: 3
+                        Gen STMT for: ASSIGN () Scope: 3
+                          Gen EXPR for: BIN_OP (*)
+                            Gen EXPR for: IDEN (result)
+                            Gen EXPR for: IDEN (base)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (*)
+                        Gen EXPR for: IDEN (base)
+                        Gen EXPR for: IDEN (base)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (/)
+                        Gen EXPR for: IDEN (exponent)
+                        Gen EXPR for: NUM (2)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (result)
+        Gen ASM for: FUNC_DEF (power@F@I) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (==)
+                  Gen EXPR for: IDEN (exp)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: RETURN () Scope: 2
+                  Gen STMT for: RETURN () Scope: 2
+                    Gen EXPR for: NUM (1)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (exp)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: RETURN () Scope: 2
+                  Gen STMT for: RETURN () Scope: 2
+                    Gen EXPR for: BIN_OP (/)
+                      Gen EXPR for: NUM (1.0)
+                      Gen EXPR for: FUNC_CALL (power@F@I)
+                        Gen EXPR for: IDEN (base)
+                        Gen EXPR for: UN_OP (-)
+                          Gen EXPR for: IDEN (exp)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (result) Scope: 2
+                    Gen STMT for: VAR_INIT (result) Scope: 2
+                      Gen EXPR for: NUM (1)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: IDEN (exp)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: IF () Scope: 3
+                    Gen STMT for: IF () Scope: 3
+                      Gen BOOL EXPR for: REL_OP (==)
+                        Gen EXPR for: BIN_OP (%)
+                          Gen EXPR for: IDEN (exp)
+                          Gen EXPR for: NUM (2)
+                        Gen EXPR for: NUM (1)
+                      Gen ASM for: ASSIGN () Scope: 3
+                        Gen STMT for: ASSIGN () Scope: 3
+                          Gen EXPR for: IDEN (base)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: IDEN (base)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: NUM (2)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (result)
+        Gen ASM for: FUNC_DEF (max@I@I) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: IDEN (a)
+                  Gen EXPR for: IDEN (b)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: RETURN () Scope: 3
+                    Gen STMT for: RETURN () Scope: 3
+                      Gen EXPR for: IDEN (a)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (b)
+        Gen ASM for: FUNC_DEF (max@F@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: IDEN (a)
+                  Gen EXPR for: IDEN (b)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: RETURN () Scope: 3
+                    Gen STMT for: RETURN () Scope: 3
+                      Gen EXPR for: IDEN (a)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (b)
+        Gen ASM for: FUNC_DEF (max@F@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: IDEN (a)
+                  Gen EXPR for: IDEN (b)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: RETURN () Scope: 3
+                    Gen STMT for: RETURN () Scope: 3
+                      Gen EXPR for: IDEN (a)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (b)
+        Gen ASM for: FUNC_DEF (min@I@I) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (a)
+                  Gen EXPR for: IDEN (b)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: RETURN () Scope: 3
+                    Gen STMT for: RETURN () Scope: 3
+                      Gen EXPR for: IDEN (a)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (b)
+        Gen ASM for: FUNC_DEF (min@F@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (a)
+                  Gen EXPR for: IDEN (b)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: RETURN () Scope: 3
+                    Gen STMT for: RETURN () Scope: 3
+                      Gen EXPR for: IDEN (a)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (b)
+        Gen ASM for: FUNC_DEF (min@F@F) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: IDEN (a)
+                  Gen EXPR for: IDEN (b)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: RETURN () Scope: 3
+                    Gen STMT for: RETURN () Scope: 3
+                      Gen EXPR for: IDEN (a)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (b)

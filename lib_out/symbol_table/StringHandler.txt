@@ -1,0 +1,136 @@
+
+--- Scope: 0 (Parent Scope: -1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 1 (Parent Scope: 0) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+length               | I               | member_func  | public       | N/A             | -1           | 10
+substr               | void            | member_func  | public       | N/A             | -1           | 24
+compare              | I               | member_func  | public       | N/A             | -1           | 37
+insert               | void            | member_func  | public       | N/A             | -1           | 48
+erase                | void            | member_func  | public       | N/A             | -1           | 59
+islower              | B               | member_func  | public       | N/A             | -1           | 64
+isupper              | B               | member_func  | public       | N/A             | -1           | 69
+tolower              | C               | member_func  | public       | N/A             | -1           | 75
+toupper              | C               | member_func  | public       | N/A             | -1           | 81
+isalpha              | B               | member_func  | public       | N/A             | -1           | 86
+isalnum              | B               | member_func  | public       | N/A             | -1           | 91
+isnum                | B               | member_func  | public       | N/A             | -1           | 96
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+str                  | [C              | parameter    | public       | N/A             | 1            | 4
+len                  | I               | variable     | public       | N/A             | 1            | 5
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+str                  | [C              | parameter    | public       | N/A             | 1            | 13
+start                | I               | parameter    | public       | N/A             | 2            | 13
+len                  | I               | parameter    | public       | N/A             | 3            | 13
+res                  | [C              | parameter    | public       | N/A             | 4            | 13
+n                    | I               | variable     | public       | N/A             | 2            | 14
+i                    | I               | variable     | public       | N/A             | 3            | 19
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 4 (Parent Scope: 3) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+s1                   | [C              | parameter    | public       | N/A             | 1            | 28
+s2                   | [C              | parameter    | public       | N/A             | 2            | 28
+i                    | I               | variable     | public       | N/A             | 4            | 29
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 4 (Parent Scope: 3) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+str                  | [C              | parameter    | public       | N/A             | 1            | 39
+pos                  | I               | parameter    | public       | N/A             | 2            | 39
+c                    | C               | parameter    | public       | N/A             | 3            | 39
+n                    | I               | variable     | public       | N/A             | 5            | 40
+i                    | I               | variable     | public       | N/A             | 6            | 44
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 4 (Parent Scope: 3) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+str                  | [C              | parameter    | public       | N/A             | 1            | 51
+pos                  | I               | parameter    | public       | N/A             | 2            | 51
+len                  | I               | parameter    | public       | N/A             | 3            | 51
+n                    | I               | variable     | public       | N/A             | 7            | 52
+i                    | I               | variable     | public       | N/A             | 8            | 55
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 4 (Parent Scope: 3) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+c                    | C               | parameter    | public       | N/A             | 1            | 62
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+c                    | C               | parameter    | public       | N/A             | 1            | 67
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+c                    | C               | parameter    | public       | N/A             | 1            | 72
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+c                    | C               | parameter    | public       | N/A             | 1            | 78
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+c                    | C               | parameter    | public       | N/A             | 1            | 84
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+c                    | C               | parameter    | public       | N/A             | 1            | 89
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+c                    | C               | parameter    | public       | N/A             | 1            | 94

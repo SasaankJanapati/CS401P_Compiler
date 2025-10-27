@@ -16,8 +16,7 @@ void main() {
     int i;
     for (i = 0; i < size; i++) {
 
-        results = (numbers);
-        results = (results);
+        results[i][0] = numbers[i];
     }
 }
 
