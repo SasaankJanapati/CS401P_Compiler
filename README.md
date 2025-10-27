@@ -2,10 +2,55 @@
 
 This repository contains a small compiler project created for the CS401P course. The project includes a lexer, a parser that builds an AST for expressions and variable declarations, test cases, and some OS-related files used by the course.
 
-### Contributions
-- Sasaank: In charge of the Lexer, Symbol Table, and generating the Three-Address Code (TAC).
-- Sonith: In charge of the Parser, the final Stack Code generation, and setting up the project.
-- Pavan: In charge of writing all the .xyz test programs and verifying the output at every step.
+## Checkpoint-1 (Oct 26)
+
+Planned scope for Checkpoint-1: Implement code generation for OOP constructs, including method calls, and enhance debugging and type handling.
+
+Current lines-of-code for key modules (from local file counts):
+
+- `parser.y` (parser/grammar): 2494 lines
+- `TC/` (testcases, all files in the folder): 465 lines
+
+### Checkpoint-1 — current author contribution
+
+- `parser.y` total: 2494 lines
+	- SasaankJanapati: +80 lines
+	- Sonith: +332 lines
+
+- `lexer.l` total: 102 lines
+	- Sonith: +12 lines
+
+## Module 6 (Sept 29)
+
+Planned scope for Module 6: Implement code generation for OOP constructs and prepare for checkpoint-1 demo.
+
+Current lines-of-code for key modules (from local file counts):
+
+- `parser.y` (parser/grammar): 2219 lines
+- `TC/` (testcases, all files in the folder): 453 lines
+
+### Module 6 — current author contribution
+
+- `parser.y` total: 2219 lines
+	- Sonith: +637 lines
+	- SasaankJanapati: +392 lines
+	- vankudavathPavan: +352 lines
+
+- `lexer.l` total: 92 lines
+	- Sonith: +4 lines
+## Module 5 (Sept 22)
+
+Planned scope for Module 5: Partial integration with the Assembler team
+
+Current lines-of-code for key modules (from local file counts):
+
+- `parser.y` (parser/grammar): 1301 lines
+- `TC/` (testcases, all files in the folder): 278 lines
+
+### Module 5 — current author contribution
+
+- `parser.y` total: 1301 lines
+	- Sonith: +79 lines
 
 ## Module 4 (Sept 19)
 
@@ -17,7 +62,7 @@ Current lines-of-code for key modules (from local file counts):
 - `lexer.l` (lexer): 90 lines
 - `TC/` (testcases, all files in the folder): ~200 lines (sum of current test files)
 
-### Module 4 — current author attribution
+### Module 4 — current author contribution
 
 - `parser.y` total: 1221 lines
 	- Sasaank: 582 lines (+203)
@@ -39,7 +84,7 @@ Current lines-of-code for key modules (from local file counts):
 - `lexer.l` (lexer): 75 lines
 - `TC/` (testcases, all files in the folder): ~195 lines (sum of current test files)
 
-### Module 3 — current author attribution
+### Module 3 — current author contribution
 
 - `parser.y` total: 635 lines
 	- Sasaank: 307 lines (+203)
@@ -61,7 +106,7 @@ Current lines-of-code for key modules (from local file counts):
 - `lexer.l` (lexer): 65 lines
 - `TC/` (testcases, all files in the folder): 128 lines (sum of current test files)
 
-### Module 2 — current author attribution
+### Module 2 — current author contribution
 
 - `parser.y` total: 257 lines
 	- Sasaank: 104 lines
