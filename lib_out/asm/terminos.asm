@@ -44,7 +44,7 @@ PUTFIELD 0
 LOAD_ARG 0 ; Load 'this' for method call
 PUSH 0
 PUSH 2
-LOAD 0 ; Load 'this' to access member object 'Eorigtermios'
+LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
 INVOKEVIRTUAL 3 ; Call TerminalHandler.tcsetattr@I@I@Termios
 .endmethod
@@ -54,15 +54,16 @@ INVOKEVIRTUAL 3 ; Call TerminalHandler.tcsetattr@I@I@Termios
 .limit locals 2
 LOAD_ARG 0 ; Load 'this' for method call
 PUSH 0
-LOAD 0 ; Load 'this' to access member object 'Eorigtermios'
+LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
 INVOKEVIRTUAL 2 ; Call TerminalHandler.tcgetattr@I@Termios
-PUSH 1
 PUSH STR_0  ; Push address of string literal "Raw mode enabled.\n"
 PUSH 18
+PUSH 1
+WRITE ; write
 POP
 LOAD 1  ; Load local var raw
-LOAD 0 ; Load 'this' to access member object 'Eorigtermios'
+LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
 INVOKEVIRTUAL 1 ; Call Termios.copyFrom@Termios
 LOAD 1  ; Load local var raw
@@ -91,9 +92,10 @@ PUTFIELD 0 ; Set field 'clflag'
 .method TerminalHandler.tcsetattr@I@I@Termios
 .limit stack 4
 .limit locals 4
-PUSH 1
 PUSH STR_1  ; Push address of string literal "Termios attributes set.\n"
 PUSH 25
+PUSH 1
+WRITE ; write
 POP
 .endmethod
 

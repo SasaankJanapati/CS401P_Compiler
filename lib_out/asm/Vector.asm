@@ -59,9 +59,10 @@ LOAD 0 ; Load array variable 'buf'
 PUSH 0
 LOAD_ARG 0  ; Load parameter 'c'
 ASTORE ; Store to array element
+PUSH 0 ; Push local index for buffer 'buf'
 PUSH 1
-LOAD 0  ; Load local var buf
 PUSH 1
+WRITE ; write
 POP
 .endmethod
 
@@ -388,7 +389,7 @@ RET
 .method VectorInt.push_back@I
 .limit stack 4
 .limit locals 2
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 1000
 ICMP_LT
@@ -397,7 +398,7 @@ JMP L34
 L33:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 LOAD_ARG 1  ; Load parameter 'val'
 ASTORE ; Store to array element
@@ -413,7 +414,7 @@ L34:
 .method VectorInt.pop_back
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 0
 ICMP_GT
@@ -432,7 +433,7 @@ L36:
 .method VectorInt.size
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 RET
 .endmethod
@@ -447,7 +448,7 @@ JNZ L37
 JMP L39
 L39:
 LOAD_ARG 1  ; Load parameter 'index'
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GE
 JNZ L37
@@ -474,7 +475,7 @@ JNZ L40
 JMP L42
 L42:
 LOAD_ARG 1  ; Load parameter 'index'
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GE
 JNZ L40
@@ -500,7 +501,7 @@ PUTFIELD 1
 .method VectorInt.empty
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 0
 ICMP_EQ
@@ -543,7 +544,7 @@ IADD
 STORE 16 ; Post increment
 L46:
 LOAD 16  ; Load local var i
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_LT
 JNZ L47
@@ -568,7 +569,7 @@ RET
 .method VectorFloat.push_back@F
 .limit stack 4
 .limit locals 2
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 1000
 ICMP_LT
@@ -577,7 +578,7 @@ JMP L51
 L50:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 LOAD_ARG 1  ; Load parameter 'val'
 ASTORE ; Store to array element
@@ -593,7 +594,7 @@ L51:
 .method VectorFloat.pop_back
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 0
 ICMP_GT
@@ -612,7 +613,7 @@ L53:
 .method VectorFloat.size
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 RET
 .endmethod
@@ -627,7 +628,7 @@ JNZ L54
 JMP L56
 L56:
 LOAD_ARG 1  ; Load parameter 'index'
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GE
 JNZ L54
@@ -654,7 +655,7 @@ JNZ L57
 JMP L59
 L59:
 LOAD_ARG 1  ; Load parameter 'index'
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GE
 JNZ L57
@@ -680,7 +681,7 @@ PUTFIELD 1
 .method VectorFloat.empty
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 0
 ICMP_EQ
@@ -723,7 +724,7 @@ IADD
 STORE 18 ; Post increment
 L63:
 LOAD 18  ; Load local var i
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_LT
 JNZ L64
@@ -748,7 +749,7 @@ RET
 .method VectorChar.push_back@C
 .limit stack 4
 .limit locals 2
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 1000
 ICMP_LT
@@ -757,7 +758,7 @@ JMP L68
 L67:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 LOAD_ARG 1  ; Load parameter 'val'
 ASTORE ; Store to array element
@@ -773,7 +774,7 @@ L68:
 .method VectorChar.pop_back
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 0
 ICMP_GT
@@ -792,7 +793,7 @@ L70:
 .method VectorChar.size
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 RET
 .endmethod
@@ -807,7 +808,7 @@ JNZ L71
 JMP L73
 L73:
 LOAD_ARG 1  ; Load parameter 'index'
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GE
 JNZ L71
@@ -833,7 +834,7 @@ JNZ L74
 JMP L76
 L76:
 LOAD_ARG 1  ; Load parameter 'index'
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GE
 JNZ L74
@@ -859,7 +860,7 @@ PUTFIELD 1
 .method VectorChar.empty
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 0
 ICMP_EQ
@@ -896,7 +897,7 @@ IADD
 STORE 20 ; Post increment
 L80:
 LOAD 20  ; Load local var i
-LOAD 0 ; Load 'this' to access member 'vsize'
+LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_LT
 JNZ L81

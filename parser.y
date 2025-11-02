@@ -80,6 +80,7 @@ typedef struct FieldInfo {
     char* type;
     char* access_spec;
     Node* initializer;
+    Node* index_node;
 } FieldInfo;
 
 typedef struct MethodInfo {
@@ -368,6 +369,7 @@ void insert_symbol(char* name, char* type, char* kind, Node* initializer, Node* 
                 field->type = strdup(type);
                 field->access_spec = strdup(current_access_spec);
                 field->initializer = initializer;
+                field->index_node = index_node;
             }
         } else if (strcmp(kind, "member_func") == 0) {
             // This part is handled in the FUNCDECL rule to get the full signature
@@ -378,6 +380,7 @@ void insert_symbol(char* name, char* type, char* kind, Node* initializer, Node* 
                 field->type = strdup(type);
                 field->access_spec = strdup(current_access_spec);
                 field->initializer = initializer;
+                field->index_node = index_node;
             }
         }
     }
@@ -1139,7 +1142,7 @@ CLASSDECL: CLASS IDEN {
                 class_metadata_pool[class_pool_count++] = current_class_info;
                 current_class_info->constructors_count = 0;
                 current_table->base_count++; // Reserve space for 'this' object
-                local_address_counter++; // Adjust local address counter
+                //local_address_counter++; // Adjust local address counter
                 enter_scope();
                 current_class_info->symbol_table = current_table;
            } OPT_INHERIT '{' CLASSBODY '}' ';' {
@@ -1178,7 +1181,7 @@ CLASSDECL: CLASS IDEN {
             $$->scope_table = current_table;
             exit_scope();
             current_table->base_count--; // Release 'this' space
-            local_address_counter--; // Adjust local address counter
+            //local_address_counter--; // Adjust local address counter
             current_class_name = NULL;
             current_class_info = NULL;
            };
@@ -1747,7 +1750,7 @@ void generate_code_for_lval_address(Node* node, SymbolTable* scope, ClassInfo* c
         }
 
         Node* access_idx_list = node->children[1];
-        Node* decl_dim_list = field->initializer->num_children > 1 ? field->initializer->children[1] : NULL;
+        Node* decl_dim_list = field->index_node->num_children > 1 ? field->index_node->children[1] : NULL;
 
         generate_code_for_expr(access_idx_list->children[0], scope, class_context);
         
@@ -1791,11 +1794,11 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
         if (s) {
              if (strcmp(s->kind, "member_var") == 0) {
-                 emit("LOAD 0 ; Load 'this' to access member '%s'", s->name);
+                 emit("LOAD_ARG 0 ; Load 'this' to access member '%s'", s->name);
                  int field_idx = get_field_index(s->class_name, s->name);
                  emit("GETFIELD %d", field_idx);
             } else if (strcmp(s->kind, "member_obj") == 0) {
-                 emit("LOAD 0 ; Load 'this' to access member object '%s'", s->name);
+                 emit("LOAD_ARG 0 ; Load 'this' to access member object '%s'", s->name);
                  fprintf(stderr, "Looking up field index for member object '%s' in class '%s'\n", s->name, s->class_name);
                  int field_idx = get_field_index(s->class_name, s->name);
                  emit("GETFIELD %d", field_idx);
@@ -1964,6 +1967,46 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             emit("STORE %d ; Post %s", s->address, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement"); 
         } else {
             fprintf(stderr, "Codegen Error: Undefined symbol '%s' for pre inc/dec.\n", lval->value);
+        }
+    } else if (strcmp(node->type, "SYS_CALL") == 0) {
+        if (strcmp(node->value, "open") == 0) {
+            // Stack: ..., filename, mode -> ..., file_handle
+            // Grammar args: filename, flags, permissions. We'll use flags as the mode.
+            generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: filename
+            generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: mode/flags
+            generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: permissions
+            emit("OPEN ; open");
+        } else if (strcmp(node->value, "read") == 0 || strcmp(node->value, "write") == 0) {
+            // Stack: ..., localidx, size, file_handle -> ...
+            // Grammar args: fd, buffer, size
+            
+            // Handle the 'buffer' argument (child 1) specially to get its local index
+            Node* buffer_expr = node->children[1];
+            if (strcmp(buffer_expr->type, "IDEN") == 0) {
+                Symbol* s = lookup_symbol_codegen(buffer_expr->value, scope, class_context);
+                if (s && (strcmp(s->kind, "variable") == 0 || strcmp(s->kind, "object") == 0 || strcmp(s->kind, "member_var") == 0 || strcmp(s->kind, "member_obj") == 0 || strcmp(s->kind, "parameter") == 0)) {
+                    emit("PUSH %d ; Push local index for buffer '%s'", s->address, s->name);
+                } else {
+                    fprintf(stderr, "Codegen Error: Syscall buffer argument '%s' must be a local variable.\n", buffer_expr->value);
+                    generate_code_for_expr(buffer_expr, scope, class_context); // Fallback
+                }
+            } else {
+                 //fprintf(stderr, "Codegen Error: Syscall buffer argument must be a simple variable identifier.\n");
+                 generate_code_for_expr(buffer_expr, scope, class_context); // Fallback
+            }
+
+            generate_code_for_expr(node->children[2], scope, class_context); // size
+            generate_code_for_expr(node->children[0], scope, class_context); // fd (file_handle)
+
+            if (strcmp(node->value, "read") == 0) {
+                emit("READ ; read");
+            } else { // write
+                emit("WRITE ; write");
+            }
+        } else if (strcmp(node->value, "close") == 0) {
+            // The grammar for SYS_CLOSE only has one argument: the file descriptor
+            generate_code_for_expr(node->children[0], scope, class_context); // fd
+            emit("CLOSE ; close"); 
         }
     } else {
         fprintf(stderr, "Codegen Warning: Unhandled expression type '%s'\n", node->type);
@@ -2263,46 +2306,6 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
             emit("L%d:", end_label);
         }
         emit("RET");
-    } else if (strcmp(node->type, "SYS_CALL") == 0) {
-        if (strcmp(node->value, "open") == 0) {
-            // Stack: ..., filename, mode -> ..., file_handle
-            // Grammar args: filename, flags, permissions. We'll use flags as the mode.
-            generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: filename
-            generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: mode/flags
-            generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: permissions
-            emit("OPEN ; open");
-        } else if (strcmp(node->value, "read") == 0 || strcmp(node->value, "write") == 0) {
-            // Stack: ..., localidx, size, file_handle -> ...
-            // Grammar args: fd, buffer, size
-            
-            // Handle the 'buffer' argument (child 1) specially to get its local index
-            Node* buffer_expr = node->children[1];
-            if (strcmp(buffer_expr->type, "IDEN") == 0) {
-                Symbol* s = lookup_symbol_codegen(buffer_expr->value, scope, class_context);
-                if (s && (strcmp(s->kind, "variable") == 0 || strcmp(s->kind, "object") == 0)) {
-                    emit("PUSH %d ; Push local index for buffer '%s'", s->address, s->name);
-                } else {
-                    fprintf(stderr, "Codegen Error: Syscall buffer argument '%s' must be a local variable.\n", buffer_expr->value);
-                    generate_code_for_expr(buffer_expr, scope, class_context); // Fallback
-                }
-            } else {
-                 fprintf(stderr, "Codegen Error: Syscall buffer argument must be a simple variable identifier.\n");
-                 generate_code_for_expr(buffer_expr, scope, class_context); // Fallback
-            }
-
-            generate_code_for_expr(node->children[2], scope, class_context); // size
-            generate_code_for_expr(node->children[0], scope, class_context); // fd (file_handle)
-
-            if (strcmp(node->value, "read") == 0) {
-                emit("READ ; read");
-            } else { // write
-                emit("WRITE ; write");
-            }
-        } else if (strcmp(node->value, "close") == 0) {
-            // The grammar for SYS_CLOSE only has one argument: the file descriptor
-            generate_code_for_expr(node->children[0], scope, class_context); // fd
-            emit("CLOSE ; close"); 
-        }
     } else if (strcmp(node->type, "EXPR_STMT") == 0) {
         generate_code_for_expr(node->children[0], scope, class_context);
         // Discard result if not a function call
@@ -2428,7 +2431,15 @@ int main(int argc, char **argv) {
             for (int i = 0; i < class_pool_count; i++) {
                 ClassInfo* cls = class_metadata_pool[i];
                 int super_idx = (cls->parent_count > 0) ? get_class_index(cls->parent_names[0]) : -1;
-                emit("class_begin %s %d", cls->name, super_idx);
+                if ( cls-> parent_count > 0) {
+                   fprintf(asm_file,".class_begin %s ", cls->name);
+                   for (int j = 0; j < cls->parent_count; j++) {
+                       fprintf(asm_file, "%s ", cls->parent_names[j]);
+                   }
+                   fprintf(asm_file, "\n");
+                } else {
+                    emit(".class_begin %s", cls->name);
+                }
                 
                 emit("field_count %d", cls->field_count);
                 for(int j=0; j<cls->field_count; ++j) {

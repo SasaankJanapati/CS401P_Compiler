@@ -69,8 +69,9 @@ LOAD_ARG 0 ; 'this' for assignment to member 'fd'
 LOAD_ARG 1  ; Load parameter 'filename'
 LOAD 1  ; Load local var flags
 PUSH 0644
+OPEN ; open
 PUTFIELD 0
-LOAD 0 ; Load 'this' to access member 'fd'
+LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
 PUSH 0
 ICMP_LT
@@ -94,15 +95,16 @@ RET
 .method FileHandler.fclose
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'isOpen'
+LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
 PUSH 1
 ICMP_EQ
 JNZ L10
 JMP L11
 L10:
-LOAD 0 ; Load 'this' to access member 'fd'
+LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
+CLOSE ; close
 POP
 LOAD_ARG 0 ; 'this' for assignment to member 'fd'
 PUSH 1
@@ -117,7 +119,7 @@ L11:
 .method FileHandler.fread@[C@I
 .limit stack 4
 .limit locals 3
-LOAD 0 ; Load 'this' to access member 'isOpen'
+LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
 PUSH 0
 ICMP_EQ
@@ -128,10 +130,11 @@ PUSH 1
 INEG
 RET
 L13:
-LOAD 0 ; Load 'this' to access member 'fd'
-GETFIELD 0
-LOAD_ARG 1  ; Load parameter 'buffer'
+PUSH 1 ; Push local index for buffer 'buffer'
 LOAD_ARG 2  ; Load parameter 'size'
+LOAD_ARG 0 ; Load 'this' to access member 'fd'
+GETFIELD 0
+READ ; read
 STORE 2 ; Init bytesRead
 LOAD 2  ; Load local var bytesRead
 RET
@@ -140,7 +143,7 @@ RET
 .method FileHandler.fwrite@[C@I
 .limit stack 4
 .limit locals 4
-LOAD 0 ; Load 'this' to access member 'isOpen'
+LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
 PUSH 0
 ICMP_EQ
@@ -151,10 +154,11 @@ PUSH 1
 INEG
 RET
 L15:
-LOAD 0 ; Load 'this' to access member 'fd'
-GETFIELD 0
-LOAD_ARG 1  ; Load parameter 'buffer'
+PUSH 1 ; Push local index for buffer 'buffer'
 LOAD_ARG 2  ; Load parameter 'size'
+LOAD_ARG 0 ; Load 'this' to access member 'fd'
+GETFIELD 0
+WRITE ; write
 STORE 3 ; Init bytesWritten
 LOAD 3  ; Load local var bytesWritten
 RET
@@ -163,7 +167,7 @@ RET
 .method FileHandler.is_open
 .limit stack 4
 .limit locals 0
-LOAD 0 ; Load 'this' to access member 'isOpen'
+LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
 RET
 .endmethod

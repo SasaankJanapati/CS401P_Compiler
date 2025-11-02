@@ -143,7 +143,7 @@ ICMP_GT
 JNZ L12
 JMP L13
 L12:
-LOAD 0 ; Load 'this' to access member object 'util'
+LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
 LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 6  ; Load local var j
@@ -185,7 +185,7 @@ ICMP_LT
 JNZ L15
 JMP L16
 L15:
-LOAD 0 ; Load 'this' to access member object 'util'
+LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
 LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 7  ; Load local var start

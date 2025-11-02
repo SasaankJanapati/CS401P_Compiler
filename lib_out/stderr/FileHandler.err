@@ -96,7 +96,6 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: ASSIGN () Scope: 2
               Gen STMT for: ASSIGN () Scope: 2
                 Gen EXPR for: SYS_CALL (open)
-Codegen Warning: Unhandled expression type 'SYS_CALL'
                   Gen EXPR for: IDEN (filename)
                   Gen EXPR for: IDEN (flags)
                   Gen EXPR for: NUM (0644)
@@ -130,7 +129,6 @@ Codegen Warning: Unhandled expression type 'SYS_CALL'
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: SYS_CALL (close)
-Codegen Warning: Unhandled expression type 'SYS_CALL'
                         Gen EXPR for: IDEN (fd)
                   Gen ASM for: ASSIGN () Scope: 3
                     Gen STMT for: ASSIGN () Scope: 3
@@ -157,10 +155,8 @@ Codegen Warning: Unhandled expression type 'SYS_CALL'
                   Gen ASM for: VAR_INIT (bytesRead) Scope: 2
                     Gen STMT for: VAR_INIT (bytesRead) Scope: 2
                       Gen EXPR for: SYS_CALL (read)
-Codegen Warning: Unhandled expression type 'SYS_CALL'
-                        Gen EXPR for: IDEN (fd)
-                        Gen EXPR for: IDEN (buffer)
                         Gen EXPR for: IDEN (size)
+                        Gen EXPR for: IDEN (fd)
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
                 Gen EXPR for: IDEN (bytesRead)
@@ -182,10 +178,8 @@ Codegen Warning: Unhandled expression type 'SYS_CALL'
                   Gen ASM for: VAR_INIT (bytesWritten) Scope: 2
                     Gen STMT for: VAR_INIT (bytesWritten) Scope: 2
                       Gen EXPR for: SYS_CALL (write)
-Codegen Warning: Unhandled expression type 'SYS_CALL'
-                        Gen EXPR for: IDEN (fd)
-                        Gen EXPR for: IDEN (buffer)
                         Gen EXPR for: IDEN (size)
+                        Gen EXPR for: IDEN (fd)
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
                 Gen EXPR for: IDEN (bytesWritten)

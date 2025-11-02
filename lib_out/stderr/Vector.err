@@ -248,9 +248,7 @@ Gen ASM for: PROGRAM () Scope: 0
         Gen ASM for: EXPR_STMT () Scope: 1
           Gen STMT for: EXPR_STMT () Scope: 1
             Gen EXPR for: SYS_CALL (write)
-Codegen Warning: Unhandled expression type 'SYS_CALL'
               Gen EXPR for: NUM (1)
-              Gen EXPR for: IDEN (buf)
               Gen EXPR for: NUM (1)
     Gen ASM for: FUNC_DEF (writeString@[C) Scope: 0
       Gen ASM for: STATEMENTS () Scope: 1

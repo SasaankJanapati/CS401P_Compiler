@@ -43,7 +43,6 @@ void main() {
     TestClass obj = new TestClass();
     AnotherClass anotherObj = new AnotherClass();
     obj.publicMethod();
-    string s = "Hello, World!";
     anotherObj.anotherMethod();
     anotherObj.anotherVar = obj.publicVar + 10;
     int i =0;

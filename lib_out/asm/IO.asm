@@ -24,9 +24,10 @@ class_end
 PUSH 1
 NEWARRAY C
 STORE 1 ; Store new flattened array to 'c'
-PUSH 0
-LOAD 1  ; Load local var c
+PUSH 1 ; Push local index for buffer 'c'
 PUSH 1
+PUSH 0
+READ ; read
 POP
 LOAD 1 ; Load array variable 'c'
 PUSH 0
@@ -46,9 +47,10 @@ LOAD 3 ; Load array variable 'arr'
 PUSH 0
 LOAD_ARG 1  ; Load parameter 'c'
 ASTORE ; Store to array element
+PUSH 3 ; Push local index for buffer 'arr'
 PUSH 1
-LOAD 3  ; Load local var arr
 PUSH 1
+WRITE ; write
 POP
 .endmethod
 

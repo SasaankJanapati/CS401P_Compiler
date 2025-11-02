@@ -102,10 +102,9 @@ Looking up field index for member object 'Eorigtermios' in class 'TerminalHandle
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: SYS_CALL (write)
-Codegen Warning: Unhandled expression type 'SYS_CALL'
-                  Gen EXPR for: NUM (1)
                   Gen EXPR for: STRING_LIT ("Raw mode enabled.\n")
                   Gen EXPR for: NUM (18)
+                  Gen EXPR for: NUM (1)
             Gen ASM for: OBJ_DECL (raw) Scope: 2
               Gen STMT for: OBJ_DECL (raw) Scope: 2
             Gen ASM for: EXPR_STMT () Scope: 2
@@ -144,7 +143,6 @@ Generating code for method call: copyFrom@Termios on object of type Termios
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: SYS_CALL (write)
-Codegen Warning: Unhandled expression type 'SYS_CALL'
-                  Gen EXPR for: NUM (1)
                   Gen EXPR for: STRING_LIT ("Termios attributes set.\n")
                   Gen EXPR for: NUM (25)
+                  Gen EXPR for: NUM (1)
