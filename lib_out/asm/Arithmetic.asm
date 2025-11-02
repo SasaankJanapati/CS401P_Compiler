@@ -1,8 +1,8 @@
 .class_metadata
 class_count 1
-class_begin Arithmetic -1
+class_begin Arithmetic None
 field_count 0
-method_count 15
+method_count 16
 method abs Arithmetic.abs@I
 method abs Arithmetic.abs@F
 method abs Arithmetic.abs@F
@@ -18,6 +18,7 @@ method max Arithmetic.max@F@F
 method min Arithmetic.min@I@I
 method min Arithmetic.min@F@F
 method min Arithmetic.min@F@F
+method Arithmetic Arithmetic.Arithmetic
 class_end
 .end_metadata
 
@@ -76,7 +77,7 @@ RET
 
 .method Arithmetic.sqrt@F
 .limit stack 4
-.limit locals 4
+.limit locals 3
 LOAD_ARG 1  ; Load parameter 'x'
 PUSH 0
 ICMP_LT
@@ -103,43 +104,43 @@ LOAD_ARG 1  ; Load parameter 'x'
 RET
 L9:
 LOAD_ARG 1  ; Load parameter 'x'
-STORE 1 ; Init guess
+STORE 0 ; Init guess
 FPUSH 0.0000000001
-STORE 2 ; Init eps
+STORE 1 ; Init eps
 L11:
 JMP L12
 L12:
 FPUSH 0.5
-LOAD 1  ; Load local var guess
+LOAD 0  ; Load local var guess
 LOAD_ARG 1  ; Load parameter 'x'
-LOAD 1  ; Load local var guess
+LOAD 0  ; Load local var guess
 FDIV
 FADD
 FMUL
-STORE 3 ; Init newGuess
+STORE 2 ; Init newGuess
 LOAD_ARG 0 ; Load 'this' for method call
-LOAD 3  ; Load local var newGuess
-LOAD 1  ; Load local var guess
+LOAD 2  ; Load local var newGuess
+LOAD 0  ; Load local var guess
 FSUB
 INVOKEVIRTUAL 1 ; Call Arithmetic.abs@F
-LOAD 2  ; Load local var eps
+LOAD 1  ; Load local var eps
 ICMP_LT
 JNZ L14
 JMP L15
 L14:
 JMP L13 ; BREAK
 L15:
-LOAD 3  ; Load local var newGuess
-STORE 1 ; Store to local 'guess'
+LOAD 2  ; Load local var newGuess
+STORE 0 ; Store to local 'guess'
 JMP L11
 L13:
-LOAD 1  ; Load local var guess
+LOAD 0  ; Load local var guess
 RET
 .endmethod
 
 .method Arithmetic.sqrt@F
 .limit stack 4
-.limit locals 7
+.limit locals 6
 LOAD_ARG 1  ; Load parameter 'x'
 PUSH 0
 ICMP_LT
@@ -166,121 +167,121 @@ LOAD_ARG 1  ; Load parameter 'x'
 RET
 L19:
 LOAD_ARG 1  ; Load parameter 'x'
-STORE 4 ; Init guess
+STORE 3 ; Init guess
 FPUSH 0.0000000001
-STORE 5 ; Init eps
+STORE 4 ; Init eps
 L21:
 JMP L22
 L22:
 FPUSH 0.5
-LOAD 4  ; Load local var guess
+LOAD 3  ; Load local var guess
 LOAD_ARG 1  ; Load parameter 'x'
-LOAD 4  ; Load local var guess
+LOAD 3  ; Load local var guess
 FDIV
 FADD
 FMUL
-STORE 6 ; Init newGuess
+STORE 5 ; Init newGuess
 LOAD_ARG 0 ; Load 'this' for method call
-LOAD 6  ; Load local var newGuess
-LOAD 4  ; Load local var guess
+LOAD 5  ; Load local var newGuess
+LOAD 3  ; Load local var guess
 FSUB
 INVOKEVIRTUAL 1 ; Call Arithmetic.abs@F
-LOAD 5  ; Load local var eps
+LOAD 4  ; Load local var eps
 ICMP_LT
 JNZ L24
 JMP L25
 L24:
 JMP L23 ; BREAK
 L25:
-LOAD 6  ; Load local var newGuess
-STORE 4 ; Store to local 'guess'
+LOAD 5  ; Load local var newGuess
+STORE 3 ; Store to local 'guess'
 JMP L21
 L23:
-LOAD 4  ; Load local var guess
+LOAD 3  ; Load local var guess
 RET
 .endmethod
 
 .method Arithmetic.exp@F
 .limit stack 4
-.limit locals 11
+.limit locals 10
 PUSH 1
-STORE 7 ; Init term
+STORE 6 ; Init term
 PUSH 1
-STORE 8 ; Init sum
+STORE 7 ; Init sum
 PUSH 1
-STORE 9 ; Init n
+STORE 8 ; Init n
 FPUSH 0.0000000000001
-STORE 10 ; Init eps
+STORE 9 ; Init eps
 L26:
 LOAD_ARG 0 ; Load 'this' for method call
-LOAD 7  ; Load local var term
+LOAD 6  ; Load local var term
 INVOKEVIRTUAL 1 ; Call Arithmetic.abs@F
-LOAD 10  ; Load local var eps
+LOAD 9  ; Load local var eps
 ICMP_GT
 JNZ L27
 JMP L28
 L27:
-LOAD 7  ; Load local var term
+LOAD 6  ; Load local var term
 LOAD_ARG 1  ; Load parameter 'x'
 FMUL
-LOAD 9  ; Load local var n
+LOAD 8  ; Load local var n
 FDIV
-STORE 7 ; Store to local 'term'
-LOAD 8  ; Load local var sum
-LOAD 7  ; Load local var term
+STORE 6 ; Store to local 'term'
+LOAD 7  ; Load local var sum
+LOAD 6  ; Load local var term
 FADD
-STORE 8 ; Store to local 'sum'
-LOAD 9  ; Load local var n
+STORE 7 ; Store to local 'sum'
+LOAD 8  ; Load local var n
 PUSH 1
 IADD
-STORE 9 ; Store to local 'n'
+STORE 8 ; Store to local 'n'
 JMP L26
 L28:
-LOAD 8  ; Load local var sum
+LOAD 7  ; Load local var sum
 RET
 .endmethod
 
 .method Arithmetic.exp@F
 .limit stack 4
-.limit locals 15
+.limit locals 14
 PUSH 1
-STORE 11 ; Init term
+STORE 10 ; Init term
 PUSH 1
-STORE 12 ; Init sum
+STORE 11 ; Init sum
 PUSH 1
-STORE 13 ; Init n
+STORE 12 ; Init n
 FPUSH 0.0000000000001
-STORE 14 ; Init eps
+STORE 13 ; Init eps
 L29:
 LOAD_ARG 0 ; Load 'this' for method call
-LOAD 11  ; Load local var term
+LOAD 10  ; Load local var term
 INVOKEVIRTUAL 1 ; Call Arithmetic.abs@F
-LOAD 14  ; Load local var eps
+LOAD 13  ; Load local var eps
 ICMP_GT
 JNZ L30
 JMP L31
 L30:
 LOAD_ARG 1  ; Load parameter 'x'
-LOAD 13  ; Load local var n
+LOAD 12  ; Load local var n
 FDIV
-STORE 11 ; Store to local 'term'
-LOAD 11  ; Load local var term
-STORE 12 ; Store to local 'sum'
-LOAD 13 ; Load current value of n for post increment
+STORE 10 ; Store to local 'term'
+LOAD 10  ; Load local var term
+STORE 11 ; Store to local 'sum'
+LOAD 12 ; Load current value of n for post increment
 DUP
 PUSH 1
 IADD
-STORE 13 ; Post increment
+STORE 12 ; Post increment
 POP
 JMP L29
 L31:
-LOAD 12  ; Load local var sum
+LOAD 11  ; Load local var sum
 RET
 .endmethod
 
 .method Arithmetic.power@F@I
 .limit stack 4
-.limit locals 16
+.limit locals 15
 LOAD_ARG 2  ; Load parameter 'exponent'
 PUSH 0
 ICMP_EQ
@@ -305,7 +306,7 @@ INVOKEVIRTUAL 7 ; Call Arithmetic.power@F@I
 RET
 L35:
 PUSH 1
-STORE 15 ; Init result
+STORE 14 ; Init result
 L36:
 LOAD_ARG 2  ; Load parameter 'exponent'
 PUSH 0
@@ -321,10 +322,10 @@ ICMP_EQ
 JNZ L39
 JMP L40
 L39:
-LOAD 15  ; Load local var result
+LOAD 14  ; Load local var result
 LOAD_ARG 1  ; Load parameter 'base'
 FMUL
-STORE 15 ; Store to local 'result'
+STORE 14 ; Store to local 'result'
 L40:
 LOAD_ARG 1  ; Load parameter 'base'
 LOAD_ARG 1  ; Load parameter 'base'
@@ -336,13 +337,13 @@ IDIV
 STORE 2 ; Store to local 'exponent'
 JMP L36
 L38:
-LOAD 15  ; Load local var result
+LOAD 14  ; Load local var result
 RET
 .endmethod
 
 .method Arithmetic.power@F@I
 .limit stack 4
-.limit locals 17
+.limit locals 16
 LOAD_ARG 2  ; Load parameter 'exp'
 PUSH 0
 ICMP_EQ
@@ -368,7 +369,7 @@ FDIV
 RET
 L44:
 PUSH 1
-STORE 16 ; Init result
+STORE 15 ; Init result
 L45:
 LOAD_ARG 2  ; Load parameter 'exp'
 PUSH 0
@@ -385,7 +386,7 @@ JNZ L48
 JMP L49
 L48:
 LOAD_ARG 1  ; Load parameter 'base'
-STORE 16 ; Store to local 'result'
+STORE 15 ; Store to local 'result'
 L49:
 LOAD_ARG 1  ; Load parameter 'base'
 STORE 1 ; Store to local 'base'
@@ -393,7 +394,7 @@ PUSH 2
 STORE 2 ; Store to local 'exp'
 JMP L45
 L47:
-LOAD 16  ; Load local var result
+LOAD 15  ; Load local var result
 RET
 .endmethod
 
@@ -490,5 +491,11 @@ LOAD_ARG 1  ; Load parameter 'a'
 RET
 L61:
 LOAD_ARG 2  ; Load parameter 'b'
+RET
+.endmethod
+
+.method Arithmetic.Arithmetic
+.limit stack 10
+.limit locals 1
 RET
 .endmethod

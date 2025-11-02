@@ -1,8 +1,8 @@
 .class_metadata
 class_count 1
-class_begin StringHandler -1
+class_begin StringHandler None
 field_count 0
-method_count 12
+method_count 13
 method length StringHandler.length@[C
 method substr StringHandler.substr@[C@I@I@[C
 method compare StringHandler.compare@[C@[C
@@ -15,6 +15,7 @@ method toupper StringHandler.toupper@C
 method isalpha StringHandler.isalpha@C
 method isalnum StringHandler.isalnum@C
 method isnum StringHandler.isnum@C
+method StringHandler StringHandler.StringHandler
 class_end
 .end_metadata
 
@@ -24,25 +25,25 @@ class_end
 .limit stack 4
 .limit locals 2
 PUSH 0
-STORE 1 ; Init len
+STORE 0 ; Init len
 L0:
 LOAD_ARG 1 ; Load array parameter 'str'
-LOAD 1  ; Load local var len
+LOAD 0  ; Load local var len
 ALOAD
 PUSH 92 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L1
 JMP L2
 L1:
-LOAD 1 ; Load current value of len for post increment
+LOAD 0 ; Load current value of len for post increment
 DUP
 PUSH 1
 IADD
-STORE 1 ; Post increment
+STORE 0 ; Post increment
 POP
 JMP L0
 L2:
-LOAD 1  ; Load local var len
+LOAD 0  ; Load local var len
 RET
 .endmethod
 
@@ -52,7 +53,7 @@ RET
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD_ARG 1  ; Load parameter 'str'
 INVOKEVIRTUAL 0 ; Call StringHandler.length@[C
-STORE 2 ; Init n
+STORE 1 ; Init n
 LOAD_ARG 2  ; Load parameter 'start'
 PUSH 0
 ICMP_LT
@@ -60,7 +61,7 @@ JNZ L3
 JMP L5
 L5:
 LOAD_ARG 2  ; Load parameter 'start'
-LOAD 2  ; Load local var n
+LOAD 1  ; Load local var n
 ICMP_GE
 JNZ L3
 JMP L4
@@ -72,52 +73,52 @@ ASTORE ; Store to array element
 RET
 L4:
 PUSH 0
-STORE 3 ; Store to local 'i'
+STORE 2 ; Store to local 'i'
 JMP L6
 L7:
 LOAD_ARG 4 ; Load array parameter 'res'
-LOAD 3  ; Load local var i
+LOAD 2  ; Load local var i
 LOAD_ARG 1 ; Load array parameter 'str'
 LOAD_ARG 2  ; Load parameter 'start'
-LOAD 3  ; Load local var i
+LOAD 2  ; Load local var i
 IADD
 ALOAD
 ASTORE ; Store to array element
 L8:
-LOAD 3 ; Load current value of i for post increment
+LOAD 2 ; Load current value of i for post increment
 DUP
 PUSH 1
 IADD
-STORE 3 ; Post increment
+STORE 2 ; Post increment
 L6:
-LOAD 3  ; Load local var i
+LOAD 2  ; Load local var i
 LOAD_ARG 3  ; Load parameter 'len'
 ICMP_LT
 JNZ L10
 JMP L9
 L10:
 LOAD_ARG 2  ; Load parameter 'start'
-LOAD 3  ; Load local var i
+LOAD 2  ; Load local var i
 IADD
-LOAD 2  ; Load local var n
+LOAD 1  ; Load local var n
 ICMP_LT
 JNZ L7
 JMP L9
 L9:
 LOAD_ARG 4 ; Load array parameter 'res'
-LOAD 3  ; Load local var i
+LOAD 2  ; Load local var i
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 .endmethod
 
 .method StringHandler.compare@[C@[C
 .limit stack 4
-.limit locals 5
+.limit locals 4
 PUSH 0
-STORE 4 ; Init i
+STORE 3 ; Init i
 L11:
 LOAD_ARG 1 ; Load array parameter 's1'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 ALOAD
 PUSH 92 ; Push ASCII for char '\0'
 ICMP_NEQ
@@ -125,7 +126,7 @@ JNZ L14
 JMP L13
 L14:
 LOAD_ARG 2 ; Load array parameter 's2'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 ALOAD
 PUSH 92 ; Push ASCII for char '\0'
 ICMP_NEQ
@@ -133,37 +134,37 @@ JNZ L12
 JMP L13
 L12:
 LOAD_ARG 1 ; Load array parameter 's1'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 ALOAD
 LOAD_ARG 2 ; Load array parameter 's2'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 ALOAD
 ICMP_NEQ
 JNZ L15
 JMP L16
 L15:
 LOAD_ARG 1 ; Load array parameter 's1'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 ALOAD
 LOAD_ARG 2 ; Load array parameter 's2'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 ALOAD
 ISUB
 RET
 L16:
-LOAD 4 ; Load current value of i for post increment
+LOAD 3 ; Load current value of i for post increment
 DUP
 PUSH 1
 IADD
-STORE 4 ; Post increment
+STORE 3 ; Post increment
 POP
 JMP L11
 L13:
 LOAD_ARG 1 ; Load array parameter 's1'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 ALOAD
 LOAD_ARG 2 ; Load array parameter 's2'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 ALOAD
 ISUB
 RET
@@ -171,11 +172,11 @@ RET
 
 .method StringHandler.insert@[C@I@C
 .limit stack 4
-.limit locals 7
+.limit locals 6
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD_ARG 1  ; Load parameter 'str'
 INVOKEVIRTUAL 0 ; Call StringHandler.length@[C
-STORE 5 ; Init n
+STORE 4 ; Init n
 LOAD_ARG 2  ; Load parameter 'pos'
 PUSH 0
 ICMP_LT
@@ -186,34 +187,34 @@ PUSH 0
 STORE 2 ; Store to local 'pos'
 L18:
 LOAD_ARG 2  ; Load parameter 'pos'
-LOAD 5  ; Load local var n
+LOAD 4  ; Load local var n
 ICMP_GT
 JNZ L19
 JMP L20
 L19:
-LOAD 5  ; Load local var n
+LOAD 4  ; Load local var n
 STORE 2 ; Store to local 'pos'
 L20:
-LOAD 5  ; Load local var n
-STORE 6 ; Init i
+LOAD 4  ; Load local var n
+STORE 5 ; Init i
 JMP L21
 L22:
 LOAD_ARG 1 ; Load array parameter 'str'
-LOAD 6  ; Load local var i
+LOAD 5  ; Load local var i
 PUSH 1
 IADD
 LOAD_ARG 1 ; Load array parameter 'str'
-LOAD 6  ; Load local var i
+LOAD 5  ; Load local var i
 ALOAD
 ASTORE ; Store to array element
 L23:
-LOAD 6 ; Load current value of i for post decrement
+LOAD 5 ; Load current value of i for post decrement
 DUP
 PUSH 1
 ISUB
-STORE 6 ; Post decrement
+STORE 5 ; Post decrement
 L21:
-LOAD 6  ; Load local var i
+LOAD 5  ; Load local var i
 LOAD_ARG 2  ; Load parameter 'pos'
 ICMP_GE
 JNZ L22
@@ -227,11 +228,11 @@ ASTORE ; Store to array element
 
 .method StringHandler.erase@[C@I@I
 .limit stack 4
-.limit locals 9
+.limit locals 8
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD_ARG 1  ; Load parameter 'str'
 INVOKEVIRTUAL 0 ; Call StringHandler.length@[C
-STORE 7 ; Init n
+STORE 6 ; Init n
 LOAD_ARG 2  ; Load parameter 'pos'
 PUSH 0
 ICMP_LT
@@ -239,7 +240,7 @@ JNZ L25
 JMP L27
 L27:
 LOAD_ARG 2  ; Load parameter 'pos'
-LOAD 7  ; Load local var n
+LOAD 6  ; Load local var n
 ICMP_GE
 JNZ L25
 JMP L26
@@ -247,34 +248,34 @@ L25:
 RET
 L26:
 LOAD_ARG 2  ; Load parameter 'pos'
-STORE 8 ; Init i
+STORE 7 ; Init i
 JMP L28
 L29:
 LOAD_ARG 1 ; Load array parameter 'str'
-LOAD 8  ; Load local var i
+LOAD 7  ; Load local var i
 LOAD_ARG 1 ; Load array parameter 'str'
-LOAD 8  ; Load local var i
+LOAD 7  ; Load local var i
 LOAD_ARG 3  ; Load parameter 'len'
 IADD
 ALOAD
 ASTORE ; Store to array element
 L30:
-LOAD 8 ; Load current value of i for post increment
+LOAD 7 ; Load current value of i for post increment
 DUP
 PUSH 1
 IADD
-STORE 8 ; Post increment
+STORE 7 ; Post increment
 L28:
-LOAD 8  ; Load local var i
+LOAD 7  ; Load local var i
 LOAD_ARG 3  ; Load parameter 'len'
 IADD
-LOAD 7  ; Load local var n
+LOAD 6  ; Load local var n
 ICMP_LT
 JNZ L29
 JMP L31
 L31:
 LOAD_ARG 1 ; Load array parameter 'str'
-LOAD 7  ; Load local var n
+LOAD 6  ; Load local var n
 LOAD_ARG 3  ; Load parameter 'len'
 ISUB
 PUSH 92 ; Push ASCII for char '\0'
@@ -445,5 +446,11 @@ JMP L54
 L53: ; Return false
 PUSH 0
 L54:
+RET
+.endmethod
+
+.method StringHandler.StringHandler
+.limit stack 10
+.limit locals 1
 RET
 .endmethod

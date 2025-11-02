@@ -1,25 +1,38 @@
 .class_metadata
 class_count 2
-class_begin Utility -1
+class_begin Utility None
 field_count 0
-method_count 3
+method_count 4
 method swap Utility.swap@I@I
 method swap Utility.swap@F@F
 method swap2 Utility.swap2@C@C
+method Utility Utility.Utility
 class_end
-class_begin Algorithms -1
+class_begin Algorithms None
 field_count 1
-field util Utility 0
-method_count 3
+field util Utility 3
+method_count 4
 method insert Algorithms.insert@[I@I@I@I
 method sort Algorithms.sort@[I@I
 method reverse Algorithms.reverse@[I@I
+method Algorithms Algorithms.Algorithms
 class_end
 .end_metadata
 
 .code
 
 .method Utility.swap@I@I
+.limit stack 4
+.limit locals 3
+LOAD_ARG 1  ; Load parameter 'a'
+STORE 0 ; Init temp
+LOAD_ARG 2  ; Load parameter 'b'
+STORE 1 ; Store to local 'a'
+LOAD 0  ; Load local var temp
+STORE 2 ; Store to local 'b'
+.endmethod
+
+.method Utility.swap@F@F
 .limit stack 4
 .limit locals 3
 LOAD_ARG 1  ; Load parameter 'a'
@@ -30,7 +43,7 @@ LOAD 1  ; Load local var temp
 STORE 2 ; Store to local 'b'
 .endmethod
 
-.method Utility.swap@F@F
+.method Utility.swap2@C@C
 .limit stack 4
 .limit locals 3
 LOAD_ARG 1  ; Load parameter 'a'
@@ -41,15 +54,10 @@ LOAD 2  ; Load local var temp
 STORE 2 ; Store to local 'b'
 .endmethod
 
-.method Utility.swap2@C@C
-.limit stack 4
-.limit locals 4
-LOAD_ARG 1  ; Load parameter 'a'
-STORE 3 ; Init temp
-LOAD_ARG 2  ; Load parameter 'b'
-STORE 1 ; Store to local 'a'
-LOAD 3  ; Load local var temp
-STORE 2 ; Store to local 'b'
+.method Utility.Utility
+.limit stack 10
+.limit locals 1
+RET
 .endmethod
 
 .method Algorithms.insert@[I@I@I@I
@@ -70,26 +78,26 @@ L0:
 RET
 L1:
 LOAD_ARG 2  ; Load parameter 'n'
-STORE 4 ; Init i
+STORE 3 ; Init i
 L3:
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 LOAD_ARG 3  ; Load parameter 'pos'
 ICMP_GT
 JNZ L4
 JMP L5
 L4:
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 PUSH 1
 ISUB
 ALOAD
 ASTORE ; Store to array element
-LOAD 4  ; Load local var i
+LOAD 3  ; Load local var i
 PUSH 1
 ISUB
-STORE 4 ; Store to local 'i'
+STORE 3 ; Store to local 'i'
 JMP L3
 L5:
 LOAD_ARG 1 ; Load array parameter 'arr'
@@ -106,11 +114,11 @@ POP
 
 .method Algorithms.sort@[I@I
 .limit stack 4
-.limit locals 7
+.limit locals 6
 PUSH 0
-STORE 5 ; Init i
+STORE 4 ; Init i
 L6:
-LOAD 5  ; Load local var i
+LOAD 4  ; Load local var i
 LOAD_ARG 2  ; Load parameter 'n'
 PUSH 1
 ISUB
@@ -119,11 +127,11 @@ JNZ L7
 JMP L8
 L7:
 PUSH 0
-STORE 6 ; Init j
+STORE 5 ; Init j
 L9:
-LOAD 6  ; Load local var j
+LOAD 5  ; Load local var j
 LOAD_ARG 2  ; Load parameter 'n'
-LOAD 5  ; Load local var i
+LOAD 4  ; Load local var i
 ISUB
 PUSH 1
 ISUB
@@ -132,10 +140,10 @@ JNZ L10
 JMP L11
 L10:
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 6  ; Load local var j
+LOAD 5  ; Load local var j
 ALOAD
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 6  ; Load local var j
+LOAD 5  ; Load local var j
 PUSH 1
 IADD
 ALOAD
@@ -146,41 +154,41 @@ L12:
 LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 6  ; Load local var j
+LOAD 5  ; Load local var j
 ALOAD
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 6  ; Load local var j
+LOAD 5  ; Load local var j
 PUSH 1
 IADD
 ALOAD
 INVOKEVIRTUAL 0 ; Call Utility.swap@I@I
 L13:
-LOAD 6  ; Load local var j
+LOAD 5  ; Load local var j
 PUSH 1
 IADD
-STORE 6 ; Store to local 'j'
+STORE 5 ; Store to local 'j'
 JMP L9
 L11:
-LOAD 5  ; Load local var i
+LOAD 4  ; Load local var i
 PUSH 1
 IADD
-STORE 5 ; Store to local 'i'
+STORE 4 ; Store to local 'i'
 JMP L6
 L8:
 .endmethod
 
 .method Algorithms.reverse@[I@I
 .limit stack 4
-.limit locals 9
+.limit locals 8
 PUSH 0
-STORE 7 ; Init start
+STORE 6 ; Init start
 LOAD_ARG 2  ; Load parameter 'n'
 PUSH 1
 ISUB
-STORE 8 ; Init end
+STORE 7 ; Init end
 L14:
-LOAD 7  ; Load local var start
-LOAD 8  ; Load local var end
+LOAD 6  ; Load local var start
+LOAD 7  ; Load local var end
 ICMP_LT
 JNZ L15
 JMP L16
@@ -188,20 +196,31 @@ L15:
 LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 7  ; Load local var start
+LOAD 6  ; Load local var start
 ALOAD
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 8  ; Load local var end
+LOAD 7  ; Load local var end
 ALOAD
 INVOKEVIRTUAL 0 ; Call Utility.swap@I@I
-LOAD 7  ; Load local var start
+LOAD 6  ; Load local var start
 PUSH 1
 IADD
-STORE 7 ; Store to local 'start'
-LOAD 8  ; Load local var end
+STORE 6 ; Store to local 'start'
+LOAD 7  ; Load local var end
 PUSH 1
 ISUB
-STORE 8 ; Store to local 'end'
+STORE 7 ; Store to local 'end'
 JMP L14
 L16:
+.endmethod
+
+.method Algorithms.Algorithms
+.limit stack 10
+.limit locals 2
+LOAD_ARG 0      ; Push 'this' reference for field 'util'
+NEW Utility
+DUP
+INVOKESPECIAL 3 ; Call default ctor for Utility
+PUTFIELD 0 ; Store new instance to 'util'
+RET
 .endmethod

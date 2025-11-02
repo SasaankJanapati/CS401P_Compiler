@@ -1,8 +1,8 @@
 .class_metadata
 class_count 3
-class_begin VectorInt -1
+class_begin VectorInt None
 field_count 2
-field arr [I 0
+field arr [I 3
 field vsize I 0
 method_count 9
 method VectorInt VectorInt.VectorInt
@@ -15,9 +15,9 @@ method clear VectorInt.clear
 method empty VectorInt.empty
 method print VectorInt.print
 class_end
-class_begin VectorFloat -1
+class_begin VectorFloat None
 field_count 2
-field arr [F 0
+field arr [F 3
 field vsize I 0
 method_count 9
 method VectorFloat VectorFloat.VectorFloat
@@ -30,9 +30,9 @@ method clear VectorFloat.clear
 method empty VectorFloat.empty
 method print VectorFloat.print
 class_end
-class_begin VectorChar -1
+class_begin VectorChar None
 field_count 2
-field arr [C 0
+field arr [C 3
 field vsize I 0
 method_count 9
 method VectorChar VectorChar.VectorChar
@@ -373,13 +373,16 @@ LOAD 11  ; Load local var i
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 .endmethod
-PUSH 1000
-NEWARRAY I
-STORE -1 ; Store new flattened array to 'arr'
 
 .method VectorInt.VectorInt
-.limit stack 4
-.limit locals 0
+.limit stack 10
+.limit locals 3
+LOAD_ARG 0      ; Push 'this' reference for field 'arr'
+PUSH 1000
+NEWARRAY I
+PUTFIELD 0
+LOAD_ARG 0      ; Push 'this' reference for field 'vsize'
+PUSH 0      ; Default value for 'vsize'
 LOAD_ARG 0 ; 'this' for assignment to member 'vsize'
 PUSH 0
 PUTFIELD 1
@@ -518,32 +521,32 @@ RET
 
 .method VectorInt.print
 .limit stack 4
-.limit locals 18
+.limit locals 17
 PUSH 0
-STORE 16 ; Store to local 'i'
+STORE 15 ; Store to local 'i'
 JMP L46
 L47:
 PUSH 50
 NEWARRAY C
-STORE 17 ; Store new flattened array to 'buf'
+STORE 16 ; Store new flattened array to 'buf'
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD 16  ; Load local var i
+LOAD 15  ; Load local var i
 ALOAD
-LOAD 17  ; Load local var buf
+LOAD 16  ; Load local var buf
 CALL intToString@I@[C
-LOAD 17  ; Load local var buf
+LOAD 16  ; Load local var buf
 CALL writeString@[C
 PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L48:
-LOAD 16 ; Load current value of i for post increment
+LOAD 15 ; Load current value of i for post increment
 DUP
 PUSH 1
 IADD
-STORE 16 ; Post increment
+STORE 15 ; Post increment
 L46:
-LOAD 16  ; Load local var i
+LOAD 15  ; Load local var i
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_LT
@@ -553,13 +556,16 @@ L49:
 PUSH 92 ; Push ASCII for char '\n'
 CALL writeChar@C
 .endmethod
-PUSH 1000
-NEWARRAY F
-STORE -1 ; Store new flattened array to 'arr'
 
 .method VectorFloat.VectorFloat
-.limit stack 4
-.limit locals 0
+.limit stack 10
+.limit locals 3
+LOAD_ARG 0      ; Push 'this' reference for field 'arr'
+PUSH 1000
+NEWARRAY F
+PUTFIELD 0
+LOAD_ARG 0      ; Push 'this' reference for field 'vsize'
+PUSH 0      ; Default value for 'vsize'
 LOAD_ARG 0 ; 'this' for assignment to member 'vsize'
 PUSH 0
 PUTFIELD 1
@@ -698,32 +704,32 @@ RET
 
 .method VectorFloat.print
 .limit stack 4
-.limit locals 20
+.limit locals 19
 PUSH 0
-STORE 18 ; Store to local 'i'
+STORE 17 ; Store to local 'i'
 JMP L63
 L64:
 PUSH 100
 NEWARRAY C
-STORE 19 ; Store new flattened array to 'buf'
+STORE 18 ; Store new flattened array to 'buf'
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD 18  ; Load local var i
+LOAD 17  ; Load local var i
 ALOAD
-LOAD 19  ; Load local var buf
+LOAD 18  ; Load local var buf
 CALL doubleToString@F@[C
-LOAD 19  ; Load local var buf
+LOAD 18  ; Load local var buf
 CALL writeString@[C
 PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L65:
-LOAD 18 ; Load current value of i for post increment
+LOAD 17 ; Load current value of i for post increment
 DUP
 PUSH 1
 IADD
-STORE 18 ; Post increment
+STORE 17 ; Post increment
 L63:
-LOAD 18  ; Load local var i
+LOAD 17  ; Load local var i
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_LT
@@ -733,13 +739,16 @@ L66:
 PUSH 92 ; Push ASCII for char '\n'
 CALL writeChar@C
 .endmethod
-PUSH 1000
-NEWARRAY C
-STORE -1 ; Store new flattened array to 'arr'
 
 .method VectorChar.VectorChar
-.limit stack 4
-.limit locals 0
+.limit stack 10
+.limit locals 3
+LOAD_ARG 0      ; Push 'this' reference for field 'arr'
+PUSH 1000
+NEWARRAY C
+PUTFIELD 0
+LOAD_ARG 0      ; Push 'this' reference for field 'vsize'
+PUSH 0      ; Default value for 'vsize'
 LOAD_ARG 0 ; 'this' for assignment to member 'vsize'
 PUSH 0
 PUTFIELD 1
@@ -877,26 +886,26 @@ RET
 
 .method VectorChar.print
 .limit stack 4
-.limit locals 21
+.limit locals 20
 PUSH 0
-STORE 20 ; Store to local 'i'
+STORE 19 ; Store to local 'i'
 JMP L80
 L81:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD 20  ; Load local var i
+LOAD 19  ; Load local var i
 ALOAD
 CALL writeChar@C
 PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L82:
-LOAD 20 ; Load current value of i for post increment
+LOAD 19 ; Load current value of i for post increment
 DUP
 PUSH 1
 IADD
-STORE 20 ; Post increment
+STORE 19 ; Post increment
 L80:
-LOAD 20  ; Load local var i
+LOAD 19  ; Load local var i
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_LT

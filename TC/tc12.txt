@@ -1,6 +1,6 @@
 class TestClass {
-    public int publicVar;
-    protected int protectedVar;
+    public int publicVar = 5;
+    protected int protectedVar = 10;
     public int a[10][10];
     public void publicMethod() {
             int z = 15;

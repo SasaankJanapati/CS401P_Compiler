@@ -156,6 +156,7 @@ Debug: Functionend 'isalnum' with mangled name 'isalnum@C' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'isnum'
 Debug: Functionend 'isnum' with mangled name 'isnum@C' declared.
+Debug: No constructor found for 'StringHandler'. Synthesizing a default constructor node.
 Gen ASM for: PROGRAM () Scope: 0
   Gen ASM for: STATEMENTS () Scope: 0
     Gen ASM for: CLASS_DECL (StringHandler) Scope: 0
@@ -491,3 +492,8 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen BOOL EXPR for: REL_OP (<=)
                     Gen EXPR for: IDEN (c)
                     Gen EXPR for: CHAR_LIT ('9')
+        Gen ASM for: CONSTRUCTOR_DEFAULT (StringHandler) Scope: 1
+Generating default constructor: StringHandler.StringHandler
+Generating field initialization for default constructor of class 
+Current scope table number: 2
+          Generating field initializers for class 'StringHandler'

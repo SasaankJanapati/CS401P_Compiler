@@ -154,7 +154,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-i                    | I               | variable     | public       | N/A             | 16           | 148
+i                    | I               | variable     | public       | N/A             | 15           | 148
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -163,7 +163,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 4 (Parent Scope: 3) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-buf                  | [C              | variable     | public       | N/A             | 17           | 150
+buf                  | [C              | variable     | public       | N/A             | 16           | 150
 
 --- Scope: 1 (Parent Scope: 0) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -223,7 +223,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-i                    | I               | variable     | public       | N/A             | 18           | 214
+i                    | I               | variable     | public       | N/A             | 17           | 214
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -232,7 +232,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 4 (Parent Scope: 3) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-buf                  | [C              | variable     | public       | N/A             | 19           | 216
+buf                  | [C              | variable     | public       | N/A             | 18           | 216
 
 --- Scope: 1 (Parent Scope: 0) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -292,7 +292,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-i                    | I               | variable     | public       | N/A             | 20           | 280
+i                    | I               | variable     | public       | N/A             | 19           | 280
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared

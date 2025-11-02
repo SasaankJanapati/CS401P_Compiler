@@ -19,6 +19,7 @@ Debug: Child type: 'PARAM_LIST' 'swap2@C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'swap2@C'
 Debug: Functionend 'swap2' with mangled name 'swap2@C@C' declared.
+Debug: No constructor found for 'Utility'. Synthesizing a default constructor node.
 Debug: Building array type for base type 'I' and index node 'INDEX'
 Debug: Processing index node for array access on '[I'
 Debug: Array access 'arr' has element type 'I'
@@ -86,6 +87,7 @@ Debug: Child type: 'PARAM_LIST' 'reverse@[I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'reverse@[I'
 Debug: Functionend 'reverse' with mangled name 'reverse@[I@I' declared.
+Debug: No constructor found for 'Algorithms'. Synthesizing a default constructor node.
 Gen ASM for: PROGRAM () Scope: 0
   Gen ASM for: STATEMENTS () Scope: 0
     Gen ASM for: CLASS_DECL (Utility) Scope: 0
@@ -132,10 +134,13 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: ASSIGN () Scope: 2
               Gen STMT for: ASSIGN () Scope: 2
                 Gen EXPR for: IDEN (temp)
+        Gen ASM for: CONSTRUCTOR_DEFAULT (Utility) Scope: 1
+Generating default constructor: Utility.Utility
+Generating field initialization for default constructor of class 
+Current scope table number: 2
+          Generating field initializers for class 'Utility'
     Gen ASM for: CLASS_DECL (Algorithms) Scope: 0
       Gen ASM for: CLASS_BODY () Scope: 1
-        Gen ASM for: OBJ_DECL (util) Scope: 1
-          Gen STMT for: OBJ_DECL (util) Scope: 1
         Gen ASM for: FUNC_DEF (insert@[I@I@I@I) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: IF () Scope: 2
@@ -295,3 +300,9 @@ Generating code for method call: swap@I@I on object of type Utility
                       Gen EXPR for: BIN_OP (-)
                         Gen EXPR for: IDEN (end)
                         Gen EXPR for: NUM (1)
+        Gen ASM for: CONSTRUCTOR_DEFAULT (Algorithms) Scope: 1
+Generating default constructor: Algorithms.Algorithms
+Generating field initialization for default constructor of class 
+Current scope table number: 2
+          Generating field initializers for class 'Algorithms'
+            Field 'util' has no initializer, generating default.

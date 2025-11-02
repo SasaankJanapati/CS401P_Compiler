@@ -24,7 +24,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --------------------------------------------------------------------------------------------------------------------
 filename             | [C              | parameter    | public       | N/A             | 1            | 17
 mode                 | I               | parameter    | public       | N/A             | 2            | 17
-flags                | I               | variable     | public       | N/A             | 1            | 18
+flags                | I               | variable     | public       | N/A             | 0            | 18
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -55,7 +55,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --------------------------------------------------------------------------------------------------------------------
 buffer               | [C              | parameter    | public       | N/A             | 1            | 42
 size                 | I               | parameter    | public       | N/A             | 2            | 42
-bytesRead            | I               | variable     | public       | N/A             | 2            | 44
+bytesRead            | I               | variable     | public       | N/A             | 1            | 44
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -66,7 +66,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --------------------------------------------------------------------------------------------------------------------
 buffer               | [C              | parameter    | public       | N/A             | 1            | 49
 size                 | I               | parameter    | public       | N/A             | 2            | 49
-bytesWritten         | I               | variable     | public       | N/A             | 3            | 51
+bytesWritten         | I               | variable     | public       | N/A             | 2            | 51
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared

@@ -35,21 +35,10 @@ Gen ASM for: PROGRAM () Scope: 0
   Gen ASM for: STATEMENTS () Scope: 0
     Gen ASM for: CLASS_DECL (FileHandler) Scope: 0
       Gen ASM for: CLASS_BODY () Scope: 1
-        Gen ASM for: MEMBER_DECL () Scope: 1
-          Gen STMT for: MEMBER_DECL () Scope: 1
-            Gen ASM for: TYPE (I) Scope: 1
-              Gen STMT for: TYPE (I) Scope: 1
-            Gen ASM for: DECL_LIST () Scope: 1
-              Gen ASM for: VAR_DECL (fd) Scope: 1
-                Gen STMT for: VAR_DECL (fd) Scope: 1
-        Gen ASM for: MEMBER_DECL () Scope: 1
-          Gen STMT for: MEMBER_DECL () Scope: 1
-            Gen ASM for: TYPE (I) Scope: 1
-              Gen STMT for: TYPE (I) Scope: 1
-            Gen ASM for: DECL_LIST () Scope: 1
-              Gen ASM for: VAR_DECL (isOpen) Scope: 1
-                Gen STMT for: VAR_DECL (isOpen) Scope: 1
         Gen ASM for: CONSTRUCTOR (FileHandler) Scope: 1
+          Generating field initializers for class 'FileHandler'
+            Field 'fd' has no initializer, generating default.
+            Field 'isOpen' has no initializer, generating default.
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: ASSIGN () Scope: 2
               Gen STMT for: ASSIGN () Scope: 2

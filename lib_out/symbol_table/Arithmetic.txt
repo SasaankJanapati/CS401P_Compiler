@@ -53,34 +53,34 @@ Name                 | Type            | Kind         | Access       | Class    
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
 x                    | F               | parameter    | public       | N/A             | 1            | 25
-guess                | F               | variable     | public       | N/A             | 1            | 29
-eps                  | F               | variable     | public       | N/A             | 2            | 30
+guess                | F               | variable     | public       | N/A             | 0            | 29
+eps                  | F               | variable     | public       | N/A             | 1            | 30
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-newGuess             | F               | variable     | public       | N/A             | 3            | 33
+newGuess             | F               | variable     | public       | N/A             | 2            | 33
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
 x                    | F               | parameter    | public       | N/A             | 1            | 41
-guess                | F               | variable     | public       | N/A             | 4            | 45
-eps                  | F               | variable     | public       | N/A             | 5            | 46
+guess                | F               | variable     | public       | N/A             | 3            | 45
+eps                  | F               | variable     | public       | N/A             | 4            | 46
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-newGuess             | F               | variable     | public       | N/A             | 6            | 48
+newGuess             | F               | variable     | public       | N/A             | 5            | 48
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
 x                    | F               | parameter    | public       | N/A             | 1            | 55
-term                 | F               | variable     | public       | N/A             | 7            | 56
-sum                  | F               | variable     | public       | N/A             | 8            | 57
-n                    | I               | variable     | public       | N/A             | 9            | 58
-eps                  | F               | variable     | public       | N/A             | 10           | 59
+term                 | F               | variable     | public       | N/A             | 6            | 56
+sum                  | F               | variable     | public       | N/A             | 7            | 57
+n                    | I               | variable     | public       | N/A             | 8            | 58
+eps                  | F               | variable     | public       | N/A             | 9            | 59
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -90,10 +90,10 @@ Name                 | Type            | Kind         | Access       | Class    
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
 x                    | F               | parameter    | public       | N/A             | 1            | 70
-term                 | F               | variable     | public       | N/A             | 11           | 71
-sum                  | F               | variable     | public       | N/A             | 12           | 72
-n                    | I               | variable     | public       | N/A             | 13           | 73
-eps                  | F               | variable     | public       | N/A             | 14           | 74
+term                 | F               | variable     | public       | N/A             | 10           | 71
+sum                  | F               | variable     | public       | N/A             | 11           | 72
+n                    | I               | variable     | public       | N/A             | 12           | 73
+eps                  | F               | variable     | public       | N/A             | 13           | 74
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -104,7 +104,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --------------------------------------------------------------------------------------------------------------------
 base                 | F               | parameter    | public       | N/A             | 1            | 84
 exponent             | I               | parameter    | public       | N/A             | 2            | 84
-result               | F               | variable     | public       | N/A             | 15           | 88
+result               | F               | variable     | public       | N/A             | 14           | 88
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -115,7 +115,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --------------------------------------------------------------------------------------------------------------------
 base                 | F               | parameter    | public       | N/A             | 1            | 98
 exp                  | I               | parameter    | public       | N/A             | 2            | 98
-result               | F               | variable     | public       | N/A             | 16           | 102
+result               | F               | variable     | public       | N/A             | 15           | 102
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -178,5 +178,9 @@ a                    | F               | parameter    | public       | N/A      
 b                    | F               | parameter    | public       | N/A             | 2            | 152
 
 --- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------

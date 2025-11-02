@@ -147,7 +147,7 @@ bool in_class_func = false;
 // Forward declarations
 void insert_symbol(char* name, char* type, char* kind, Node* initializer, Node* index_node);
 ClassInfo* find_class_info(const char* class_name);
-
+char* get_base_array_type(const char* mangled_type);
 
 // Helper function to recursively build a nested type string for multi-dimensional arrays
 char* build_array_type(const char* base_type, Node* index_node) {
@@ -944,25 +944,25 @@ DECL: IDEN {
         if (!are_types_compatible(current_decl_type, $3->data_type)) {
             fprintf(stderr, "Error line %d: Incompatible types in initialization. Cannot assign '%s' to '%s'\n", yylineno, $3->data_type, current_decl_type);
         }
-        insert_symbol($1, current_decl_type, current_class_name && in_class_func ? "member_var" : "variable", $3, NULL);
         $$ = create_node("VAR_INIT", $1); 
         add_child($$, $3);
+        insert_symbol($1, current_decl_type, current_class_name && in_class_func ? "member_var" : "variable", $$, NULL);
       }
     | IDEN INDEX {
         char* array_type = build_array_type(current_decl_type, $2);
         fprintf(stderr, "Debug: Declaring array '%s' of type '%s'\n", $1, array_type);
-        insert_symbol($1, array_type, current_class_name && in_class_func ? "member_var" : "variable", NULL, $2);
         $$ = create_node("ARRAY_DECL", $1); 
         add_child($$, $2);
+        insert_symbol($1, array_type, current_class_name && in_class_func ? "member_var" : "variable", $$, $2);
         free(array_type);
       }
     | IDEN INDEX '=' '{' INITLIST '}' {
         char* array_type = build_array_type(current_decl_type, $2);
-        insert_symbol($1, array_type, current_class_name && in_class_func ? "member_var" : "variable", $5, $2);
         check_init_list_types($5, current_decl_type);
         $$ = create_node("ARRAY_INIT", $1); 
         add_child($$, $2); 
         add_child($$, $5);
+        insert_symbol($1, array_type, current_class_name && in_class_func ? "member_var" : "variable", $$, $2);
         free(array_type);
       }
     ;
@@ -1151,33 +1151,37 @@ CLASSDECL: CLASS IDEN {
             $$ = create_node("CLASS_DECL", $2);
             add_child($$, $4); add_child($$, $6);
             // Default Constructor(To be handled)
-            // if (current_class_info && current_class_info->constructors_count == 0) {
-            //     fprintf(stderr, "Debug: No constructor found for '%s'. Synthesizing a default constructor node.\n", current_class_info->name);
+            if (current_class_info && current_class_info->constructors_count == 0 && !current_class_info->is_abstract) {
+                fprintf(stderr, "Debug: No constructor found for '%s'. Synthesizing a default constructor node.\n", current_class_info->name);
 
-            //     // 1. Create MethodInfo (same as before)
-            //     MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
-            //     method->name = strdup(current_class_info->name);
-            //     method->return_type = strdup("void");
-            //     method->signature = strdup(current_class_info->name);
-            //     method->access_spec = strdup("public");
-            //     method->is_abstract = false;
-            //     method->is_override = false;
-            //     method->vtable_index = current_class_info->method_count - 1;
+                // 1. Create MethodInfo (same as before)
+                MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
+                method->name = strdup(current_class_info->name);
+                method->return_type = strdup("void");
+                method->signature = strdup(current_class_info->name);
+                method->access_spec = strdup("public");
+                method->is_abstract = false;
+                method->is_override = false;
+                method->vtable_index = current_class_info->method_count - 1;
 
-            //     // 2. Create a new CONSTRUCTOR node for the AST
-            //     Node* constructor_node = create_node("CONSTRUCTOR", current_class_info->name);
+                // 2. Create a new CONSTRUCTOR node for the AST
+                Node* constructor_node = create_node("CONSTRUCTOR_DEFAULT", current_class_info->name);
+                constructor_node->data_type = strdup("void");
+                enter_scope(); // Enter constructor scope
+                constructor_node->scope_table = current_table;
+                exit_scope(); // Exit constructor scope
                 
-            //     // Create empty nodes for its children (param list and body)
-            //     Node* empty_params = create_node("PARAM_LIST", "empty");
-            //     Node* empty_body = create_node("STATEMENTS", "empty");
+                // Create empty nodes for its children (param list and body)
+                Node* empty_params = create_node("PARAM_LIST", "empty");
+                Node* empty_body = create_node("STATEMENTS", "empty");
 
-            //     add_child(constructor_node, empty_params);
-            //     add_child(constructor_node, empty_body);
+                add_child(constructor_node, empty_params);
+                add_child(constructor_node, empty_body);
 
-            //     // 3. Add the new node to the class body in the AST
-            //     // $6 is the CLASSBODY node from the grammar rule
-            //     add_child($6, constructor_node);
-            // }
+                // 3. Add the new node to the class body in the AST
+                // $6 is the CLASSBODY node from the grammar rule
+                add_child($6, constructor_node);
+            }
             $$->scope_table = current_table;
             exit_scope();
             current_table->base_count--; // Release 'this' space
@@ -1307,17 +1311,17 @@ OBJDECL: IDEN IDEN {
             } else if (!cls_info) {
                 fprintf(stderr, "Error line %d: Unknown class type '%s' for object '%s'\n", yylineno, $1, $2);
             }
-            insert_symbol($2, $1, current_class_name && in_class_func ? "member_obj" : "object", NULL, NULL); // Initializer handled by ASNEXPR
             $$ = create_node("OBJ_INIT", $2); 
             add_child($$, $7); 
             $$->data_type = strdup($1);
+            insert_symbol($2, $1, current_class_name && in_class_func ? "member_obj" : "object", $$, NULL); // Initializer handled by ASNEXPR
         }
         | IDEN IDEN INDEX { 
             char* array_type = build_array_type($1, $3);
-            insert_symbol($2, array_type, current_class_name && in_class_func ? "member_obj" : "object", NULL, $3);
             $$ = create_node("OBJ_ARRAY_DECL", $2);
             add_child($$, $3);
             $$->data_type = array_type;
+            insert_symbol($2, array_type, current_class_name && in_class_func ? "member_obj" : "object", $$, $3);
         }
          ;
 MEMBERACCESS: LVAL '.' IDEN { 
@@ -1586,6 +1590,116 @@ Symbol* lookup_symbol_codegen(char* name, SymbolTable* scope, ClassInfo* class_c
 //         }
 //     }
 // }
+
+void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* scope) {
+    if (class_info == NULL) {
+        return;
+    }
+
+    debug_print("Generating field initializers for class '%s'", class_info->name);
+    code_gen_depth++;
+
+
+    for (int i = 0; i < class_info->parent_count; i++) {
+        ClassInfo* parent = class_info->parents[i];
+        if (parent) {
+            // Find the default constructor signature for the parent
+            char* parent_ctor_sig = strdup(parent->name);
+            int parent_ctor_idx = get_method_vtable_index(parent->name, parent_ctor_sig);
+            if (parent_ctor_idx != -1) {
+                emit("LOAD_ARG 0 ; 'this' for parent constructor call");
+                emit("INVOKESPECIAL %d ; super() call to %s", parent_ctor_idx, parent_ctor_sig);
+            }
+            free(parent_ctor_sig);
+        }
+    }
+
+    ClassInfo* class_context = class_info; // For generate_code_for_expr
+
+    // Now, initialize fields declared in the current class.
+    for (int i = 0; i < class_info->field_count; i++) {
+        FieldInfo* field = &class_info->fields[i];
+        int field_idx = get_field_index(class_info->name, field->name);
+
+        if (field_idx == -1) {
+             fprintf(stderr, "Codegen Error: Could not find field index for '%s' in class '%s'\n", field->name, class_info->name);
+             continue;
+        }
+        
+        // All field initializations start by loading 'this'
+        emit("LOAD_ARG 0      ; Push 'this' reference for field '%s'", field->name);
+
+        if (field->initializer != NULL) {
+            // Case 1: An initializer was provided (e.g., = 5 or = new MyClass())
+            debug_print("Field '%s' has initializer of type '%s'", field->name, field->initializer->type);
+            // Generate code for the initializer expression.
+            // This now handles `NEW_OBJ` nodes correctly.
+            generate_code_for_statement(field->initializer, scope, class_context);
+        
+        } else {
+            // Case 2: No initializer. Generate default value.
+            debug_print("Field '%s' has no initializer, generating default.", field->name);
+            
+            if (field->index_node != NULL) {
+                // It's an array. Generate NEWARRAY.
+                Node* index_node = field->index_node;
+                bool first_dim = true;
+                bool error = false;
+                while(index_node) {
+                    if (strcmp(index_node->type, "INDEX_EMPTY") == 0) {
+                        fprintf(stderr, "Codegen Error: Member array '%s' has unsized dimension. Cannot initialize.\n", field->name);
+                        emit("PUSH 0 ; Error: unsized array dim"); // Push null as a fallback
+                        error = true;
+                        break; 
+                    }
+                    generate_code_for_expr(index_node->children[0], scope, class_context);
+                    if (!first_dim) emit("IMUL");
+                    first_dim = false;
+                    
+                    if(index_node->num_children > 1) index_node = index_node->children[1];
+                    else break;
+                }
+                if (!error) { // Means we pushed at least one dim
+                     char* base_type = get_base_array_type(field->type);
+                     emit("NEWARRAY %s", base_type);
+                     free(base_type);
+                }
+
+            } else if (find_class_info(field->type) != NULL) {
+                // It's an object. Call its default constructor.
+                ClassInfo* field_class_info = find_class_info(field->type);
+                char* default_ctor_sig = strdup(field->type); // Default ctor signature is just the class name
+                int ctor_idx = get_method_vtable_index(field->type, default_ctor_sig);
+                
+                if (ctor_idx == -1) {
+                    fprintf(stderr, "Codegen Error: No default constructor found for member '%s' of type '%s'\n", field->name, field->type);
+                    emit("PUSH 0 ; Error: no default ctor"); // Push null
+                } else if (field_class_info && field_class_info->is_abstract) {
+                    fprintf(stderr, "Codegen Error: Cannot auto-initialize abstract class field '%s' of type '%s'\n", field->name, field->type);
+                    emit("PUSH 0 ; Error: abstract class"); // Push null
+                } else {
+                    emit("NEW %s", field->type);
+                    emit("DUP");
+                    emit("INVOKESPECIAL %d ; Call default ctor for %s", ctor_idx, field->type);
+                    emit("PUTFIELD %d ; Store new instance to '%s'", field_idx, field->name);
+                }
+                free(default_ctor_sig);
+
+            } else if (strcmp(field->type, "F") == 0) {
+                // It's a float.
+                emit("FPUSH 0.0 ; Default value for float '%s'", field->name);
+            
+            } else {
+                // It's an int, char, or bool. Default to 0.
+                emit("PUSH 0      ; Default value for '%s'", field->name);
+            }
+        }
+        
+        // Finally, store the initialized value into the field
+        //emit("PUTFIELD %d ; this.%s = ...", field_idx, field->name);
+    }
+    code_gen_depth--;
+}
 
 // Helper function to extract the base type from a mangled array type string
 char* get_base_array_type(const char* mangled_type) {
@@ -2107,8 +2221,14 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         // fprintf(stderr, "Debug: Variable initialization for '%s'\n", node->value);
         if(s) {
             generate_code_for_expr(node->children[0], scope, class_context);
-            emit("STORE %d ; Init %s", s->address, s->name);
-            //fprintf(stderr, "Debug: Completed variable initialization for '%s'\n", node->value);    
+            if(strcmp(s->kind, "member_var") == 0) {
+                int field_idx = get_field_index(s->class_name, s->name);
+                emit("PUTFIELD %d", field_idx);
+                //fprintf(stderr, "Debug: Initialized member variable '%s'\n", node->value);
+            } else {
+                emit("STORE %d ; Init %s", s->address, s->name);
+            }
+            //fprintf(stderr, "Debug: Completed variable initialization for '%s'\n", node->value);
         }
         //fprintf(stderr, "Debug: Completed variable initialization for '%s'\n", node->value);    
     } else if(strcmp(node->type, "ARRAY_DECL") == 0) {
@@ -2136,7 +2256,12 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
             // Get the base type and emit the NEWARRAY instruction.
             char* base_type = get_base_array_type(s->type);
             emit("NEWARRAY %s", base_type);
-            emit("STORE %d ; Store new flattened array to '%s'", s->address, s->name);
+            if(strcmp(s->kind, "member_var") == 0) {
+                int field_idx = get_field_index(s->class_name, s->name);
+                emit("PUTFIELD %d", field_idx);
+            } else {
+                emit("STORE %d ; Store new flattened array to '%s'", s->address, s->name);
+            }
             free(base_type);
         }
         else {
@@ -2167,7 +2292,12 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
             // Get the base type (class name) and emit the NEWARRAY instruction.
             char* base_type = get_base_array_type(s->type);
             emit("NEWARRAY %s", base_type);
-            emit("STORE %d ; Store new flattened object array to '%s'", s->address, s->name);
+            if(strcmp(s->kind, "member_obj") == 0) {
+                int field_idx = get_field_index(s->class_name, s->name);
+                emit("PUTFIELD %d", field_idx);
+            } else {
+                emit("STORE %d ; Store new flattened array to '%s'", s->address, s->name);
+            }
             free(base_type);
         } else {
             fprintf(stderr, "Codegen Error: Array declaration for undeclared variable '%s'\n", node->value);
@@ -2185,7 +2315,7 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
             return;
         }
         emit("NEW %s ; Create new object of class %s", class_info->name, s->type);
-        //emit("DUP");
+        emit("DUP");
         
         for (int i = 0; i < arg_list->num_children; i++) {
             generate_code_for_expr(arg_list->children[i], scope, class_context);
@@ -2198,7 +2328,14 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         emit("INVOKESPECIAL %d ; Call constructor for %s", ctor_idx, s->type);
         free(constructor_sig);
 
-        emit("STORE %d ; Store new object to '%s'", s->address, s->name);
+        if(strcmp(s->kind, "member_obj") == 0) {
+            //emit("LOAD_ARG 0 ; 'this' for member variable initialization '%s'", s->name);
+            int field_idx = get_field_index(s->class_name, s->name);
+            emit("PUTFIELD %d", field_idx);
+            //fprintf(stderr, "Debug: Initialized member variable '%s'\n", node->value);
+        } else {
+            emit("STORE %d ; Store new Object %s", s->address, s->name);
+        }
 
     } else if (strcmp(node->type, "IF") == 0) {
         int true_label = new_label();
@@ -2343,8 +2480,14 @@ void generate_assembly(Node* node, SymbolTable* scope) {
     SymbolTable* next_scope = node->scope_table ? node->scope_table : scope;
     ClassInfo* class_context = find_class_info(current_class_name);
 
-    if (strcmp(node->type, "PROGRAM") == 0 || strcmp(node->type, "STATEMENTS") == 0 || strcmp(node->type, "DECL_LIST") == 0 || strcmp(node->type, "CLASS_BODY") == 0) {
+    if (strcmp(node->type, "PROGRAM") == 0 || strcmp(node->type, "STATEMENTS") == 0 || strcmp(node->type, "DECL_LIST") == 0) {
         for (int i = 0; i < node->num_children; i++) {
+            generate_assembly(node->children[i], next_scope);
+        }
+    } else if (strcmp(node->type, "CLASS_BODY") == 0) {
+        // if class fields skip as it generated in construuctor
+        for (int i = 0; i < node->num_children; i++) {
+            if (strcmp(node->children[i]->type, "OBJ_DECL") == 0 || strcmp(node->children[i]->type, "OBJ_INIT") == 0 || strcmp(node->children[i]->type, "OBJ_ARRAY_DECL") == 0 || strcmp(node->children[i]->type, "MEMBER_DECL") == 0) continue;
             generate_assembly(node->children[i], next_scope);
         }
     } else if (strcmp(node->type, "CLASS_DECL") == 0) {
@@ -2371,21 +2514,39 @@ void generate_assembly(Node* node, SymbolTable* scope) {
         fprintf(asm_file, ".endmethod\n");
     } else if (strcmp(node->type, "CONSTRUCTOR") == 0) {
          char mangled_name[512];
-          sprintf(mangled_name, "%s.%s", current_class_name, node->value);
-         
-         int locals = calculate_total_locals(node->scope_table);
-         int stack = calculate_max_stack_depth(node->children[1]);
-         if (stack < 4) stack = 4;
+         sprintf(mangled_name, "%s.%s", current_class_name, node->value);
+
+         ClassInfo* current_class_info = find_class_info(current_class_name);
+         int locals = calculate_total_locals(node->scope_table) + current_class_info->field_count + 1; // +1 for 'this'
+         int stack = 10;
 
          fprintf(asm_file, "\n.method %s\n", mangled_name);
          emit(".limit stack %d", stack);
          emit(".limit locals %d", locals);
+         generate_field_initialization_code(current_class_info, node->scope_table);
          generate_assembly(node->children[1], node->scope_table);
+         emit("RET");
+         fprintf(asm_file, ".endmethod\n");
+    } else if (strcmp(node->type, "CONSTRUCTOR_DEFAULT") == 0) {
+         char mangled_name[512];
+         sprintf(mangled_name, "%s.%s", current_class_name, current_class_name);
+         fprintf(stderr, "Generating default constructor: %s\n", mangled_name);
+         ClassInfo* current_class_info = find_class_info(current_class_name);
+         int locals = current_class_info->field_count + 1; // +1 for 'this'
+         int stack = 10;
+
+         fprintf(asm_file, "\n.method %s\n", mangled_name);
+         emit(".limit stack %d", stack);
+         emit(".limit locals %d", locals);
+         fprintf(stderr, "Generating field initialization for default constructor of class \n");
+         // print current scope table number
+            fprintf(stderr, "Current scope table number: %d\n", node->scope_table->scope);
+         generate_field_initialization_code(current_class_info, node->scope_table);
          emit("RET");
          fprintf(asm_file, ".endmethod\n");
     } else if (strcmp(node->type, "IMPORT") == 0) {
         while(node) {
-            emit("IMPORT %s", node->value);
+            emit("#include \"%s\"", node->value);
             if (node->num_children > 0) {
                 node = node->children[0];
             } else {
@@ -2432,19 +2593,27 @@ int main(int argc, char **argv) {
                 ClassInfo* cls = class_metadata_pool[i];
                 int super_idx = (cls->parent_count > 0) ? get_class_index(cls->parent_names[0]) : -1;
                 if ( cls-> parent_count > 0) {
-                   fprintf(asm_file,".class_begin %s ", cls->name);
+                   fprintf(asm_file,"class_begin %s ", cls->name);
                    for (int j = 0; j < cls->parent_count; j++) {
                        fprintf(asm_file, "%s ", cls->parent_names[j]);
                    }
                    fprintf(asm_file, "\n");
                 } else {
-                    emit(".class_begin %s", cls->name);
+                    emit("class_begin %s None", cls->name);
                 }
                 
                 emit("field_count %d", cls->field_count);
                 for(int j=0; j<cls->field_count; ++j) {
-                    // Type 0 = int, 1 = float, 2=object_ref/array_ref
-                    emit("field %s %s %d", cls->fields[j].name, cls->fields[j].type, 0); 
+                    // Type 0 = int, 1 = float, 2 = char, 3=object_ref/array_ref
+                    if (strcmp(cls->fields[j].type, "I") == 0) {
+                        emit("field %s %s %d", cls->fields[j].name, cls->fields[j].type, 0); 
+                    } else if (strcmp(cls->fields[j].type, "F") == 0) {
+                        emit("field %s %s %d", cls->fields[j].name, cls->fields[j].type, 1); 
+                    } else if (strcmp(cls->fields[j].type, "C") == 0) {
+                        emit("field %s %s %d", cls->fields[j].name, cls->fields[j].type, 2); 
+                    } else {
+                        emit("field %s %s %d", cls->fields[j].name, cls->fields[j].type, 3); 
+                    }
                 }
 
                 emit("method_count %d", cls->method_count);

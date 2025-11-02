@@ -23,7 +23,7 @@ isnum                | B               | member_func  | public       | N/A      
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
 str                  | [C              | parameter    | public       | N/A             | 1            | 4
-len                  | I               | variable     | public       | N/A             | 1            | 5
+len                  | I               | variable     | public       | N/A             | 0            | 5
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -36,8 +36,8 @@ str                  | [C              | parameter    | public       | N/A      
 start                | I               | parameter    | public       | N/A             | 2            | 13
 len                  | I               | parameter    | public       | N/A             | 3            | 13
 res                  | [C              | parameter    | public       | N/A             | 4            | 13
-n                    | I               | variable     | public       | N/A             | 2            | 14
-i                    | I               | variable     | public       | N/A             | 3            | 19
+n                    | I               | variable     | public       | N/A             | 1            | 14
+i                    | I               | variable     | public       | N/A             | 2            | 19
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -56,7 +56,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --------------------------------------------------------------------------------------------------------------------
 s1                   | [C              | parameter    | public       | N/A             | 1            | 28
 s2                   | [C              | parameter    | public       | N/A             | 2            | 28
-i                    | I               | variable     | public       | N/A             | 4            | 29
+i                    | I               | variable     | public       | N/A             | 3            | 29
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -72,8 +72,8 @@ Name                 | Type            | Kind         | Access       | Class    
 str                  | [C              | parameter    | public       | N/A             | 1            | 39
 pos                  | I               | parameter    | public       | N/A             | 2            | 39
 c                    | C               | parameter    | public       | N/A             | 3            | 39
-n                    | I               | variable     | public       | N/A             | 5            | 40
-i                    | I               | variable     | public       | N/A             | 6            | 44
+n                    | I               | variable     | public       | N/A             | 4            | 40
+i                    | I               | variable     | public       | N/A             | 5            | 44
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -89,8 +89,8 @@ Name                 | Type            | Kind         | Access       | Class    
 str                  | [C              | parameter    | public       | N/A             | 1            | 51
 pos                  | I               | parameter    | public       | N/A             | 2            | 51
 len                  | I               | parameter    | public       | N/A             | 3            | 51
-n                    | I               | variable     | public       | N/A             | 7            | 52
-i                    | I               | variable     | public       | N/A             | 8            | 55
+n                    | I               | variable     | public       | N/A             | 6            | 52
+i                    | I               | variable     | public       | N/A             | 7            | 55
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -134,3 +134,7 @@ c                    | C               | parameter    | public       | N/A      
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
 c                    | C               | parameter    | public       | N/A             | 1            | 94
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------

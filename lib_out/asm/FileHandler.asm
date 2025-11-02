@@ -1,6 +1,6 @@
 .class_metadata
 class_count 1
-class_begin FileHandler -1
+class_begin FileHandler None
 field_count 2
 field fd I 0
 field isOpen I 0
@@ -17,8 +17,12 @@ class_end
 .code
 
 .method FileHandler.FileHandler
-.limit stack 4
-.limit locals 0
+.limit stack 10
+.limit locals 3
+LOAD_ARG 0      ; Push 'this' reference for field 'fd'
+PUSH 0      ; Default value for 'fd'
+LOAD_ARG 0      ; Push 'this' reference for field 'isOpen'
+PUSH 0      ; Default value for 'isOpen'
 LOAD_ARG 0 ; 'this' for assignment to member 'fd'
 PUSH 1
 INEG
@@ -33,7 +37,7 @@ RET
 .limit stack 4
 .limit locals 3
 PUSH 0
-STORE 1 ; Init flags
+STORE 0 ; Init flags
 LOAD_ARG 2  ; Load parameter 'mode'
 PUSH 0
 ICMP_EQ
@@ -41,7 +45,7 @@ JNZ L0
 JMP L1
 L0:
 PUSH 0
-STORE 1 ; Store to local 'flags'
+STORE 0 ; Store to local 'flags'
 JMP L2
 L1:
 LOAD_ARG 2  ; Load parameter 'mode'
@@ -51,7 +55,7 @@ JNZ L3
 JMP L4
 L3:
 PUSH 577
-STORE 1 ; Store to local 'flags'
+STORE 0 ; Store to local 'flags'
 JMP L5
 L4:
 LOAD_ARG 2  ; Load parameter 'mode'
@@ -61,13 +65,13 @@ JNZ L6
 JMP L7
 L6:
 PUSH 1089
-STORE 1 ; Store to local 'flags'
+STORE 0 ; Store to local 'flags'
 L7:
 L5:
 L2:
 LOAD_ARG 0 ; 'this' for assignment to member 'fd'
 LOAD_ARG 1  ; Load parameter 'filename'
-LOAD 1  ; Load local var flags
+LOAD 0  ; Load local var flags
 PUSH 0644
 OPEN ; open
 PUTFIELD 0
@@ -135,14 +139,14 @@ LOAD_ARG 2  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
 READ ; read
-STORE 2 ; Init bytesRead
-LOAD 2  ; Load local var bytesRead
+STORE 1 ; Init bytesRead
+LOAD 1  ; Load local var bytesRead
 RET
 .endmethod
 
 .method FileHandler.fwrite@[C@I
 .limit stack 4
-.limit locals 4
+.limit locals 3
 LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
 PUSH 0
@@ -159,8 +163,8 @@ LOAD_ARG 2  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
 WRITE ; write
-STORE 3 ; Init bytesWritten
-LOAD 3  ; Load local var bytesWritten
+STORE 2 ; Init bytesWritten
+LOAD 2  ; Load local var bytesWritten
 RET
 .endmethod
 

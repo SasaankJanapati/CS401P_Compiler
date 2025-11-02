@@ -163,6 +163,7 @@ Debug: Child type: 'IDEN'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'printDouble'
 Debug: Functionend 'printDouble' with mangled name 'printDouble@F' declared.
+Debug: No constructor found for 'IOHandler'. Synthesizing a default constructor node.
 Gen ASM for: PROGRAM () Scope: 0
   Gen ASM for: STATEMENTS () Scope: 0
     Gen ASM for: CLASS_DECL (IOHandler) Scope: 0
@@ -686,3 +687,8 @@ Gen ASM for: PROGRAM () Scope: 0
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (printString@[C)
                   Gen EXPR for: IDEN (buf)
+        Gen ASM for: CONSTRUCTOR_DEFAULT (IOHandler) Scope: 1
+Generating default constructor: IOHandler.IOHandler
+Generating field initialization for default constructor of class 
+Current scope table number: 2
+          Generating field initializers for class 'IOHandler'
