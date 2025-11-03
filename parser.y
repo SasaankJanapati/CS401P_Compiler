@@ -190,13 +190,50 @@ char* build_array_type(const char* base_type, Node* index_node) {
 }
 
 
-void check_init_list_types(Node* list_node, const char* base_type) {
-    if (list_node == NULL) return;
-    for (int i = 0; i < list_node->num_children; i++) {
-        Node* expr_node = list_node->children[i];
-        if (strcmp(expr_node->data_type, base_type) != 0) {
-            fprintf(stderr, "Error at line %d: Incompatible type in array initializer. Expected '%s' but got '%s'.\n", yylineno, base_type, expr_node->data_type);
+// void check_init_list_types(Node* list_node, const char* base_type) {
+//     if (list_node == NULL) return;
+//     for (int i = 0; i < list_node->num_children; i++) {
+//         Node* expr_node = list_node->children[i];
+//         if (strcmp(expr_node->data_type, base_type) != 0) {
+//             fprintf(stderr, "Error at line %d: Incompatible type in array initializer. Expected '%s' but got '%s'.\n", yylineno, base_type, expr_node->data_type);
+//         }
+//     }
+// }
+// New recursive function to check nested initializers
+// Pass the full type (e.g., "[[I") and the initializer list node
+void check_initializer_list(Node* list_node, const char* expected_type) {
+    if (list_node == NULL || strcmp(list_node->type, "INIT_LIST") != 0) return;
+    if (expected_type == NULL) return;
+
+    // Base case: We expect a 1D array (e.g., "[I", "[F", "[LMyClass;")
+    if (expected_type[0] == '[' && expected_type[1] != '[') {
+        char* base_type = get_base_array_type(expected_type);
+        for (int i = 0; i < list_node->num_children; i++) {
+            Node* item = list_node->children[i];
+            // Items should be expressions, not nested lists
+            if (strcmp(item->type, "INIT_LIST") == 0) {
+                fprintf(stderr, "Error at line %d: Unexpected nested initializer list for 1D array.\n", yylineno);
+            } else if (!are_types_compatible(base_type, item->data_type)) {
+                fprintf(stderr, "Error at line %d: Incompatible type in array initializer. Expected '%s' but got '%s'.\n", yylineno, base_type, item->data_type);
+            }
         }
+        free(base_type);
+    }
+    // Recursive case: We expect a multi-dimensional array (e.g., "[[I", "[[[F")
+    else if (expected_type[0] == '[' && expected_type[1] == '[') {
+        char* inner_type = strdup(expected_type + 1); // Get the "inner" type (e.g., "[I" from "[[I")
+        
+        for (int i = 0; i < list_node->num_children; i++) {
+            Node* item = list_node->children[i];
+            // Items *must* be nested INIT_LIST nodes
+            if (strcmp(item->type, "INIT_LIST") != 0) {
+                fprintf(stderr, "Error at line %d: Expected nested initializer list '{...}' for multi-dimensional array, but got an expression.\n", yylineno);
+            } else {
+                // Recursively check the nested list against the inner type
+                check_initializer_list(item, inner_type);
+            }
+        }
+        free(inner_type);
     }
 }
 
@@ -750,7 +787,7 @@ char* current_decl_type;
 
 /* Node Types */
 %type <node> S STMNTS A ASNEXPR BOOLEXPR EXPR TERM TYPE LVAL
-%type <node> FUNCDECL PARAMLIST PARAM DECLSTATEMENT DECLLIST DECL INITLIST INDEX
+%type <node> FUNCDECL PARAMLIST PARAM DECLSTATEMENT DECLLIST DECL INITLIST INITIALIZER INDEX
 %type <node> ASSGN FUNC_CALL ARGLIST
 %type <node> M NN
 %type <node> CLASSDECL CLASSBODY CLASSMEMBER ACCESS CONSTRUCTOR DESTRUCTOR
@@ -959,7 +996,7 @@ DECL: IDEN {
       }
     | IDEN INDEX '=' '{' INITLIST '}' {
         char* array_type = build_array_type(current_decl_type, $2);
-        check_init_list_types($5, current_decl_type);
+        check_initializer_list($5, array_type);
         $$ = create_node("ARRAY_INIT", $1); 
         add_child($$, $2); 
         add_child($$, $5);
@@ -967,8 +1004,30 @@ DECL: IDEN {
         free(array_type);
       }
     ;
-INITLIST: INITLIST ',' EXPR { $$ = $1; add_child($$, $3); }
-        | EXPR              { $$ = create_node("INIT_LIST", NULL); add_child($$, $1); }
+// INITLIST: INITLIST ',' EXPR { $$ = $1; add_child($$, $3); }
+//         | EXPR              { $$ = create_node("INIT_LIST", NULL); add_child($$, $1); }
+//         ;
+INITIALIZER: EXPR { $$ = $1; }
+           | NEW IDEN '(' ARGLIST ')' {
+               ClassInfo* cls_info = find_class_info($2);
+               if (cls_info && cls_info->is_abstract) {
+                   fprintf(stderr, "Error line %d: Cannot create an instance of abstract class '%s'\n", yylineno, $2);
+               }
+               // check constructor existence and argument types
+               MethodInfo* constructor = find_method_in_hierarchy("constructor", get_mangled_name($2, $4), cls_info);
+               if (!constructor) {
+                   fprintf(stderr, "Error line %d: No matching constructor found for class '%s'\n", yylineno, $2);
+               }
+               $$ = create_node("NEW_OBJ", $2);
+               $$->data_type = strdup($2);
+               add_child($$, $4);
+           }
+           | '{' INITLIST '}' { $$ = $2; }
+           ;
+
+INITLIST: INITLIST ',' INITIALIZER { $$ = $1; add_child($$, $3); }
+        | INITIALIZER              { $$ = create_node("INIT_LIST", NULL); add_child($$, $1); }
+        | /* empty */              { $$ = create_node("INIT_LIST", "empty"); }
         ;
 INDEX: '[' EXPR ']' { $$ = create_node("INDEX", NULL); add_child($$, $2); if (strcmp($2->data_type, "I") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
      | '[' EXPR ']' INDEX { $$ = create_node("INDEX", NULL); add_child($$, $2); add_child($$, $4); if (strcmp($2->data_type, "I") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
@@ -1321,6 +1380,15 @@ OBJDECL: IDEN IDEN {
             char* array_type = build_array_type($1, $3);
             $$ = create_node("OBJ_ARRAY_DECL", $2);
             add_child($$, $3);
+            $$->data_type = array_type;
+            insert_symbol($2, array_type, current_class_name && in_class_func ? "member_obj" : "object", $$, $3);
+        }
+        | IDEN IDEN INDEX '=' '{' INITLIST '}' { 
+            char* array_type = build_array_type($1, $3);
+            check_initializer_list($6, array_type);
+            $$ = create_node("ARRAY_INIT", $2); 
+            add_child($$, $3); 
+            add_child($$, $6);
             $$->data_type = array_type;
             insert_symbol($2, array_type, current_class_name && in_class_func ? "member_obj" : "object", $$, $3);
         }
@@ -1738,6 +1806,82 @@ void emit_inc_dec_op(const char* node_type, const char* data_type) {
         emit("PUSH 1");
         emit(is_inc ? "IADD ; ++" : "ISUB ; --");
     }
+}
+
+void emit_default_value(const char* element_type, SymbolTable* scope, ClassInfo* class_context) {
+    if (find_class_info(element_type) != NULL) {
+        // It's an object, call default constructor
+        ClassInfo* obj_class = find_class_info(element_type);
+        char* ctor_sig = strdup(obj_class->name);
+        int ctor_idx = get_method_vtable_index(obj_class->name, ctor_sig);
+        
+        if (ctor_idx == -1) {
+            fprintf(stderr, "Codegen Error: No default constructor found for padding '%s'.\n", element_type);
+            emit("PUSH 0 ; Error: no default ctor, pushing null");
+        } else {
+            emit("NEW %s", element_type);
+            emit("DUP");
+            emit("INVOKEVIRTUAL %d ; Call default ctor for %s", ctor_idx, element_type);
+        }
+        free(ctor_sig);
+    } else {
+        // It's a primitive (I, F, C), push 0
+        emit("PUSH 0 ; Default value for primitive");
+    }
+}
+
+int generate_flat_init_code( Node* init_node, Node* dim_node, int current_flat_index, const char* base_type, SymbolTable* scope, ClassInfo* class_context) {
+    if (dim_node == NULL || strcmp(dim_node->type, "INDEX_EMPTY") == 0) {
+        fprintf(stderr, "Codegen Error: Array dimension is required for initialization.\n");
+        return current_flat_index;
+    }
+
+    // HACK: Assumes size is a literal, matching your provided function's style.
+    // A robust solution would evaluate size_expr.
+    int declared_size = atoi(dim_node->children[0]->value); 
+    Node* next_dim_node = (dim_node->num_children > 1) ? dim_node->children[1] : NULL;
+
+    // Loop from i = 0 to the *declared* size
+    for (int i = 0; i < declared_size; i++) {
+        // Get the corresponding item from the initializer list, if it exists
+        Node* item = (init_node && i < init_node->num_children) ? init_node->children[i] : NULL;
+
+        if (next_dim_node == NULL) {
+            // --- BASE CASE: We are at the innermost dimension ---
+            // We expect 'item' to be an EXPR or null (for padding).
+            
+            emit("DUP ; array_ref for ASTORE");
+            emit("PUSH %d ; flat index", current_flat_index);
+
+            if (item != NULL && strcmp(item->type, "INIT_LIST") != 0) {
+                // It's a value, generate code to push it
+                generate_code_for_expr(item, scope, class_context);
+            } else {
+                // It's a padding element (item is null) or a type mismatch
+                if (item != NULL) {
+                    fprintf(stderr, "Codegen Error: Mismatched initializer at index %d, expected value but got '{...}'\n", i);
+                }
+                // Pad with default value
+                emit_default_value(base_type, scope, class_context);
+            }
+            emit("ASTORE ; Store value at flat index %d", current_flat_index);
+            current_flat_index++; // Move to the next flat slot
+
+        } else {
+            // --- RECURSIVE CASE: We are in an outer dimension ---
+            // We expect 'item' to be an INIT_LIST or null (for padding).
+
+            if (item != NULL && strcmp(item->type, "INIT_LIST") != 0) {
+                fprintf(stderr, "Codegen Error: Mismatched initializer at index %d, expected '{...}' but got value\n", i);
+                item = NULL; // Treat as padding to fill sub-block with defaults
+            }
+
+            // Recursively fill the sub-block.
+            // 'item' is the nested INIT_LIST (or null if padding)
+            current_flat_index = generate_flat_init_code(item, next_dim_node, current_flat_index, base_type, scope, class_context);
+        }
+    }
+    return current_flat_index; // Return the next available index
 }
 
 
@@ -2168,6 +2312,26 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             generate_code_for_lval_address(lval, scope, class_context);
             emit("GETFIELD %d", field_idx);
         }
+    } else if (strcmp(node->type, "NEW_OBJ") == 0) {
+        char* class_name = node->value;
+        ClassInfo* class_info = find_class_info(class_name);
+        if (!class_info) {
+            fprintf(stderr, "Codegen Error: Undefined class '%s' for object creation.\n", class_name);
+            return;
+        }
+        emit("NEW %s ; Create new object", class_name);
+        emit("DUP ; Duplicate object ref for constructor call");
+        char* constructor_name = get_mangled_name(class_name, node->children[0]);
+        Node* arg_list = node->children[0];
+        for (int i = 0; i < arg_list->num_children; i++) {
+            generate_code_for_expr(arg_list->children[i], scope, class_context);
+        }
+        int method_idx = get_method_vtable_index(class_name, constructor_name);
+        if (method_idx != -1) {
+            emit("INVOKEVIRTUAL %d ; Call constructor %s.%s", method_idx, class_name, constructor_name);
+        } else {
+            fprintf(stderr, "Codegen Error: Could not find constructor '%s' in class '%s'\n", constructor_name, class_name);
+        }
     } else if (strcmp(node->type, "SYS_CALL") == 0) {
         if (strcmp(node->value, "open") == 0) {
             // Stack: ..., filename, mode -> ..., file_handle
@@ -2339,6 +2503,57 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         else {
             fprintf(stderr, "Codegen Error: Array declaration for undeclared variable '%s'\n", node->value);
         }
+    } else if(strcmp(node->type, "ARRAY_INIT") == 0) {
+        Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
+        if(!s) {
+            fprintf(stderr, "Codegen Error: Array initialization for undeclared variable '%s'\n", node->value);
+            return;
+        }
+
+        Node* dimension_node = node->children[0]; // The INDEX node
+        Node* init_list_node = node->children[1]; // The INIT_LIST node
+        emit(";Generating array initialization for '%s'\n", s->name);
+
+        // if(strcmp(s->kind, "member_var") == 0 || strcmp(s->kind, "member_obj") == 0) {
+        //     emit("LOAD_ARG 0 ; 'this' for member array initialization '%s'", s->name);
+        // }
+        Node* temp_dim = dimension_node;
+        bool first_dim = true;
+
+        while (temp_dim) {
+            if(strcmp(temp_dim->type, "INDEX_EMPTY") == 0) {
+                fprintf(stderr, "Codegen Error: Cannot initialize array '%s' with unspecified dimension size.\n", s->name);
+                break;
+            }
+            generate_code_for_expr(temp_dim->children[0], scope, class_context);
+            if (!first_dim) {
+                emit("IMUL ; Multiply dimensions for flattened array");
+            }
+            first_dim = false;
+
+            if(temp_dim->num_children > 1) {
+                temp_dim = temp_dim->children[1];
+            } else {
+                temp_dim = NULL;
+                break;
+            }
+        }
+
+        char* base_type = get_base_array_type(s->type);
+        emit("NEWARRAY %s ; allocating array", base_type);
+        emit("DUP ; duplicate array ref for initialization");
+        generate_flat_init_code(init_list_node, dimension_node, 0, base_type, scope, class_context);
+        emit("POP ; pop initialized array reference");
+        free(base_type);
+
+        if(strcmp(s->kind, "member_var") == 0 || strcmp(s->kind, "member_obj") == 0) {
+            int field_idx = get_field_index(s->class_name, s->name);
+            emit("PUTFIELD %d", field_idx);
+        } else {
+            emit("STORE %d ; Store initialized array to '%s'", s->address, s->name);
+        }
+        emit("\n;Completed array initialization for '%s'\n", s->name);
+
     } else if(strcmp(node->type, "OBJ_ARRAY_DECL") == 0) {
         Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
         if(s) {
