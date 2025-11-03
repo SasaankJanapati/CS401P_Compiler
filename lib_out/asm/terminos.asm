@@ -39,6 +39,7 @@ LOAD_ARG 0 ; 'this' for assignment to member 'clflag'
 LOAD_ARG 1  ; Load parameter 'src'
 GETFIELD 0 ; Get field 'clflag'
 PUTFIELD 0
+RET
 .endmethod
 
 .method TerminalHandler.disableRawMode
@@ -50,6 +51,7 @@ PUSH 2
 LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
 INVOKEVIRTUAL 3 ; Call TerminalHandler.tcsetattr@I@I@Termios
+RET
 .endmethod
 
 .method TerminalHandler.enableRawMode
@@ -82,6 +84,7 @@ PUSH 0
 PUSH 2
 LOAD 0  ; Load local var raw
 INVOKEVIRTUAL 3 ; Call TerminalHandler.tcsetattr@I@I@Termios
+RET
 .endmethod
 
 .method TerminalHandler.tcgetattr@I@Termios
@@ -90,6 +93,7 @@ INVOKEVIRTUAL 3 ; Call TerminalHandler.tcsetattr@I@I@Termios
 LOAD_ARG 2  ; Load parameter 't'
 PUSH 1
 PUTFIELD 0 ; Set field 'clflag'
+RET
 .endmethod
 
 .method TerminalHandler.tcsetattr@I@I@Termios
@@ -100,6 +104,7 @@ PUSH 25
 PUSH 1
 SYS_CALL WRITE ; write
 POP
+RET
 .endmethod
 
 .method TerminalHandler.TerminalHandler

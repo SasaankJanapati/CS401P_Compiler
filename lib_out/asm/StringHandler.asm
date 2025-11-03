@@ -109,6 +109,7 @@ LOAD_ARG 4 ; Load array parameter 'res'
 LOAD 2  ; Load local var i
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
+RET
 .endmethod
 
 .method StringHandler.compare@[C@[C
@@ -224,6 +225,7 @@ LOAD_ARG 1 ; Load array parameter 'str'
 LOAD_ARG 2  ; Load parameter 'pos'
 LOAD_ARG 3  ; Load parameter 'c'
 ASTORE ; Store to array element
+RET
 .endmethod
 
 .method StringHandler.erase@[C@I@I
@@ -280,6 +282,7 @@ LOAD_ARG 3  ; Load parameter 'len'
 ISUB
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
+RET
 .endmethod
 
 .method StringHandler.islower@C

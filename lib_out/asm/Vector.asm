@@ -59,11 +59,12 @@ LOAD 0 ; Load array variable 'buf'
 PUSH 0
 LOAD_ARG 0  ; Load parameter 'c'
 ASTORE ; Store to array element
-PUSH 0 ; Push local index for buffer 'buf'
+LOAD 0  ; Load local var buf
 PUSH 1
 PUSH 1
 SYS_CALL WRITE ; write
 POP
+RET
 .endmethod
 
 .method writeString@[C
@@ -92,6 +93,7 @@ STORE 1 ; Store local 'i'
 POP
 JMP L0
 L2:
+RET
 .endmethod
 
 .method intToString@I@[C
@@ -216,6 +218,7 @@ ICMP_LT
 JNZ L13
 JMP L15
 L15:
+RET
 .endmethod
 
 .method doubleToString@F@[C
@@ -372,6 +375,7 @@ LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 11  ; Load local var i
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
+RET
 .endmethod
 
 .method VectorInt.VectorInt
@@ -412,6 +416,7 @@ IADD ; ++
 STORE -1 ; Store local 'vsize'
 POP
 L34:
+RET
 .endmethod
 
 .method VectorInt.pop_back
@@ -431,6 +436,7 @@ ISUB ; --
 STORE -1 ; Store local 'vsize'
 POP
 L36:
+RET
 .endmethod
 
 .method VectorInt.size
@@ -491,6 +497,7 @@ GETFIELD 0
 LOAD_ARG 1  ; Load parameter 'index'
 LOAD_ARG 2  ; Load parameter 'val'
 ASTORE ; Store to array element
+RET
 .endmethod
 
 .method VectorInt.clear
@@ -499,6 +506,7 @@ ASTORE ; Store to array element
 LOAD_ARG 0 ; 'this' for assignment to member 'vsize'
 PUSH 0
 PUTFIELD 1
+RET
 .endmethod
 
 .method VectorInt.empty
@@ -555,6 +563,7 @@ JMP L49
 L49:
 PUSH 92 ; Push ASCII for char '\n'
 CALL writeChar@C
+RET
 .endmethod
 
 .method VectorFloat.VectorFloat
@@ -595,6 +604,7 @@ IADD ; ++
 STORE -1 ; Store local 'vsize'
 POP
 L51:
+RET
 .endmethod
 
 .method VectorFloat.pop_back
@@ -614,6 +624,7 @@ ISUB ; --
 STORE -1 ; Store local 'vsize'
 POP
 L53:
+RET
 .endmethod
 
 .method VectorFloat.size
@@ -674,6 +685,7 @@ GETFIELD 0
 LOAD_ARG 1  ; Load parameter 'index'
 LOAD_ARG 2  ; Load parameter 'val'
 ASTORE ; Store to array element
+RET
 .endmethod
 
 .method VectorFloat.clear
@@ -682,6 +694,7 @@ ASTORE ; Store to array element
 LOAD_ARG 0 ; 'this' for assignment to member 'vsize'
 PUSH 0
 PUTFIELD 1
+RET
 .endmethod
 
 .method VectorFloat.empty
@@ -738,6 +751,7 @@ JMP L66
 L66:
 PUSH 92 ; Push ASCII for char '\n'
 CALL writeChar@C
+RET
 .endmethod
 
 .method VectorChar.VectorChar
@@ -778,6 +792,7 @@ IADD ; ++
 STORE -1 ; Store local 'vsize'
 POP
 L68:
+RET
 .endmethod
 
 .method VectorChar.pop_back
@@ -797,6 +812,7 @@ ISUB ; --
 STORE -1 ; Store local 'vsize'
 POP
 L70:
+RET
 .endmethod
 
 .method VectorChar.size
@@ -856,6 +872,7 @@ GETFIELD 0
 LOAD_ARG 1  ; Load parameter 'index'
 LOAD_ARG 2  ; Load parameter 'val'
 ASTORE ; Store to array element
+RET
 .endmethod
 
 .method VectorChar.clear
@@ -864,6 +881,7 @@ ASTORE ; Store to array element
 LOAD_ARG 0 ; 'this' for assignment to member 'vsize'
 PUSH 0
 PUTFIELD 1
+RET
 .endmethod
 
 .method VectorChar.empty
@@ -914,4 +932,5 @@ JMP L83
 L83:
 PUSH 92 ; Push ASCII for char '\n'
 CALL writeChar@C
+RET
 .endmethod

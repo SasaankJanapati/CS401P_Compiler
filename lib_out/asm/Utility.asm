@@ -30,6 +30,7 @@ LOAD_ARG 2  ; Load parameter 'b'
 STORE 1 ; Store to local 'a'
 LOAD 0  ; Load local var temp
 STORE 2 ; Store to local 'b'
+RET
 .endmethod
 
 .method Utility.swap@F@F
@@ -41,6 +42,7 @@ LOAD_ARG 2  ; Load parameter 'b'
 STORE 1 ; Store to local 'a'
 LOAD 1  ; Load local var temp
 STORE 2 ; Store to local 'b'
+RET
 .endmethod
 
 .method Utility.swap2@C@C
@@ -52,6 +54,7 @@ LOAD_ARG 2  ; Load parameter 'b'
 STORE 1 ; Store to local 'a'
 LOAD 2  ; Load local var temp
 STORE 2 ; Store to local 'b'
+RET
 .endmethod
 
 .method Utility.Utility
@@ -110,6 +113,7 @@ PUSH 1
 IADD ; ++
 STORE_ARG 2 ; Store param 'n'
 POP
+RET
 .endmethod
 
 .method Algorithms.sort@[I@I
@@ -175,6 +179,7 @@ IADD
 STORE 4 ; Store to local 'i'
 JMP L6
 L8:
+RET
 .endmethod
 
 .method Algorithms.reverse@[I@I
@@ -212,6 +217,7 @@ ISUB
 STORE 7 ; Store to local 'end'
 JMP L14
 L16:
+RET
 .endmethod
 
 .method Algorithms.Algorithms

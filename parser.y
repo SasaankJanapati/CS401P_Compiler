@@ -881,6 +881,7 @@ FUNCDECL: /*TYPE IDEN '(' PARAMLIST ')' ';' {
               $$ = create_node("FUNC_DEF", mangled_name);
               add_child($$, $1); add_child($$, $5); add_child($$, $8);
               $$->scope_table = func_scope;
+              $$->data_type = strdup(current_function_return_type);
               current_function_return_type = NULL;
               fprintf(stderr, "Debug: Functionend '%s' with mangled name '%s' declared.\n", $2, mangled_name);
           }
@@ -2163,23 +2164,9 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             // Stack: ..., localidx, size, file_handle -> ...
             // Grammar args: fd, buffer, size
             
-            // Handle the 'buffer' argument (child 1) specially to get its local index
-            Node* buffer_expr = node->children[1];
-            if (strcmp(buffer_expr->type, "IDEN") == 0) {
-                Symbol* s = lookup_symbol_codegen(buffer_expr->value, scope, class_context);
-                if (s && (strcmp(s->kind, "variable") == 0 || strcmp(s->kind, "object") == 0 || strcmp(s->kind, "member_var") == 0 || strcmp(s->kind, "member_obj") == 0 || strcmp(s->kind, "parameter") == 0)) {
-                    emit("PUSH %d ; Push local index for buffer '%s'", s->address, s->name);
-                } else {
-                    fprintf(stderr, "Codegen Error: Syscall buffer argument '%s' must be a local variable.\n", buffer_expr->value);
-                    generate_code_for_expr(buffer_expr, scope, class_context); // Fallback
-                }
-            } else {
-                 //fprintf(stderr, "Codegen Error: Syscall buffer argument must be a simple variable identifier.\n");
-                 generate_code_for_expr(buffer_expr, scope, class_context); // Fallback
-            }
-
-            generate_code_for_expr(node->children[2], scope, class_context); // size
-            generate_code_for_expr(node->children[0], scope, class_context); // fd (file_handle)
+            generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: buffer
+            generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: size
+            generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: fd
 
             if (strcmp(node->value, "read") == 0) {
                 emit("SYS_CALL READ ; read");

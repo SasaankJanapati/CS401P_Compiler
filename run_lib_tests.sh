@@ -47,4 +47,11 @@ for file in lib/*.gs; do
     fi
 done
 
+echo "Checking for errors in stderr files..."
+grep -ir "Error" lib_out/stderr/*
+
+
+echo "Checking for warnings in stderr files..."
+grep -ir "Warning" lib_out/stderr/*
+
 echo "All files processed."

@@ -25,7 +25,7 @@ class_end
 PUSH 1
 NEWARRAY C
 STORE 0 ; Store new flattened array to 'c'
-PUSH 0 ; Push local index for buffer 'c'
+LOAD 0  ; Load local var c
 PUSH 1
 PUSH 0
 SYS_CALL READ ; read
@@ -48,11 +48,12 @@ LOAD 2 ; Load array variable 'arr'
 PUSH 0
 LOAD_ARG 1  ; Load parameter 'c'
 ASTORE ; Store to array element
-PUSH 2 ; Push local index for buffer 'arr'
+LOAD 2  ; Load local var arr
 PUSH 1
 PUSH 1
 SYS_CALL WRITE ; write
 POP
+RET
 .endmethod
 
 .method IOHandler.readString@[C@I
@@ -102,6 +103,7 @@ LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 3  ; Load local var i
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
+RET
 .endmethod
 
 .method IOHandler.stringToInt@[C
@@ -306,6 +308,7 @@ ICMP_LT
 JNZ L25
 JMP L27
 L27:
+RET
 .endmethod
 
 .method IOHandler.doubleToString@F@[C
@@ -463,6 +466,7 @@ LOAD_ARG 2 ; Load array parameter 'arr'
 LOAD 17  ; Load local var i
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
+RET
 .endmethod
 
 .method IOHandler.readInt
@@ -508,6 +512,7 @@ STORE 22 ; Store local 'i'
 POP
 JMP L45
 L47:
+RET
 .endmethod
 
 .method IOHandler.printInt@I
@@ -523,6 +528,7 @@ INVOKEVIRTUAL 4 ; Call IOHandler.intToString@I@[C
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 23  ; Load local var buf
 INVOKEVIRTUAL 7 ; Call IOHandler.printString@[C
+RET
 .endmethod
 
 .method IOHandler.printDouble@F
@@ -538,6 +544,7 @@ INVOKEVIRTUAL 5 ; Call IOHandler.doubleToString@F@[C
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 24  ; Load local var buf
 INVOKEVIRTUAL 7 ; Call IOHandler.printString@[C
+RET
 .endmethod
 
 .method IOHandler.IOHandler

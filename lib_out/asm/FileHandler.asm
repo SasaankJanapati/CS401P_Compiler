@@ -118,6 +118,7 @@ LOAD_ARG 0 ; 'this' for assignment to member 'isOpen'
 PUSH 0
 PUTFIELD 1
 L11:
+RET
 .endmethod
 
 .method FileHandler.fread@[C@I
@@ -134,7 +135,7 @@ PUSH 1
 INEG
 RET
 L13:
-PUSH 1 ; Push local index for buffer 'buffer'
+LOAD_ARG 1  ; Load parameter 'buffer'
 LOAD_ARG 2  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
@@ -158,7 +159,7 @@ PUSH 1
 INEG
 RET
 L15:
-PUSH 1 ; Push local index for buffer 'buffer'
+LOAD_ARG 1  ; Load parameter 'buffer'
 LOAD_ARG 2  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
