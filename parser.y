@@ -1914,10 +1914,26 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
     } else if(strcmp(node->type, "NUM") == 0 && strcmp(node->data_type, "F") == 0) {
         emit("FPUSH %s", node->value); // Assuming FPUSH for floats
     } else if (strcmp(node->type, "STRING_LIT") == 0) {
-        int index = get_string_label_index(node->value);
-        if (index != -1) {
-            emit("PUSH STR_%d  ; Push address of string literal %s", index, node->value);
+        char* literal = node->value;
+        int len = strlen(literal) - 2; // Subtract 2 for the quotes
+        if (len < 0) len = 0; // Handle empty string ""
+
+        // strndup is useful here to get just the content without quotes
+        char* content = strndup(literal + 1, len);
+        
+        emit("PUSH %d ; String literal length", len);
+        emit("NEWARRAY C ; Create char array for string \"%s\"", content);
+        
+        // Loop to populate the array
+        for (int i = 0; i < len; i++) {
+            emit("DUP ; Duplicate array ref for ASTORE");
+            emit("PUSH %d ; Push index %d", i, i);
+            // Push the ASCII value of the character
+            emit("PUSH %d ; Push char '%c'", (int)content[i], content[i]);
+            emit("ASTORE ; Store char in array");
         }
+        
+        free(content);
     } else if(strcmp(node->type, "CHAR_LIT") == 0) {
         int ascii_val = (int)node->value[1];
         emit("PUSH %d ; Push ASCII for char %s", ascii_val, node->value);
@@ -2683,17 +2699,17 @@ int main(int argc, char **argv) {
 
             // --- Emit Code Section ---
             generate_assembly(root, all_tables[0]);
-            if (string_pool_count > 0 || array_descriptor_count > 0) {
-                fprintf(asm_file, "\n.data\n");
-                for (int i = 0; i < string_pool_count; i++) {
-                    fprintf(asm_file, "STR_%d: .word \"%s\"\n", i, string_pool[i]);
-                    free(string_pool[i]);
-                }
-                for (int i = 0; i < array_descriptor_count; i++) {
-                    fprintf(asm_file, "A%d: .word \"%s\"\n", i, array_descriptor_pool[i]);
-                    free(array_descriptor_pool[i]);
-                }
-            }
+            // if (string_pool_count > 0 || array_descriptor_count > 0) {
+            //     fprintf(asm_file, "\n.data\n");
+            //     for (int i = 0; i < string_pool_count; i++) {
+            //         fprintf(asm_file, "STR_%d: .word \"%s\"\n", i, string_pool[i]);
+            //         free(string_pool[i]);
+            //     }
+            //     for (int i = 0; i < array_descriptor_count; i++) {
+            //         fprintf(asm_file, "A%d: .word \"%s\"\n", i, array_descriptor_pool[i]);
+            //         free(array_descriptor_pool[i]);
+            //     }
+            // }
             
             fclose(asm_file);
         }
