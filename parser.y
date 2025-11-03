@@ -1608,7 +1608,7 @@ void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* scop
             int parent_ctor_idx = get_method_vtable_index(parent->name, parent_ctor_sig);
             if (parent_ctor_idx != -1) {
                 emit("LOAD_ARG 0 ; 'this' for parent constructor call");
-                emit("INVOKESPECIAL %d ; super() call to %s", parent_ctor_idx, parent_ctor_sig);
+                emit("INVOKEVIRTUAL %d ; super() call to %s", parent_ctor_idx, parent_ctor_sig);
             }
             free(parent_ctor_sig);
         }
@@ -1680,7 +1680,7 @@ void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* scop
                 } else {
                     emit("NEW %s", field->type);
                     emit("DUP");
-                    emit("INVOKESPECIAL %d ; Call default ctor for %s", ctor_idx, field->type);
+                    emit("INVOKEVIRTUAL %d ; Call default ctor for %s", ctor_idx, field->type);
                     emit("PUTFIELD %d ; Store new instance to '%s'", field_idx, field->name);
                 }
                 free(default_ctor_sig);
@@ -1735,12 +1735,12 @@ void generate_code_for_boolean_expr(Node* node, int true_label, int false_label,
         generate_code_for_expr(node->children[1], scope, class_context);
         if (strcmp(node->value, "<") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_LT");
         else if (strcmp(node->value, "<") == 0) emit("ICMP_LT");
-        else if (strcmp(node->value, "<=") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_LE");
-        else if (strcmp(node->value, "<=") == 0) emit("ICMP_LE");
+        else if (strcmp(node->value, "<=") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_LEQ");
+        else if (strcmp(node->value, "<=") == 0) emit("ICMP_LEQ");
         else if (strcmp(node->value, "!=") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_NEQ");
         else if (strcmp(node->value, "!=") == 0) emit("ICMP_NEQ");
-        else if (strcmp(node->value, ">=") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_GE");
-        else if (strcmp(node->value, ">=") == 0) emit("ICMP_GE");        else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
+        else if (strcmp(node->value, ">=") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_GEQ");
+        else if (strcmp(node->value, ">=") == 0) emit("ICMP_GEQ");        else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
         else if (strcmp(node->value, "==") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_EQ");
         else if (strcmp(node->value, "==") == 0) emit("ICMP_EQ");
         else if (strcmp(node->value, ">") == 0 && strcmp(node->children[0]->data_type, "F") == 0 && strcmp(node->children[1]->data_type, "F") == 0) emit("FCMP_GT");
@@ -2089,7 +2089,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: filename
             generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: mode/flags
             generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: permissions
-            emit("OPEN ; open");
+            emit("SYS_CALL OPEN ; open");
         } else if (strcmp(node->value, "read") == 0 || strcmp(node->value, "write") == 0) {
             // Stack: ..., localidx, size, file_handle -> ...
             // Grammar args: fd, buffer, size
@@ -2113,14 +2113,14 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             generate_code_for_expr(node->children[0], scope, class_context); // fd (file_handle)
 
             if (strcmp(node->value, "read") == 0) {
-                emit("READ ; read");
+                emit("SYS_CALL READ ; read");
             } else { // write
-                emit("WRITE ; write");
+                emit("SYS_CALL WRITE ; write");
             }
         } else if (strcmp(node->value, "close") == 0) {
             // The grammar for SYS_CLOSE only has one argument: the file descriptor
             generate_code_for_expr(node->children[0], scope, class_context); // fd
-            emit("CLOSE ; close"); 
+            emit("SYS_CALL CLOSE ; close"); 
         }
     } else {
         fprintf(stderr, "Codegen Warning: Unhandled expression type '%s'\n", node->type);
@@ -2325,7 +2325,7 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         fprintf(stderr, "Debug: Constructor signature for '%s': %s\n", s->type, constructor_sig);
         int ctor_idx = get_method_vtable_index(s->type, constructor_sig);
         fprintf(stderr, "Debug: Constructor index for '%s': %d\n", s->type, ctor_idx);
-        emit("INVOKESPECIAL %d ; Call constructor for %s", ctor_idx, s->type);
+        emit("INVOKEVIRTUAL %d ; Call constructor for %s", ctor_idx, s->type);
         free(constructor_sig);
 
         if(strcmp(s->kind, "member_obj") == 0) {
