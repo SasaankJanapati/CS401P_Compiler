@@ -90,11 +90,11 @@ LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 3  ; Load local var i
 LOAD 4  ; Load local var c
 ASTORE ; Store to array element
-LOAD 3 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 3 ; Load local 'i'
 DUP
-STORE 3 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 3 ; Store local 'i'
 POP
 JMP L0
 L2:
@@ -124,11 +124,11 @@ L6:
 PUSH 1
 INEG
 STORE 7 ; Store to local 'sign'
-LOAD 5 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 5 ; Load local 'i'
 DUP
-STORE 5 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 5 ; Store local 'i'
 POP
 L7:
 L8:
@@ -170,11 +170,11 @@ JMP L13
 L12:
 JMP L10 ; BREAK
 L13:
-LOAD 5 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 5 ; Load local 'i'
 DUP
-STORE 5 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 5 ; Store local 'i'
 POP
 JMP L8
 L10:
@@ -198,11 +198,11 @@ JNZ L15
 JMP L16
 L15:
 LOAD_ARG 2 ; Load array parameter 'arr'
-LOAD 8 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 8 ; Load local 'i'
 DUP
-STORE 8 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 8 ; Store local 'i'
 PUSH 48 ; Push ASCII for char '0'
 ASTORE ; Store to array element
 LOAD_ARG 2 ; Load array parameter 'arr'
@@ -231,11 +231,11 @@ JNZ L20
 JMP L21
 L20:
 LOAD_ARG 2 ; Load array parameter 'arr'
-LOAD 8 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 8 ; Load local 'i'
 DUP
-STORE 8 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 8 ; Store local 'i'
 LOAD_ARG 1  ; Load parameter 'x'
 PUSH 10
 IMOD
@@ -253,11 +253,11 @@ JNZ L22
 JMP L23
 L22:
 LOAD_ARG 2 ; Load array parameter 'arr'
-LOAD 8 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 8 ; Load local 'i'
 DUP
-STORE 8 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 8 ; Store local 'i'
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
 L23:
@@ -292,11 +292,11 @@ ISUB
 LOAD 11  ; Load local var temp
 ASTORE ; Store to array element
 L26:
-LOAD 10 ; Load current value of j for post increment
-PUSH 1
-IADD
+LOAD 10 ; Load local 'j'
 DUP
-STORE 10 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 10 ; Store local 'j'
 L24:
 LOAD 10  ; Load local var j
 LOAD 8  ; Load local var i
@@ -368,11 +368,11 @@ JNZ L33
 JMP L34
 L33:
 LOAD_ARG 2 ; Load array parameter 'arr'
-LOAD 17 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 17 ; Load local 'i'
 DUP
-STORE 17 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 17 ; Store local 'i'
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
 L34:
@@ -386,27 +386,27 @@ JNZ L36
 JMP L37
 L36:
 LOAD_ARG 2 ; Load array parameter 'arr'
-LOAD 17 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 17 ; Load local 'i'
 DUP
-STORE 17 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 17 ; Store local 'i'
 LOAD 16 ; Load array variable 'intBuf'
-LOAD 18 ; Load current value of j for post increment
-PUSH 1
-IADD
+LOAD 18 ; Load local 'j'
 DUP
-STORE 18 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 18 ; Store local 'j'
 ALOAD
 ASTORE ; Store to array element
 JMP L35
 L37:
 LOAD_ARG 2 ; Load array parameter 'arr'
-LOAD 17 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 17 ; Load local 'i'
 DUP
-STORE 17 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 17 ; Store local 'i'
 PUSH 46 ; Push ASCII for char '.'
 ASTORE ; Store to array element
 PUSH 0
@@ -437,21 +437,21 @@ STORE 20 ; Store to local 'digit'
 JMP L42
 L44:
 LOAD_ARG 2 ; Load array parameter 'arr'
-LOAD 17 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 17 ; Load local 'i'
 DUP
-STORE 17 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 17 ; Store local 'i'
 PUSH 48 ; Push ASCII for char '0'
 LOAD 20  ; Load local var digit
 IADD
 ASTORE ; Store to array element
 L40:
-LOAD 19 ; Load current value of k for post increment
-PUSH 1
-IADD
+LOAD 19 ; Load local 'k'
 DUP
-STORE 19 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 19 ; Store local 'k'
 L38:
 LOAD 19  ; Load local var k
 PUSH 6
@@ -500,11 +500,11 @@ LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 22  ; Load local var i
 ALOAD
 INVOKEVIRTUAL 1 ; Call IOHandler.writeChar@C
-LOAD 22 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 22 ; Load local 'i'
 DUP
-STORE 22 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 22 ; Store local 'i'
 POP
 JMP L45
 L47:

@@ -104,11 +104,11 @@ LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD_ARG 3  ; Load parameter 'pos'
 LOAD_ARG 4  ; Load parameter 'value'
 ASTORE ; Store to array element
-LOAD 2 ; Load current value of n for post increment
-PUSH 1
-IADD
+LOAD_ARG 2 ; Load param 'n'
 DUP
-STORE 2 ; Post increment
+PUSH 1
+IADD ; ++
+STORE_ARG 2 ; Store param 'n'
 POP
 .endmethod
 

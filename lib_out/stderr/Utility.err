@@ -188,6 +188,7 @@ Current scope table number: 2
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: POST_INC (++)
+                  Gen EXPR for POST-INC/DEC on LVAL type: IDEN
         Gen ASM for: FUNC_DEF (sort@[I@I) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: DECL_STMT () Scope: 2

@@ -267,11 +267,11 @@ FDIV
 STORE 10 ; Store to local 'term'
 LOAD 10  ; Load local var term
 STORE 11 ; Store to local 'sum'
-LOAD 12 ; Load current value of n for post increment
-PUSH 1
-IADD
+LOAD 12 ; Load local 'n'
 DUP
-STORE 12 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 12 ; Store local 'n'
 POP
 JMP L29
 L31:

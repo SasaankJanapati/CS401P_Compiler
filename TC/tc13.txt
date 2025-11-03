@@ -1,6 +1,7 @@
 class TestClass {
     public int publicVar;
     protected int protectedVar;
+    public int as[10];
     public void publicMethod() {
             int z = 15;
             z = 20;
@@ -27,10 +28,13 @@ int main() {
     int a[n+1][n-1];
     TestClass b[5];
     int x = 5;
-    string s = "Hello, World!";
     a[x+2][5-2] = 11;
     obj.publicMethod();
     obj.publicVar = 10;
     x = a[3][4] + 34;
+    obj.publicVar++;
+    a[3][4]++;
+    x++;
+    obj.as[0]++;
     return 0;
 }

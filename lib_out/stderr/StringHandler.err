@@ -180,6 +180,7 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: POST_INC (++)
+                        Gen EXPR for POST-INC/DEC on LVAL type: IDEN
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
                 Gen EXPR for: IDEN (len)
@@ -229,6 +230,7 @@ Gen ASM for: PROGRAM () Scope: 0
                             Gen EXPR for: IDEN (start)
                             Gen EXPR for: IDEN (i)
                 Gen EXPR for: POST_INC (++)
+                  Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                 Gen BOOL EXPR for: BOOL_OP (&&)
                   Gen BOOL EXPR for: REL_OP (<)
                     Gen EXPR for: IDEN (i)
@@ -287,6 +289,7 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: POST_INC (++)
+                        Gen EXPR for POST-INC/DEC on LVAL type: IDEN
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
                 Gen EXPR for: BIN_OP (-)
@@ -339,6 +342,7 @@ Gen ASM for: PROGRAM () Scope: 0
                         Gen LVAL ADDR for: ARRAY_ACCESS (str)
                           Gen EXPR for: IDEN (i)
                 Gen EXPR for: POST_DEC (--)
+                  Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                 Gen BOOL EXPR for: REL_OP (>=)
                   Gen EXPR for: IDEN (i)
                   Gen EXPR for: IDEN (pos)
@@ -385,6 +389,7 @@ Gen ASM for: PROGRAM () Scope: 0
                             Gen EXPR for: IDEN (i)
                             Gen EXPR for: IDEN (len)
                 Gen EXPR for: POST_INC (++)
+                  Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                 Gen BOOL EXPR for: REL_OP (<)
                   Gen EXPR for: BIN_OP (+)
                     Gen EXPR for: IDEN (i)

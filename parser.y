@@ -1724,6 +1724,21 @@ char* get_base_array_type(const char* mangled_type) {
     }
 }
 
+void emit_inc_dec_op(const char* node_type, const char* data_type) {
+    // Check if it's an increment or decrement
+    bool is_inc = (strcmp(node_type, "POST_INC") == 0 || strcmp(node_type, "PRE_INC") == 0);
+    
+    if (strcmp(data_type, "F") == 0) {
+        // Handle float
+        emit("FPUSH 1.0");
+        emit(is_inc ? "FADD ; ++" : "FSUB ; --");
+    } else { 
+        // Handle integer or char
+        emit("PUSH 1");
+        emit(is_inc ? "IADD ; ++" : "ISUB ; --");
+    }
+}
+
 
 
 void generate_code_for_boolean_expr(Node* node, int true_label, int false_label, SymbolTable* scope, ClassInfo* class_context) {
@@ -2028,120 +2043,113 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             emit("ALOAD ; Load array element");
         }
     } else if (strcmp(node->type, "POST_INC") == 0 || strcmp(node->type, "POST_DEC") == 0) {
-        // Load current value
         Node* lval = node->children[0];
-        if(strcmp(lval->type,"MEMBER_VAR_ACCESS") == 0)
-        {
-            generate_code_for_expr(lval,scope,class_context);
-            char * class_name = lval->children[0]->data_type;
-            ClassInfo* cls_info = find_class_info(class_name);
-            FieldInfo* field_info = find_field_in_hierarchy(lval->value,cls_info);
-            int field_index = get_field_index(class_name,lval->value);
-            emit("GETFIELD %d",field_index);
-            if (strcmp(node->type, "POST_INC") == 0) {
-                if(strcmp(field_info->type, "I") == 0) {
-                    emit("PUSH 1");
-                    emit("IADD");
-                } else if(strcmp(field_info->type, "F") == 0) {
-                    emit("FPUSH 1.0");
-                    emit("FADD");
-                }
-            } else {
-                if(strcmp(field_info->type, "I") == 0) {
-                    emit("PUSH 1");
-                    emit("ISUB");
-                } else if(strcmp(field_info->type, "F") == 0) {
-                    emit("FPUSH 1.0");
-                    emit("FSUB");
-                }
-            }
-            emit("DUP"); // Duplicate for storing back
-            generate_code_for_expr(lval,scope,class_context);
-            emit("PUTFIELD %d",field_index);
-        } else {
+        debug_print("Gen EXPR for POST-INC/DEC on LVAL type: %s", lval->type);
+
+        if (strcmp(lval->type, "IDEN") == 0) {
             Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
-            if(s) {
-                emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
-                if (strcmp(node->type, "POST_INC") == 0) {
-                    if(strcmp(s->type, "I") == 0) {
-                        emit("PUSH 1");
-                        emit("IADD");
-                    } else if(strcmp(s->type, "F") == 0) {
-                        emit("FPUSH 1.0");
-                        emit("FADD");
-                    }
-                } else {
-                    if(strcmp(s->type, "I") == 0) {
-                        emit("PUSH 1");
-                        emit("ISUB");
-                    } else if(strcmp(s->type, "F") == 0) {
-                        emit("FPUSH 1.0");
-                        emit("FSUB");
-                    }
-                }
-                emit("DUP"); // Duplicate for storing back
-                emit("STORE %d ; Post %s", s->address, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement"); 
-            } else {
-                fprintf(stderr, "Codegen Error: Undefined symbol '%s' for pre inc/dec.\n", lval->value);
+            if (!s) {
+                fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post-op.\n", lval->value);
+                return;
             }
+            
+            // 1. Load the old value
+            if (strcmp(s->kind, "parameter") == 0) {
+                emit("LOAD_ARG %d ; Load param '%s'", s->address, s->name);
+            } else {
+                emit("LOAD %d ; Load local '%s'", s->address, s->name);
+            }
+            
+            // 2. DUP the old value. This copy is the result of the expression.
+            emit("DUP");
+            
+            // 3. Perform the operation on the top copy to create the new value.
+            emit_inc_dec_op(node->type, lval->data_type);
+            
+            // 4. Store the new value back.
+            if (strcmp(s->kind, "parameter") == 0) {
+                emit("STORE_ARG %d ; Store param '%s'", s->address, s->name);
+            } else {
+                emit("STORE %d ; Store local '%s'", s->address, s->name);
+            }
+            // The stack now contains the old value from step 2.
+
+        } else if (strcmp(lval->type, "ARRAY_ACCESS") == 0 || strcmp(lval->type, "MEMBER_ARRAY_ACCESS") == 0) {
+            
+            generate_code_for_lval_address(lval, scope, class_context);
+            emit("ALOAD");
+            generate_code_for_lval_address(lval, scope, class_context);
+            generate_code_for_lval_address(lval, scope, class_context);
+            emit("ALOAD");
+            emit_inc_dec_op(node->type, lval->data_type);
+            emit("ASTORE");
+            // The stack now contains the old value from step 4.
+
+        } else if (strcmp(lval->type, "MEMBER_VAR_ACCESS") == 0) {
+            int field_idx = get_field_index(lval->children[0]->data_type, lval->value);
+            generate_code_for_lval_address(lval, scope, class_context);
+            emit("GETFIELD %d", field_idx);
+            generate_code_for_lval_address(lval, scope, class_context);
+            generate_code_for_lval_address(lval, scope, class_context);
+            emit("GETFIELD %d", field_idx);
+            emit_inc_dec_op(node->type, lval->data_type);
+            emit("PUTFIELD %d", field_idx);
         }
     } else if (strcmp(node->type, "PRE_INC") == 0 || strcmp(node->type, "PRE_DEC") == 0) {
-        // Load current value
         Node* lval = node->children[0];
-        if(strcmp(lval->type,"MEMBER_VAR_ACCESS") == 0)
-        {
-            generate_code_for_expr(lval,scope,class_context);
-            char * class_name = lval->children[0]->data_type;
-            ClassInfo* cls_info = find_class_info(class_name);
-            FieldInfo* field_info = find_field_in_hierarchy(lval->value,cls_info);
-            int field_index = get_field_index(class_name,lval->value);
-            emit("GETFIELD %d",field_index);
-            emit("DUP"); // Duplicate for storing back
-            if (strcmp(node->type, "PRE_INC") == 0) {
-                if(strcmp(field_info->type, "I") == 0) {
-                    emit("PUSH 1");
-                    emit("IADD");
-                } else if(strcmp(field_info->type, "F") == 0) {
-                    emit("FPUSH 1.0");
-                    emit("FADD");
-                }
-            } else {
-                if(strcmp(field_info->type, "I") == 0) {
-                    emit("PUSH 1");
-                    emit("ISUB");
-                } else if(strcmp(field_info->type, "F") == 0) {
-                    emit("FPUSH 1.0");
-                    emit("FSUB");
-                }
-            }
-            generate_code_for_expr(lval,scope,class_context);
-            emit("PUTFIELD %d",field_index);
-        } else {
+        debug_print("Gen EXPR for PRE-INC/DEC on LVAL type: %s", lval->type);
+
+        if (strcmp(lval->type, "IDEN") == 0) {
             Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
-            if(s) {
-                emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
-                emit("DUP"); // Duplicate for storing back
-                if (strcmp(node->type, "PRE_INC") == 0) {
-                    if(strcmp(s->type, "I") == 0) {
-                        emit("PUSH 1");
-                        emit("IADD");
-                    } else if(strcmp(s->type, "F") == 0) {
-                        emit("FPUSH 1.0");
-                        emit("FADD");
-                    }
-                } else {
-                    if(strcmp(s->type, "I") == 0) {
-                        emit("PUSH 1");
-                        emit("ISUB");
-                    } else if(strcmp(s->type, "F") == 0) {
-                        emit("FPUSH 1.0");
-                        emit("FSUB");
-                    }
-                }
-                emit("STORE %d ; Post %s", s->address, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement"); 
-            } else {
-                fprintf(stderr, "Codegen Error: Undefined symbol '%s' for pre inc/dec.\n", lval->value);
+            if (!s) {
+                fprintf(stderr, "Codegen Error: Undefined symbol '%s' for pre-op.\n", lval->value);
+                return;
             }
+            
+            // 1. Load the old value
+            if (strcmp(s->kind, "parameter") == 0) {
+                emit("LOAD_ARG %d ; Load param '%s'", s->address, s->name);
+            } else {
+                emit("LOAD %d ; Load local '%s'", s->address, s->name);
+            }
+            
+            // 2. Perform the operation to create the new value.
+            emit_inc_dec_op(node->type, lval->data_type);
+            
+            // 3. DUP the new value. This copy is the result of the expression.
+            emit("DUP");
+
+            // 4. Store the new value back.
+            if (strcmp(s->kind, "parameter") == 0) {
+                emit("STORE_ARG %d ; Store param '%s'", s->address, s->name);
+            } else {
+                emit("STORE %d ; Store local '%s'", s->address, s->name);
+            }
+            // The stack now contains the new value from step 3.
+
+        } else if (strcmp(lval->type, "ARRAY_ACCESS") == 0 || strcmp(lval->type, "MEMBER_ARRAY_ACCESS") == 0) {
+            // 1. Push address components (array_ref, index)
+            generate_code_for_lval_address(lval, scope, class_context);
+            generate_code_for_lval_address(lval, scope, class_context);
+            emit("ALOAD");
+            emit_inc_dec_op(node->type, lval->data_type);
+            emit("ASTORE");
+
+            generate_code_for_lval_address(lval, scope, class_context);
+            emit("ALOAD");  
+            // The stack now contains the new value from step 5.
+
+        } else if (strcmp(lval->type, "MEMBER_VAR_ACCESS") == 0) {
+            int field_idx = get_field_index(lval->children[0]->data_type, lval->value);
+            // 1. Push address component (object_ref)
+            generate_code_for_lval_address(lval, scope, class_context);
+            generate_code_for_lval_address(lval, scope, class_context);
+            emit("GETFIELD %d", field_idx);
+            emit_inc_dec_op(node->type, lval->data_type);
+            emit("PUTFIELD %d", field_idx);
+
+            generate_code_for_lval_address(lval, scope, class_context);
+            emit("GETFIELD %d", field_idx);
         }
     } else if (strcmp(node->type, "SYS_CALL") == 0) {
         if (strcmp(node->value, "open") == 0) {

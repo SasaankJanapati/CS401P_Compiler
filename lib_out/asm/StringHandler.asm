@@ -35,11 +35,11 @@ ICMP_NEQ
 JNZ L1
 JMP L2
 L1:
-LOAD 0 ; Load current value of len for post increment
-PUSH 1
-IADD
+LOAD 0 ; Load local 'len'
 DUP
-STORE 0 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 0 ; Store local 'len'
 POP
 JMP L0
 L2:
@@ -85,11 +85,11 @@ IADD
 ALOAD
 ASTORE ; Store to array element
 L8:
-LOAD 2 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 2 ; Load local 'i'
 DUP
-STORE 2 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 2 ; Store local 'i'
 L6:
 LOAD 2  ; Load local var i
 LOAD_ARG 3  ; Load parameter 'len'
@@ -152,11 +152,11 @@ ALOAD
 ISUB
 RET
 L16:
-LOAD 3 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 3 ; Load local 'i'
 DUP
-STORE 3 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 3 ; Store local 'i'
 POP
 JMP L11
 L13:
@@ -208,11 +208,11 @@ LOAD 5  ; Load local var i
 ALOAD
 ASTORE ; Store to array element
 L23:
-LOAD 5 ; Load current value of i for post decrement
-PUSH 1
-ISUB
+LOAD 5 ; Load local 'i'
 DUP
-STORE 5 ; Post decrement
+PUSH 1
+ISUB ; --
+STORE 5 ; Store local 'i'
 L21:
 LOAD 5  ; Load local var i
 LOAD_ARG 2  ; Load parameter 'pos'
@@ -260,11 +260,11 @@ IADD
 ALOAD
 ASTORE ; Store to array element
 L30:
-LOAD 7 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 7 ; Load local 'i'
 DUP
-STORE 7 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 7 ; Store local 'i'
 L28:
 LOAD 7  ; Load local var i
 LOAD_ARG 3  ; Load parameter 'len'

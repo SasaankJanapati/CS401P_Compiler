@@ -84,11 +84,11 @@ LOAD_ARG 0 ; Load array parameter 'arr'
 LOAD 1  ; Load local var i
 ALOAD
 CALL writeChar@C
-LOAD 1 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 1 ; Load local 'i'
 DUP
-STORE 1 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 1 ; Store local 'i'
 POP
 JMP L0
 L2:
@@ -108,11 +108,11 @@ JNZ L3
 JMP L4
 L3:
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 2 ; Load local 'i'
 DUP
-STORE 2 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 2 ; Store local 'i'
 PUSH 48 ; Push ASCII for char '0'
 ASTORE ; Store to array element
 LOAD_ARG 1 ; Load array parameter 'arr'
@@ -141,11 +141,11 @@ JNZ L8
 JMP L9
 L8:
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 2 ; Load local 'i'
 DUP
-STORE 2 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 2 ; Store local 'i'
 LOAD_ARG 0  ; Load parameter 'x'
 PUSH 10
 IMOD
@@ -163,11 +163,11 @@ JNZ L10
 JMP L11
 L10:
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 2 ; Load local 'i'
 DUP
-STORE 2 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 2 ; Store local 'i'
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
 L11:
@@ -202,11 +202,11 @@ ISUB
 LOAD 5  ; Load local var tmp
 ASTORE ; Store to array element
 L14:
-LOAD 4 ; Load current value of j for post increment
-PUSH 1
-IADD
+LOAD 4 ; Load local 'j'
 DUP
-STORE 4 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 4 ; Store local 'j'
 L12:
 LOAD 4  ; Load local var j
 LOAD 2  ; Load local var i
@@ -277,11 +277,11 @@ JNZ L21
 JMP L22
 L21:
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 11 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 11 ; Load local 'i'
 DUP
-STORE 11 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 11 ; Store local 'i'
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
 L22:
@@ -295,27 +295,27 @@ JNZ L24
 JMP L25
 L24:
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 11 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 11 ; Load local 'i'
 DUP
-STORE 11 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 11 ; Store local 'i'
 LOAD 10 ; Load array variable 'intBuf'
-LOAD 12 ; Load current value of j for post increment
-PUSH 1
-IADD
+LOAD 12 ; Load local 'j'
 DUP
-STORE 12 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 12 ; Store local 'j'
 ALOAD
 ASTORE ; Store to array element
 JMP L23
 L25:
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 11 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 11 ; Load local 'i'
 DUP
-STORE 11 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 11 ; Store local 'i'
 PUSH 46 ; Push ASCII for char '.'
 ASTORE ; Store to array element
 PUSH 0
@@ -346,21 +346,21 @@ STORE 14 ; Store to local 'digit'
 JMP L30
 L32:
 LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 11 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 11 ; Load local 'i'
 DUP
-STORE 11 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 11 ; Store local 'i'
 PUSH 48 ; Push ASCII for char '0'
 LOAD 14  ; Load local var digit
 IADD
 ASTORE ; Store to array element
 L28:
-LOAD 13 ; Load current value of k for post increment
-PUSH 1
-IADD
+LOAD 13 ; Load local 'k'
 DUP
-STORE 13 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 13 ; Store local 'k'
 L26:
 LOAD 13  ; Load local var k
 PUSH 6
@@ -405,11 +405,11 @@ LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 LOAD_ARG 1  ; Load parameter 'val'
 ASTORE ; Store to array element
-LOAD -1 ; Load current value of vsize for post increment
-PUSH 1
-IADD
+LOAD -1 ; Load local 'vsize'
 DUP
-STORE -1 ; Post increment
+PUSH 1
+IADD ; ++
+STORE -1 ; Store local 'vsize'
 POP
 L34:
 .endmethod
@@ -424,11 +424,11 @@ ICMP_GT
 JNZ L35
 JMP L36
 L35:
-LOAD -1 ; Load current value of vsize for post decrement
-PUSH 1
-ISUB
+LOAD -1 ; Load local 'vsize'
 DUP
-STORE -1 ; Post decrement
+PUSH 1
+ISUB ; --
+STORE -1 ; Store local 'vsize'
 POP
 L36:
 .endmethod
@@ -540,11 +540,11 @@ CALL writeString@[C
 PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L48:
-LOAD 15 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 15 ; Load local 'i'
 DUP
-STORE 15 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 15 ; Store local 'i'
 L46:
 LOAD 15  ; Load local var i
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
@@ -588,11 +588,11 @@ LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 LOAD_ARG 1  ; Load parameter 'val'
 ASTORE ; Store to array element
-LOAD -1 ; Load current value of vsize for post increment
-PUSH 1
-IADD
+LOAD -1 ; Load local 'vsize'
 DUP
-STORE -1 ; Post increment
+PUSH 1
+IADD ; ++
+STORE -1 ; Store local 'vsize'
 POP
 L51:
 .endmethod
@@ -607,11 +607,11 @@ ICMP_GT
 JNZ L52
 JMP L53
 L52:
-LOAD -1 ; Load current value of vsize for post decrement
-PUSH 1
-ISUB
+LOAD -1 ; Load local 'vsize'
 DUP
-STORE -1 ; Post decrement
+PUSH 1
+ISUB ; --
+STORE -1 ; Store local 'vsize'
 POP
 L53:
 .endmethod
@@ -723,11 +723,11 @@ CALL writeString@[C
 PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L65:
-LOAD 17 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 17 ; Load local 'i'
 DUP
-STORE 17 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 17 ; Store local 'i'
 L63:
 LOAD 17  ; Load local var i
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
@@ -771,11 +771,11 @@ LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 LOAD_ARG 1  ; Load parameter 'val'
 ASTORE ; Store to array element
-LOAD -1 ; Load current value of vsize for post increment
-PUSH 1
-IADD
+LOAD -1 ; Load local 'vsize'
 DUP
-STORE -1 ; Post increment
+PUSH 1
+IADD ; ++
+STORE -1 ; Store local 'vsize'
 POP
 L68:
 .endmethod
@@ -790,11 +790,11 @@ ICMP_GT
 JNZ L69
 JMP L70
 L69:
-LOAD -1 ; Load current value of vsize for post decrement
-PUSH 1
-ISUB
+LOAD -1 ; Load local 'vsize'
 DUP
-STORE -1 ; Post decrement
+PUSH 1
+ISUB ; --
+STORE -1 ; Store local 'vsize'
 POP
 L70:
 .endmethod
@@ -899,11 +899,11 @@ CALL writeChar@C
 PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L82:
-LOAD 19 ; Load current value of i for post increment
-PUSH 1
-IADD
+LOAD 19 ; Load local 'i'
 DUP
-STORE 19 ; Post increment
+PUSH 1
+IADD ; ++
+STORE 19 ; Store local 'i'
 L80:
 LOAD 19  ; Load local var i
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'

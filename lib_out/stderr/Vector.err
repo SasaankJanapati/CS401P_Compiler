@@ -275,6 +275,7 @@ Gen ASM for: PROGRAM () Scope: 0
               Gen ASM for: EXPR_STMT () Scope: 2
                 Gen STMT for: EXPR_STMT () Scope: 2
                   Gen EXPR for: POST_INC (++)
+                    Gen EXPR for POST-INC/DEC on LVAL type: IDEN
     Gen ASM for: FUNC_DEF (intToString@I@[C) Scope: 0
       Gen ASM for: STATEMENTS () Scope: 1
         Gen ASM for: DECL_STMT () Scope: 1
@@ -296,6 +297,7 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen STMT for: ASSIGN () Scope: 2
                   Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                     Gen EXPR for: POST_INC (++)
+                      Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                   Gen EXPR for: CHAR_LIT ('0')
               Gen ASM for: ASSIGN () Scope: 2
                 Gen STMT for: ASSIGN () Scope: 2
@@ -327,6 +329,7 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen STMT for: ASSIGN () Scope: 2
                   Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                     Gen EXPR for: POST_INC (++)
+                      Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                   Gen EXPR for: BIN_OP (+)
                     Gen EXPR for: BIN_OP (%)
                       Gen EXPR for: IDEN (x)
@@ -344,6 +347,7 @@ Gen ASM for: PROGRAM () Scope: 0
               Gen STMT for: ASSIGN () Scope: 1
                 Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                   Gen EXPR for: POST_INC (++)
+                    Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                 Gen EXPR for: CHAR_LIT ('-')
         Gen ASM for: ASSIGN () Scope: 1
           Gen STMT for: ASSIGN () Scope: 1
@@ -387,6 +391,7 @@ Gen ASM for: PROGRAM () Scope: 0
                       Gen EXPR for: NUM (1)
                   Gen EXPR for: IDEN (tmp)
             Gen EXPR for: POST_INC (++)
+              Gen EXPR for POST-INC/DEC on LVAL type: IDEN
             Gen BOOL EXPR for: REL_OP (<)
               Gen EXPR for: IDEN (j)
               Gen EXPR for: BIN_OP (/)
@@ -479,6 +484,7 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen STMT for: ASSIGN () Scope: 2
                   Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                     Gen EXPR for: POST_INC (++)
+                      Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                   Gen EXPR for: CHAR_LIT ('-')
         Gen ASM for: WHILE () Scope: 1
           Gen STMT for: WHILE () Scope: 1
@@ -492,13 +498,16 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen STMT for: ASSIGN () Scope: 2
                   Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                     Gen EXPR for: POST_INC (++)
+                      Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                   Gen EXPR for: ARRAY_ACCESS (intBuf)
                     Gen LVAL ADDR for: ARRAY_ACCESS (intBuf)
                       Gen EXPR for: POST_INC (++)
+                        Gen EXPR for POST-INC/DEC on LVAL type: IDEN
         Gen ASM for: ASSIGN () Scope: 1
           Gen STMT for: ASSIGN () Scope: 1
             Gen LVAL ADDR for: ARRAY_ACCESS (arr)
               Gen EXPR for: POST_INC (++)
+                Gen EXPR for POST-INC/DEC on LVAL type: IDEN
             Gen EXPR for: CHAR_LIT ('.')
         Gen ASM for: FOR () Scope: 1
           Gen STMT for: FOR () Scope: 2
@@ -539,10 +548,12 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen STMT for: ASSIGN () Scope: 3
                   Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                     Gen EXPR for: POST_INC (++)
+                      Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                   Gen EXPR for: BIN_OP (+)
                     Gen EXPR for: CHAR_LIT ('0')
                     Gen EXPR for: IDEN (digit)
             Gen EXPR for: POST_INC (++)
+              Gen EXPR for POST-INC/DEC on LVAL type: IDEN
             Gen BOOL EXPR for: REL_OP (<)
               Gen EXPR for: IDEN (k)
               Gen EXPR for: NUM (6)
@@ -579,6 +590,7 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: POST_INC (++)
+                        Gen EXPR for POST-INC/DEC on LVAL type: IDEN
         Gen ASM for: FUNC_DEF (pop_back) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: IF () Scope: 2
@@ -589,6 +601,7 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen ASM for: EXPR_STMT () Scope: 2
                   Gen STMT for: EXPR_STMT () Scope: 2
                     Gen EXPR for: POST_DEC (--)
+                      Gen EXPR for POST-INC/DEC on LVAL type: IDEN
         Gen ASM for: FUNC_DEF (size) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: RETURN () Scope: 2
@@ -678,6 +691,7 @@ Gen ASM for: PROGRAM () Scope: 0
                       Gen EXPR for: FUNC_CALL (writeChar@C)
                         Gen EXPR for: CHAR_LIT (' ')
                 Gen EXPR for: POST_INC (++)
+                  Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                 Gen BOOL EXPR for: REL_OP (<)
                   Gen EXPR for: IDEN (i)
                   Gen EXPR for: IDEN (vsize)
@@ -713,6 +727,7 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: POST_INC (++)
+                        Gen EXPR for POST-INC/DEC on LVAL type: IDEN
         Gen ASM for: FUNC_DEF (pop_back) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: IF () Scope: 2
@@ -723,6 +738,7 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen ASM for: EXPR_STMT () Scope: 2
                   Gen STMT for: EXPR_STMT () Scope: 2
                     Gen EXPR for: POST_DEC (--)
+                      Gen EXPR for POST-INC/DEC on LVAL type: IDEN
         Gen ASM for: FUNC_DEF (size) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: RETURN () Scope: 2
@@ -812,6 +828,7 @@ Gen ASM for: PROGRAM () Scope: 0
                       Gen EXPR for: FUNC_CALL (writeChar@C)
                         Gen EXPR for: CHAR_LIT (' ')
                 Gen EXPR for: POST_INC (++)
+                  Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                 Gen BOOL EXPR for: REL_OP (<)
                   Gen EXPR for: IDEN (i)
                   Gen EXPR for: IDEN (vsize)
@@ -847,6 +864,7 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: POST_INC (++)
+                        Gen EXPR for POST-INC/DEC on LVAL type: IDEN
         Gen ASM for: FUNC_DEF (pop_back) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: IF () Scope: 2
@@ -857,6 +875,7 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen ASM for: EXPR_STMT () Scope: 2
                   Gen STMT for: EXPR_STMT () Scope: 2
                     Gen EXPR for: POST_DEC (--)
+                      Gen EXPR for POST-INC/DEC on LVAL type: IDEN
         Gen ASM for: FUNC_DEF (size) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: RETURN () Scope: 2
@@ -934,6 +953,7 @@ Gen ASM for: PROGRAM () Scope: 0
                       Gen EXPR for: FUNC_CALL (writeChar@C)
                         Gen EXPR for: CHAR_LIT (' ')
                 Gen EXPR for: POST_INC (++)
+                  Gen EXPR for POST-INC/DEC on LVAL type: IDEN
                 Gen BOOL EXPR for: REL_OP (<)
                   Gen EXPR for: IDEN (i)
                   Gen EXPR for: IDEN (vsize)

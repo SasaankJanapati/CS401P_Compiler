@@ -386,6 +386,7 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: POST_INC (++)
+                        Gen EXPR for POST-INC/DEC on LVAL type: IDEN
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
                 Gen EXPR for: IDEN (sum)
