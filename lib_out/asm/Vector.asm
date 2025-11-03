@@ -62,7 +62,7 @@ ASTORE ; Store to array element
 PUSH 0 ; Push local index for buffer 'buf'
 PUSH 1
 PUSH 1
-WRITE ; write
+SYS_CALL WRITE ; write
 POP
 .endmethod
 
@@ -85,9 +85,9 @@ LOAD 1  ; Load local var i
 ALOAD
 CALL writeChar@C
 LOAD 1 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 1 ; Post increment
 POP
 JMP L0
@@ -109,9 +109,9 @@ JMP L4
 L3:
 LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 2 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 2 ; Post increment
 PUSH 48 ; Push ASCII for char '0'
 ASTORE ; Store to array element
@@ -142,9 +142,9 @@ JMP L9
 L8:
 LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 2 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 2 ; Post increment
 LOAD_ARG 0  ; Load parameter 'x'
 PUSH 10
@@ -164,9 +164,9 @@ JMP L11
 L10:
 LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 2 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 2 ; Post increment
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
@@ -203,9 +203,9 @@ LOAD 5  ; Load local var tmp
 ASTORE ; Store to array element
 L14:
 LOAD 4 ; Load current value of j for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 4 ; Post increment
 L12:
 LOAD 4  ; Load local var j
@@ -242,7 +242,7 @@ STORE 8 ; Init temp
 L18:
 LOAD 8  ; Load local var temp
 FPUSH 1.0
-FCMP_GE
+FCMP_GEQ
 JNZ L19
 JMP L20
 L19:
@@ -278,9 +278,9 @@ JMP L22
 L21:
 LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 11 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 11 ; Post increment
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
@@ -296,15 +296,15 @@ JMP L25
 L24:
 LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 11 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 11 ; Post increment
 LOAD 10 ; Load array variable 'intBuf'
 LOAD 12 ; Load current value of j for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 12 ; Post increment
 ALOAD
 ASTORE ; Store to array element
@@ -312,9 +312,9 @@ JMP L23
 L25:
 LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 11 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 11 ; Post increment
 PUSH 46 ; Push ASCII for char '.'
 ASTORE ; Store to array element
@@ -331,7 +331,7 @@ STORE 14 ; Init digit
 L30:
 LOAD 9  ; Load local var frac
 FPUSH 1.0
-FCMP_GE
+FCMP_GEQ
 JNZ L31
 JMP L32
 L31:
@@ -347,9 +347,9 @@ JMP L30
 L32:
 LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 11 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 11 ; Post increment
 PUSH 48 ; Push ASCII for char '0'
 LOAD 14  ; Load local var digit
@@ -357,9 +357,9 @@ IADD
 ASTORE ; Store to array element
 L28:
 LOAD 13 ; Load current value of k for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 13 ; Post increment
 L26:
 LOAD 13  ; Load local var k
@@ -406,9 +406,9 @@ GETFIELD 1
 LOAD_ARG 1  ; Load parameter 'val'
 ASTORE ; Store to array element
 LOAD -1 ; Load current value of vsize for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE -1 ; Post increment
 POP
 L34:
@@ -425,9 +425,9 @@ JNZ L35
 JMP L36
 L35:
 LOAD -1 ; Load current value of vsize for post decrement
-DUP
 PUSH 1
 ISUB
+DUP
 STORE -1 ; Post decrement
 POP
 L36:
@@ -453,7 +453,7 @@ L39:
 LOAD_ARG 1  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
-ICMP_GE
+ICMP_GEQ
 JNZ L37
 JMP L38
 L37:
@@ -480,7 +480,7 @@ L42:
 LOAD_ARG 1  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
-ICMP_GE
+ICMP_GEQ
 JNZ L40
 JMP L41
 L40:
@@ -541,9 +541,9 @@ PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L48:
 LOAD 15 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 15 ; Post increment
 L46:
 LOAD 15  ; Load local var i
@@ -589,9 +589,9 @@ GETFIELD 1
 LOAD_ARG 1  ; Load parameter 'val'
 ASTORE ; Store to array element
 LOAD -1 ; Load current value of vsize for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE -1 ; Post increment
 POP
 L51:
@@ -608,9 +608,9 @@ JNZ L52
 JMP L53
 L52:
 LOAD -1 ; Load current value of vsize for post decrement
-DUP
 PUSH 1
 ISUB
+DUP
 STORE -1 ; Post decrement
 POP
 L53:
@@ -636,7 +636,7 @@ L56:
 LOAD_ARG 1  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
-ICMP_GE
+ICMP_GEQ
 JNZ L54
 JMP L55
 L54:
@@ -663,7 +663,7 @@ L59:
 LOAD_ARG 1  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
-ICMP_GE
+ICMP_GEQ
 JNZ L57
 JMP L58
 L57:
@@ -724,9 +724,9 @@ PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L65:
 LOAD 17 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 17 ; Post increment
 L63:
 LOAD 17  ; Load local var i
@@ -772,9 +772,9 @@ GETFIELD 1
 LOAD_ARG 1  ; Load parameter 'val'
 ASTORE ; Store to array element
 LOAD -1 ; Load current value of vsize for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE -1 ; Post increment
 POP
 L68:
@@ -791,9 +791,9 @@ JNZ L69
 JMP L70
 L69:
 LOAD -1 ; Load current value of vsize for post decrement
-DUP
 PUSH 1
 ISUB
+DUP
 STORE -1 ; Post decrement
 POP
 L70:
@@ -819,7 +819,7 @@ L73:
 LOAD_ARG 1  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
-ICMP_GE
+ICMP_GEQ
 JNZ L71
 JMP L72
 L71:
@@ -845,7 +845,7 @@ L76:
 LOAD_ARG 1  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
-ICMP_GE
+ICMP_GEQ
 JNZ L74
 JMP L75
 L74:
@@ -900,9 +900,9 @@ PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L82:
 LOAD 19 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 19 ; Post increment
 L80:
 LOAD 19  ; Load local var i

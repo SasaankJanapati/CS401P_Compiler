@@ -73,7 +73,7 @@ LOAD_ARG 0 ; 'this' for assignment to member 'fd'
 LOAD_ARG 1  ; Load parameter 'filename'
 LOAD 0  ; Load local var flags
 PUSH 0644
-OPEN ; open
+SYS_CALL OPEN ; open
 PUTFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
@@ -108,7 +108,7 @@ JMP L11
 L10:
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
-CLOSE ; close
+SYS_CALL CLOSE ; close
 POP
 LOAD_ARG 0 ; 'this' for assignment to member 'fd'
 PUSH 1
@@ -138,7 +138,7 @@ PUSH 1 ; Push local index for buffer 'buffer'
 LOAD_ARG 2  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
-READ ; read
+SYS_CALL READ ; read
 STORE 1 ; Init bytesRead
 LOAD 1  ; Load local var bytesRead
 RET
@@ -162,7 +162,7 @@ PUSH 1 ; Push local index for buffer 'buffer'
 LOAD_ARG 2  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
-WRITE ; write
+SYS_CALL WRITE ; write
 STORE 2 ; Init bytesWritten
 LOAD 2  ; Load local var bytesWritten
 RET

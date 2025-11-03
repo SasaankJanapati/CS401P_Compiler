@@ -268,9 +268,9 @@ STORE 10 ; Store to local 'term'
 LOAD 10  ; Load local var term
 STORE 11 ; Store to local 'sum'
 LOAD 12 ; Load current value of n for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 12 ; Post increment
 POP
 JMP L29

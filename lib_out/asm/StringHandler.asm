@@ -36,9 +36,9 @@ JNZ L1
 JMP L2
 L1:
 LOAD 0 ; Load current value of len for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 0 ; Post increment
 POP
 JMP L0
@@ -62,7 +62,7 @@ JMP L5
 L5:
 LOAD_ARG 2  ; Load parameter 'start'
 LOAD 1  ; Load local var n
-ICMP_GE
+ICMP_GEQ
 JNZ L3
 JMP L4
 L3:
@@ -86,9 +86,9 @@ ALOAD
 ASTORE ; Store to array element
 L8:
 LOAD 2 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 2 ; Post increment
 L6:
 LOAD 2  ; Load local var i
@@ -153,9 +153,9 @@ ISUB
 RET
 L16:
 LOAD 3 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 3 ; Post increment
 POP
 JMP L11
@@ -209,14 +209,14 @@ ALOAD
 ASTORE ; Store to array element
 L23:
 LOAD 5 ; Load current value of i for post decrement
-DUP
 PUSH 1
 ISUB
+DUP
 STORE 5 ; Post decrement
 L21:
 LOAD 5  ; Load local var i
 LOAD_ARG 2  ; Load parameter 'pos'
-ICMP_GE
+ICMP_GEQ
 JNZ L22
 JMP L24
 L24:
@@ -241,7 +241,7 @@ JMP L27
 L27:
 LOAD_ARG 2  ; Load parameter 'pos'
 LOAD 6  ; Load local var n
-ICMP_GE
+ICMP_GEQ
 JNZ L25
 JMP L26
 L25:
@@ -261,9 +261,9 @@ ALOAD
 ASTORE ; Store to array element
 L30:
 LOAD 7 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 7 ; Post increment
 L28:
 LOAD 7  ; Load local var i
@@ -287,13 +287,13 @@ ASTORE ; Store to array element
 .limit locals 2
 LOAD_ARG 1  ; Load parameter 'c'
 PUSH 97 ; Push ASCII for char 'a'
-ICMP_GE
+ICMP_GEQ
 JNZ L35
 JMP L33
 L35:
 LOAD_ARG 1  ; Load parameter 'c'
 PUSH 122 ; Push ASCII for char 'z'
-ICMP_LE
+ICMP_LEQ
 JNZ L32
 JMP L33
 L32: ; Return true
@@ -310,13 +310,13 @@ RET
 .limit locals 2
 LOAD_ARG 1  ; Load parameter 'c'
 PUSH 65 ; Push ASCII for char 'A'
-ICMP_GE
+ICMP_GEQ
 JNZ L39
 JMP L37
 L39:
 LOAD_ARG 1  ; Load parameter 'c'
 PUSH 90 ; Push ASCII for char 'Z'
-ICMP_LE
+ICMP_LEQ
 JNZ L36
 JMP L37
 L36: ; Return true
@@ -431,13 +431,13 @@ RET
 .limit locals 2
 LOAD_ARG 1  ; Load parameter 'c'
 PUSH 48 ; Push ASCII for char '0'
-ICMP_GE
+ICMP_GEQ
 JNZ L55
 JMP L53
 L55:
 LOAD_ARG 1  ; Load parameter 'c'
 PUSH 57 ; Push ASCII for char '9'
-ICMP_LE
+ICMP_LEQ
 JNZ L52
 JMP L53
 L52: ; Return true

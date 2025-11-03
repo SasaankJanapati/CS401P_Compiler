@@ -28,7 +28,7 @@ STORE 0 ; Store new flattened array to 'c'
 PUSH 0 ; Push local index for buffer 'c'
 PUSH 1
 PUSH 0
-READ ; read
+SYS_CALL READ ; read
 POP
 LOAD 0 ; Load array variable 'c'
 PUSH 0
@@ -51,7 +51,7 @@ ASTORE ; Store to array element
 PUSH 2 ; Push local index for buffer 'arr'
 PUSH 1
 PUSH 1
-WRITE ; write
+SYS_CALL WRITE ; write
 POP
 .endmethod
 
@@ -91,9 +91,9 @@ LOAD 3  ; Load local var i
 LOAD 4  ; Load local var c
 ASTORE ; Store to array element
 LOAD 3 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 3 ; Post increment
 POP
 JMP L0
@@ -125,9 +125,9 @@ PUSH 1
 INEG
 STORE 7 ; Store to local 'sign'
 LOAD 5 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 5 ; Post increment
 POP
 L7:
@@ -144,7 +144,7 @@ LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 5  ; Load local var i
 ALOAD
 PUSH 48 ; Push ASCII for char '0'
-ICMP_GE
+ICMP_GEQ
 JNZ L14
 JMP L12
 L14:
@@ -152,7 +152,7 @@ LOAD_ARG 1 ; Load array parameter 'arr'
 LOAD 5  ; Load local var i
 ALOAD
 PUSH 57 ; Push ASCII for char '9'
-ICMP_LE
+ICMP_LEQ
 JNZ L11
 JMP L12
 L11:
@@ -171,9 +171,9 @@ L12:
 JMP L10 ; BREAK
 L13:
 LOAD 5 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 5 ; Post increment
 POP
 JMP L8
@@ -199,9 +199,9 @@ JMP L16
 L15:
 LOAD_ARG 2 ; Load array parameter 'arr'
 LOAD 8 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 8 ; Post increment
 PUSH 48 ; Push ASCII for char '0'
 ASTORE ; Store to array element
@@ -232,9 +232,9 @@ JMP L21
 L20:
 LOAD_ARG 2 ; Load array parameter 'arr'
 LOAD 8 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 8 ; Post increment
 LOAD_ARG 1  ; Load parameter 'x'
 PUSH 10
@@ -254,9 +254,9 @@ JMP L23
 L22:
 LOAD_ARG 2 ; Load array parameter 'arr'
 LOAD 8 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 8 ; Post increment
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
@@ -293,9 +293,9 @@ LOAD 11  ; Load local var temp
 ASTORE ; Store to array element
 L26:
 LOAD 10 ; Load current value of j for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 10 ; Post increment
 L24:
 LOAD 10  ; Load local var j
@@ -332,7 +332,7 @@ STORE 14 ; Init temp
 L30:
 LOAD 14  ; Load local var temp
 FPUSH 1.0
-FCMP_GE
+FCMP_GEQ
 JNZ L31
 JMP L32
 L31:
@@ -369,9 +369,9 @@ JMP L34
 L33:
 LOAD_ARG 2 ; Load array parameter 'arr'
 LOAD 17 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 17 ; Post increment
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
@@ -387,15 +387,15 @@ JMP L37
 L36:
 LOAD_ARG 2 ; Load array parameter 'arr'
 LOAD 17 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 17 ; Post increment
 LOAD 16 ; Load array variable 'intBuf'
 LOAD 18 ; Load current value of j for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 18 ; Post increment
 ALOAD
 ASTORE ; Store to array element
@@ -403,9 +403,9 @@ JMP L35
 L37:
 LOAD_ARG 2 ; Load array parameter 'arr'
 LOAD 17 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 17 ; Post increment
 PUSH 46 ; Push ASCII for char '.'
 ASTORE ; Store to array element
@@ -422,7 +422,7 @@ STORE 20 ; Init digit
 L42:
 LOAD 15  ; Load local var frac
 FPUSH 1.0
-FCMP_GE
+FCMP_GEQ
 JNZ L43
 JMP L44
 L43:
@@ -438,9 +438,9 @@ JMP L42
 L44:
 LOAD_ARG 2 ; Load array parameter 'arr'
 LOAD 17 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 17 ; Post increment
 PUSH 48 ; Push ASCII for char '0'
 LOAD 20  ; Load local var digit
@@ -448,9 +448,9 @@ IADD
 ASTORE ; Store to array element
 L40:
 LOAD 19 ; Load current value of k for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 19 ; Post increment
 L38:
 LOAD 19  ; Load local var k
@@ -501,9 +501,9 @@ LOAD 22  ; Load local var i
 ALOAD
 INVOKEVIRTUAL 1 ; Call IOHandler.writeChar@C
 LOAD 22 ; Load current value of i for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 22 ; Post increment
 POP
 JMP L45

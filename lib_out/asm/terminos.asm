@@ -63,7 +63,7 @@ INVOKEVIRTUAL 2 ; Call TerminalHandler.tcgetattr@I@Termios
 PUSH STR_0  ; Push address of string literal "Raw mode enabled.\n"
 PUSH 18
 PUSH 1
-WRITE ; write
+SYS_CALL WRITE ; write
 POP
 LOAD 0  ; Load local var raw
 LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
@@ -98,7 +98,7 @@ PUTFIELD 0 ; Set field 'clflag'
 PUSH STR_1  ; Push address of string literal "Termios attributes set.\n"
 PUSH 25
 PUSH 1
-WRITE ; write
+SYS_CALL WRITE ; write
 POP
 .endmethod
 
@@ -108,7 +108,7 @@ POP
 LOAD_ARG 0      ; Push 'this' reference for field 'Eorigtermios'
 NEW Termios
 DUP
-INVOKESPECIAL 0 ; Call default ctor for Termios
+INVOKEVIRTUAL 0 ; Call default ctor for Termios
 PUTFIELD 0 ; Store new instance to 'Eorigtermios'
 RET
 .endmethod

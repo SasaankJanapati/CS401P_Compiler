@@ -105,9 +105,9 @@ LOAD_ARG 3  ; Load parameter 'pos'
 LOAD_ARG 4  ; Load parameter 'value'
 ASTORE ; Store to array element
 LOAD 2 ; Load current value of n for post increment
-DUP
 PUSH 1
 IADD
+DUP
 STORE 2 ; Post increment
 POP
 .endmethod
@@ -220,7 +220,7 @@ L16:
 LOAD_ARG 0      ; Push 'this' reference for field 'util'
 NEW Utility
 DUP
-INVOKESPECIAL 3 ; Call default ctor for Utility
+INVOKEVIRTUAL 3 ; Call default ctor for Utility
 PUTFIELD 0 ; Store new instance to 'util'
 RET
 .endmethod

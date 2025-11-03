@@ -1095,7 +1095,7 @@ ARGLIST: ARGLIST ',' EXPR { $$ = $1; add_child($$, $3); }
        ;
 TERM: LVAL { $$ = $1; }
     | NUM  { $$ = create_node("NUM", $1); $$->data_type = (strchr($1, '.')) ? strdup("F") : strdup("I"); }
-    | STR  { $$ = create_node("STRING_LIT", $1); $$->data_type = strdup("string"); }
+    | STR  { $$ = create_node("STRING_LIT", $1); $$->data_type = strdup("[C"); }
     | CHR  { $$ = create_node("CHAR_LIT", $1); $$->data_type = strdup("C"); }
     // | TR   { $$ = create_node("BOOL_CONST", "true"); $$->data_type="B"; }
     // | FL   { $$ = create_node("BOOL_CONST", "false"); $$->data_type="B"; }
@@ -1359,9 +1359,10 @@ MEMBERACCESS: LVAL '.' IDEN {
                        char* type = strdup(field->type);
                        Node* temp_idx = $4;
                        while(temp_idx) {
+                            fprintf(stderr," t at type %s\n",type);
                            if(strncmp(type, "[", 1) == 0) {
                                char* inner = strdup(type + 1);
-                               inner[strlen(inner)-1] = '\0';
+                               //inner[strlen(inner)-1] = '\0';
                                type = inner;
                            } else {
                                 fprintf(stderr, "Error line %d: Invalid indexing on non-array type for member '%s'\n", yylineno, $3);
@@ -2029,58 +2030,118 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
     } else if (strcmp(node->type, "POST_INC") == 0 || strcmp(node->type, "POST_DEC") == 0) {
         // Load current value
         Node* lval = node->children[0];
-        Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
-        if(s) {
-            emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
-            emit("DUP"); // Duplicate for storing back
+        if(strcmp(lval->type,"MEMBER_VAR_ACCESS") == 0)
+        {
+            generate_code_for_expr(lval,scope,class_context);
+            char * class_name = lval->children[0]->data_type;
+            ClassInfo* cls_info = find_class_info(class_name);
+            FieldInfo* field_info = find_field_in_hierarchy(lval->value,cls_info);
+            int field_index = get_field_index(class_name,lval->value);
+            emit("GETFIELD %d",field_index);
             if (strcmp(node->type, "POST_INC") == 0) {
-                if(strcmp(s->type, "I") == 0) {
+                if(strcmp(field_info->type, "I") == 0) {
                     emit("PUSH 1");
                     emit("IADD");
-                } else if(strcmp(s->type, "F") == 0) {
+                } else if(strcmp(field_info->type, "F") == 0) {
                     emit("FPUSH 1.0");
                     emit("FADD");
                 }
             } else {
-                if(strcmp(s->type, "I") == 0) {
+                if(strcmp(field_info->type, "I") == 0) {
                     emit("PUSH 1");
                     emit("ISUB");
-                } else if(strcmp(s->type, "F") == 0) {
+                } else if(strcmp(field_info->type, "F") == 0) {
                     emit("FPUSH 1.0");
                     emit("FSUB");
                 }
             }
-            emit("STORE %d ; Post %s", s->address, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");  
+            emit("DUP"); // Duplicate for storing back
+            generate_code_for_expr(lval,scope,class_context);
+            emit("PUTFIELD %d",field_index);
         } else {
-            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for post inc/dec.\n", lval->value);
+            Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
+            if(s) {
+                emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
+                if (strcmp(node->type, "POST_INC") == 0) {
+                    if(strcmp(s->type, "I") == 0) {
+                        emit("PUSH 1");
+                        emit("IADD");
+                    } else if(strcmp(s->type, "F") == 0) {
+                        emit("FPUSH 1.0");
+                        emit("FADD");
+                    }
+                } else {
+                    if(strcmp(s->type, "I") == 0) {
+                        emit("PUSH 1");
+                        emit("ISUB");
+                    } else if(strcmp(s->type, "F") == 0) {
+                        emit("FPUSH 1.0");
+                        emit("FSUB");
+                    }
+                }
+                emit("DUP"); // Duplicate for storing back
+                emit("STORE %d ; Post %s", s->address, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement"); 
+            } else {
+                fprintf(stderr, "Codegen Error: Undefined symbol '%s' for pre inc/dec.\n", lval->value);
+            }
         }
     } else if (strcmp(node->type, "PRE_INC") == 0 || strcmp(node->type, "PRE_DEC") == 0) {
         // Load current value
         Node* lval = node->children[0];
-        Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
-        if(s) {
-            emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
-            if (strcmp(node->type, "POST_INC") == 0) {
-                if(strcmp(s->type, "I") == 0) {
+        if(strcmp(lval->type,"MEMBER_VAR_ACCESS") == 0)
+        {
+            generate_code_for_expr(lval,scope,class_context);
+            char * class_name = lval->children[0]->data_type;
+            ClassInfo* cls_info = find_class_info(class_name);
+            FieldInfo* field_info = find_field_in_hierarchy(lval->value,cls_info);
+            int field_index = get_field_index(class_name,lval->value);
+            emit("GETFIELD %d",field_index);
+            emit("DUP"); // Duplicate for storing back
+            if (strcmp(node->type, "PRE_INC") == 0) {
+                if(strcmp(field_info->type, "I") == 0) {
                     emit("PUSH 1");
                     emit("IADD");
-                } else if(strcmp(s->type, "F") == 0) {
+                } else if(strcmp(field_info->type, "F") == 0) {
                     emit("FPUSH 1.0");
                     emit("FADD");
                 }
             } else {
-                if(strcmp(s->type, "I") == 0) {
+                if(strcmp(field_info->type, "I") == 0) {
                     emit("PUSH 1");
                     emit("ISUB");
-                } else if(strcmp(s->type, "F") == 0) {
+                } else if(strcmp(field_info->type, "F") == 0) {
                     emit("FPUSH 1.0");
                     emit("FSUB");
                 }
             }
-            emit("DUP"); // Duplicate for storing back
-            emit("STORE %d ; Post %s", s->address, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement"); 
+            generate_code_for_expr(lval,scope,class_context);
+            emit("PUTFIELD %d",field_index);
         } else {
-            fprintf(stderr, "Codegen Error: Undefined symbol '%s' for pre inc/dec.\n", lval->value);
+            Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
+            if(s) {
+                emit("LOAD %d ; Load current value of %s for post %s", s->address, s->name, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement");
+                emit("DUP"); // Duplicate for storing back
+                if (strcmp(node->type, "PRE_INC") == 0) {
+                    if(strcmp(s->type, "I") == 0) {
+                        emit("PUSH 1");
+                        emit("IADD");
+                    } else if(strcmp(s->type, "F") == 0) {
+                        emit("FPUSH 1.0");
+                        emit("FADD");
+                    }
+                } else {
+                    if(strcmp(s->type, "I") == 0) {
+                        emit("PUSH 1");
+                        emit("ISUB");
+                    } else if(strcmp(s->type, "F") == 0) {
+                        emit("FPUSH 1.0");
+                        emit("FSUB");
+                    }
+                }
+                emit("STORE %d ; Post %s", s->address, (strcmp(node->type, "POST_INC") == 0) ? "increment" : "decrement"); 
+            } else {
+                fprintf(stderr, "Codegen Error: Undefined symbol '%s' for pre inc/dec.\n", lval->value);
+            }
         }
     } else if (strcmp(node->type, "SYS_CALL") == 0) {
         if (strcmp(node->value, "open") == 0) {
