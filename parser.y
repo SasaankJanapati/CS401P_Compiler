@@ -2068,7 +2068,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         // strndup is useful here to get just the content without quotes
         char* content = strndup(literal + 1, len);
         
-        emit("PUSH %d ; String literal length", len);
+        emit("PUSH %d ; String literal length", len+1); // +1 for null terminator
         emit("NEWARRAY C ; Create char array for string \"%s\"", content);
         
         // Loop to populate the array
@@ -2079,6 +2079,12 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             emit("PUSH %d ; Push char '%c'", (int)content[i], content[i]);
             emit("ASTORE ; Store char in array");
         }
+
+        // push '\0' at the end
+        emit("DUP ; Duplicate array ref for ASTORE");
+        emit("PUSH %d ; Push index %d for null terminator", len, len);
+        emit("PUSH 0 ; Push null terminator");
+        emit("ASTORE ; Store null terminator in array");
         
         free(content);
     } else if(strcmp(node->type, "CHAR_LIT") == 0) {

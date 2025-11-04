@@ -66,7 +66,7 @@ LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
 LOAD_ARG 0 ; vm identification
 INVOKEVIRTUAL 2 ; Call TerminalHandler.tcgetattr@I@Termios
-PUSH 19 ; String literal length
+PUSH 20 ; String literal length
 NEWARRAY C ; Create char array for string "Raw mode enabled.\n"
 DUP ; Duplicate array ref for ASTORE
 PUSH 0 ; Push index 0
@@ -144,6 +144,10 @@ DUP ; Duplicate array ref for ASTORE
 PUSH 18 ; Push index 18
 PUSH 110 ; Push char 'n'
 ASTORE ; Store char in array
+DUP ; Duplicate array ref for ASTORE
+PUSH 19 ; Push index 19 for null terminator
+PUSH 0 ; Push null terminator
+ASTORE ; Store null terminator in array
 PUSH 18
 PUSH 1
 SYS_CALL WRITE ; write
@@ -192,7 +196,7 @@ LOAD_ARG 1 ; Copy arg 'flag' to local
 STORE 5
 LOAD_ARG 2 ; Copy arg 't' to local
 STORE 6
-PUSH 25 ; String literal length
+PUSH 26 ; String literal length
 NEWARRAY C ; Create char array for string "Termios attributes set.\n"
 DUP ; Duplicate array ref for ASTORE
 PUSH 0 ; Push index 0
@@ -294,6 +298,10 @@ DUP ; Duplicate array ref for ASTORE
 PUSH 24 ; Push index 24
 PUSH 110 ; Push char 'n'
 ASTORE ; Store char in array
+DUP ; Duplicate array ref for ASTORE
+PUSH 25 ; Push index 25 for null terminator
+PUSH 0 ; Push null terminator
+ASTORE ; Store null terminator in array
 PUSH 25
 PUSH 1
 SYS_CALL WRITE ; write
