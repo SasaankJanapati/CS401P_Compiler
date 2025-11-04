@@ -1166,11 +1166,13 @@ TERM: LVAL { $$ = $1; }
     | DEC LVAL { $$ = create_node("PRE_DEC", "--"); add_child($$, $2); $$->data_type = strdup($2->data_type); }
     ;
 
-SYSCALL: SYS_OPEN '(' EXPR ',' EXPR ',' EXPR ')' ';' {  // filename flags permissions
+SYSCALL: SYS_OPEN '(' EXPR ',' EXPR ')' ';' {  // filename flags 
             $$ = create_node("SYS_CALL", "open");
             add_child($$, $3);
             add_child($$, $5);
-            add_child($$, $7);
+            if (strcmp($5->data_type, "C") != 0) {
+                fprintf(stderr, "Error line %d: 'open' syscall flags must be a char (got '%s')\n", yylineno, $5->data_type);
+            }
             $$->data_type = strdup("I");
          }
         | SYS_CLOSE '(' EXPR ')' ';' {  // fd
@@ -2353,10 +2355,9 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
     } else if (strcmp(node->type, "SYS_CALL") == 0) {
         if (strcmp(node->value, "open") == 0) {
             // Stack: ..., filename, mode -> ..., file_handle
-            // Grammar args: filename, flags, permissions. We'll use flags as the mode.
+            // Grammar args: filename, flags. We'll use flags as the mode.
             generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: filename
             generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: mode/flags
-            generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: permissions
             emit("SYS_CALL OPEN ; open");
         } else if (strcmp(node->value, "read") == 0 || strcmp(node->value, "write") == 0) {
             // Stack: ..., localidx, size, file_handle -> ...

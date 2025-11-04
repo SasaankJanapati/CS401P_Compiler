@@ -76,7 +76,6 @@ L2:
 LOAD_ARG 0 ; 'this' for assignment to member 'fd'
 LOAD 0  ; Load parameter 'filename'
 LOAD 2  ; Load local var flags
-PUSH 0644
 SYS_CALL OPEN ; open
 PUTFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member 'fd'

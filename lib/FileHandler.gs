@@ -21,7 +21,7 @@ class FileHandler {
         else if (mode == 1){  flags = 577;} // write (create/truncate)
         else if (mode == 2){  flags = 1089;} // append
 
-        fd = sys_open(filename, flags, 0644);; // using syscall
+        fd = sys_open(filename, flags);; // using syscall
         if (fd < 0) {
             isOpen = 0;
             return -1; // error

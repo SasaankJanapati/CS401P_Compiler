@@ -3,6 +3,7 @@ Debug: Adding member variable 'isOpen' to class 'FileHandler'
 ---------------Debug: Constructor index for 'FileHandler': 0
 ---------------Debug: Constructor signature for 'FileHandler': FileHandler
 Debug: Building array type for base type 'C' and index node 'INDEX'
+Error line 24: 'open' syscall flags must be a char (got 'I')
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'fopen'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
@@ -87,7 +88,6 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen EXPR for: SYS_CALL (open)
                   Gen EXPR for: IDEN (filename)
                   Gen EXPR for: IDEN (flags)
-                  Gen EXPR for: NUM (0644)
             Gen ASM for: IF () Scope: 2
               Gen STMT for: IF () Scope: 2
                 Gen BOOL EXPR for: REL_OP (<)

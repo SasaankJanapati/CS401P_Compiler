@@ -370,7 +370,7 @@ public
             flags = 1089;
         } // append
 
-        fd = sys_open(filename, flags, 0644);
+        fd = sys_open(filename, flags);
         ; // using syscall
         if (fd < 0)
         {
