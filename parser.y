@@ -772,7 +772,7 @@ char* current_decl_type;
 %token <str_val> OR AND EQ NE LE GE LT GT
 %token <str_val> INC DEC
 %token <str_val> CLASS PUBLIC PRIVATE PROTECTED ABSTRACT NEW
-%token <str_val> SYS_OPEN SYS_CLOSE SYS_READ SYS_WRITE
+%token <str_val> SYS_OPEN SYS_CLOSE SYS_READ SYS_WRITE SYS_EXIT
 %token IMPORT
 %token MEOF
 
@@ -1190,6 +1190,11 @@ SYSCALL: SYS_OPEN '(' EXPR ',' EXPR ',' EXPR ')' ';' {  // filename flags permis
             add_child($$, $3);
             add_child($$, $5);
             add_child($$, $7);
+            $$->data_type = strdup("I");
+         }
+        | SYS_EXIT '(' EXPR ')' ';' { // status
+            $$ = create_node("SYS_CALL", "exit");
+            add_child($$, $3);
             $$->data_type = strdup("I");
          }
         ;
@@ -2370,6 +2375,11 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             // The grammar for SYS_CLOSE only has one argument: the file descriptor
             generate_code_for_expr(node->children[0], scope, class_context); // fd
             emit("SYS_CALL CLOSE ; close"); 
+        } else if (strcmp(node->value, "exit") == 0) {
+            generate_code_for_expr(node->children[0], scope, class_context); // exit code
+            emit("SYS_CALL EXIT ; exit");
+        } else {
+            fprintf(stderr, "Codegen Error: Unsupported system call '%s'\n", node->value);
         }
     } else {
         fprintf(stderr, "Codegen Warning: Unhandled expression type '%s'\n", node->type);

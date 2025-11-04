@@ -38,6 +38,7 @@ extern int yylineno;
 "sys_close"    { return SYS_CLOSE; }
 "sys_read"     { return SYS_READ; }
 "sys_write"    { return SYS_WRITE; }
+"sys_exit"     { return SYS_EXIT; }
 
 "import"        { return IMPORT; }
 
