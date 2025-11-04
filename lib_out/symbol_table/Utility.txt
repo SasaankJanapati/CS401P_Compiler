@@ -13,23 +13,23 @@ swap2                | void            | member_func  | public       | N/A      
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-a                    | I               | parameter    | public       | N/A             | 1            | 4
-b                    | I               | parameter    | public       | N/A             | 2            | 4
-temp                 | I               | variable     | public       | N/A             | 0            | 5
+a                    | I               | parameter    | public       | N/A             | 0            | 4
+b                    | I               | parameter    | public       | N/A             | 1            | 4
+temp                 | I               | variable     | public       | N/A             | 2            | 5
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-a                    | F               | parameter    | public       | N/A             | 1            | 11
-b                    | F               | parameter    | public       | N/A             | 2            | 11
-temp                 | F               | variable     | public       | N/A             | 1            | 12
+a                    | F               | parameter    | public       | N/A             | 3            | 11
+b                    | F               | parameter    | public       | N/A             | 4            | 11
+temp                 | F               | variable     | public       | N/A             | 5            | 12
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-a                    | C               | parameter    | public       | N/A             | 1            | 18
-b                    | C               | parameter    | public       | N/A             | 2            | 18
-temp                 | C               | variable     | public       | N/A             | 2            | 19
+a                    | C               | parameter    | public       | N/A             | 6            | 18
+b                    | C               | parameter    | public       | N/A             | 7            | 18
+temp                 | C               | variable     | public       | N/A             | 8            | 19
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -46,11 +46,11 @@ reverse              | void            | member_func  | public       | N/A      
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-arr                  | [I              | parameter    | public       | N/A             | 1            | 31
-n                    | I               | parameter    | public       | N/A             | 2            | 31
-pos                  | I               | parameter    | public       | N/A             | 3            | 31
-value                | I               | parameter    | public       | N/A             | 4            | 31
-i                    | I               | variable     | public       | N/A             | 3            | 34
+arr                  | [I              | parameter    | public       | N/A             | 9            | 31
+n                    | I               | parameter    | public       | N/A             | 10           | 31
+pos                  | I               | parameter    | public       | N/A             | 11           | 31
+value                | I               | parameter    | public       | N/A             | 12           | 31
+i                    | I               | variable     | public       | N/A             | 13           | 34
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -59,14 +59,14 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-arr                  | [I              | parameter    | public       | N/A             | 1            | 58
-n                    | I               | parameter    | public       | N/A             | 2            | 58
-i                    | I               | variable     | public       | N/A             | 4            | 59
+arr                  | [I              | parameter    | public       | N/A             | 14           | 58
+n                    | I               | parameter    | public       | N/A             | 15           | 58
+i                    | I               | variable     | public       | N/A             | 16           | 59
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-j                    | I               | variable     | public       | N/A             | 5            | 61
+j                    | I               | variable     | public       | N/A             | 17           | 61
 
 --- Scope: 4 (Parent Scope: 3) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -79,10 +79,10 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-arr                  | [I              | parameter    | public       | N/A             | 1            | 74
-n                    | I               | parameter    | public       | N/A             | 2            | 74
-start                | I               | variable     | public       | N/A             | 6            | 75
-end                  | I               | variable     | public       | N/A             | 7            | 76
+arr                  | [I              | parameter    | public       | N/A             | 18           | 74
+n                    | I               | parameter    | public       | N/A             | 19           | 74
+start                | I               | variable     | public       | N/A             | 20           | 75
+end                  | I               | variable     | public       | N/A             | 21           | 76
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared

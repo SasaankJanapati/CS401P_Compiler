@@ -17,7 +17,7 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-src                  | Termios         | parameter    | public       | N/A             | 1            | 11
+src                  | Termios         | parameter    | public       | N/A             | 0            | 11
 
 --- Scope: 1 (Parent Scope: 0) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -35,20 +35,20 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-raw                  | Termios         | object       | public       | N/A             | 0            | 30
+raw                  | Termios         | object       | public       | N/A             | 1            | 30
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-fd                   | I               | parameter    | public       | N/A             | 1            | 36
-t                    | Termios         | parameter    | public       | N/A             | 2            | 36
+fd                   | I               | parameter    | public       | N/A             | 2            | 36
+t                    | Termios         | parameter    | public       | N/A             | 3            | 36
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-fd                   | I               | parameter    | public       | N/A             | 1            | 41
-flag                 | I               | parameter    | public       | N/A             | 2            | 41
-t                    | Termios         | parameter    | public       | N/A             | 3            | 41
+fd                   | I               | parameter    | public       | N/A             | 4            | 41
+flag                 | I               | parameter    | public       | N/A             | 5            | 41
+t                    | Termios         | parameter    | public       | N/A             | 6            | 41
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared

@@ -36,42 +36,46 @@ RET
 .method FileHandler.fopen@[C@I
 .limit stack 4
 .limit locals 3
+LOAD_ARG 0 ; Copy arg 'filename' to local
+STORE 0
+LOAD_ARG 1 ; Copy arg 'mode' to local
+STORE 1
 PUSH 0
-STORE 0 ; Init flags
-LOAD_ARG 2  ; Load parameter 'mode'
+STORE 2 ; Init flags
+LOAD 1  ; Load parameter 'mode'
 PUSH 0
 ICMP_EQ
 JNZ L0
 JMP L1
 L0:
 PUSH 0
-STORE 0 ; Store to local 'flags'
+STORE 2 ; Store to local 'flags'
 JMP L2
 L1:
-LOAD_ARG 2  ; Load parameter 'mode'
+LOAD 1  ; Load parameter 'mode'
 PUSH 1
 ICMP_EQ
 JNZ L3
 JMP L4
 L3:
 PUSH 577
-STORE 0 ; Store to local 'flags'
+STORE 2 ; Store to local 'flags'
 JMP L5
 L4:
-LOAD_ARG 2  ; Load parameter 'mode'
+LOAD 1  ; Load parameter 'mode'
 PUSH 2
 ICMP_EQ
 JNZ L6
 JMP L7
 L6:
 PUSH 1089
-STORE 0 ; Store to local 'flags'
+STORE 2 ; Store to local 'flags'
 L7:
 L5:
 L2:
 LOAD_ARG 0 ; 'this' for assignment to member 'fd'
-LOAD_ARG 1  ; Load parameter 'filename'
-LOAD 0  ; Load local var flags
+LOAD 0  ; Load parameter 'filename'
+LOAD 2  ; Load local var flags
 PUSH 0644
 SYS_CALL OPEN ; open
 PUTFIELD 0
@@ -123,7 +127,11 @@ RET
 
 .method FileHandler.fread@[C@I
 .limit stack 4
-.limit locals 3
+.limit locals 6
+LOAD_ARG 0 ; Copy arg 'buffer' to local
+STORE 3
+LOAD_ARG 1 ; Copy arg 'size' to local
+STORE 4
 LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
 PUSH 0
@@ -135,19 +143,23 @@ PUSH 1
 INEG
 RET
 L13:
-LOAD_ARG 1  ; Load parameter 'buffer'
-LOAD_ARG 2  ; Load parameter 'size'
+LOAD 3  ; Load parameter 'buffer'
+LOAD 4  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
 SYS_CALL READ ; read
-STORE 1 ; Init bytesRead
-LOAD 1  ; Load local var bytesRead
+STORE 5 ; Init bytesRead
+LOAD 5  ; Load local var bytesRead
 RET
 .endmethod
 
 .method FileHandler.fwrite@[C@I
 .limit stack 4
-.limit locals 3
+.limit locals 9
+LOAD_ARG 0 ; Copy arg 'buffer' to local
+STORE 6
+LOAD_ARG 1 ; Copy arg 'size' to local
+STORE 7
 LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
 PUSH 0
@@ -159,13 +171,13 @@ PUSH 1
 INEG
 RET
 L15:
-LOAD_ARG 1  ; Load parameter 'buffer'
-LOAD_ARG 2  ; Load parameter 'size'
+LOAD 6  ; Load parameter 'buffer'
+LOAD 7  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
 SYS_CALL WRITE ; write
-STORE 2 ; Init bytesWritten
-LOAD 2  ; Load local var bytesWritten
+STORE 8 ; Init bytesWritten
+LOAD 8  ; Load local var bytesWritten
 RET
 .endmethod
 

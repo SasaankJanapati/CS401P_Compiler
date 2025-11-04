@@ -247,6 +247,8 @@ Looking up field index for member object 'util' in class 'Algorithms'
                                           Gen EXPR for: IDEN (j)
                                           Gen EXPR for: NUM (1)
 Generating code for method call: swap@I@I on object of type Utility
+                                    Gen EXPR for: IDEN (util)
+Looking up field index for member object 'util' in class 'Algorithms'
                         Gen ASM for: ASSIGN () Scope: 4
                           Gen STMT for: ASSIGN () Scope: 4
                             Gen EXPR for: BIN_OP (+)
@@ -291,6 +293,8 @@ Looking up field index for member object 'util' in class 'Algorithms'
                           Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                             Gen EXPR for: IDEN (end)
 Generating code for method call: swap@I@I on object of type Utility
+                        Gen EXPR for: IDEN (util)
+Looking up field index for member object 'util' in class 'Algorithms'
                   Gen ASM for: ASSIGN () Scope: 3
                     Gen STMT for: ASSIGN () Scope: 3
                       Gen EXPR for: BIN_OP (+)

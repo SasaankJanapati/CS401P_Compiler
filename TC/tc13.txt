@@ -2,7 +2,7 @@ class TestClass {
     public int publicVar;
     protected int protectedVar;
     public int as[10];
-    public void publicMethod() {
+    public void publicMethod(int a, int b) {
             int z = 15;
             z = 20;
             publicVar = 10;
@@ -29,7 +29,7 @@ int main() {
     TestClass b[5];
     int x = 5;
     a[x+2][5-2] = 11;
-    obj.publicMethod();
+    obj.publicMethod(10,10);
     obj.publicVar = 10;
     x = a[3][4] + 34;
     obj.publicVar++;

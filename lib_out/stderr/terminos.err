@@ -108,6 +108,7 @@ Looking up field index for member object 'Eorigtermios' in class 'TerminalHandle
                   Gen EXPR for: IDEN (Eorigtermios)
 Looking up field index for member object 'Eorigtermios' in class 'TerminalHandler'
 Generating code for method call: copyFrom@Termios on object of type Termios
+                  Gen EXPR for: IDEN (raw)
             Gen ASM for: ASSIGN () Scope: 2
               Gen STMT for: ASSIGN () Scope: 2
                 Gen LVAL ADDR for: MEMBER_VAR_ACCESS (clflag)

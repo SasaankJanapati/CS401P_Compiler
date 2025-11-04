@@ -51,15 +51,17 @@ class_end
 
 .method writeChar@C
 .limit stack 4
-.limit locals 1
+.limit locals 2
+LOAD_ARG 0 ; Copy arg 'c' to local
+STORE 0
 PUSH 1
 NEWARRAY C
-STORE 0 ; Store new flattened array to 'buf'
-LOAD 0 ; Load array variable 'buf'
+STORE 1 ; Store new flattened array to 'buf'
+LOAD 1 ; Load array variable 'buf'
 PUSH 0
-LOAD_ARG 0  ; Load parameter 'c'
+LOAD 0  ; Load parameter 'c'
 ASTORE ; Store to array element
-LOAD 0  ; Load local var buf
+LOAD 1  ; Load local var buf
 PUSH 1
 PUSH 1
 SYS_CALL WRITE ; write
@@ -69,27 +71,29 @@ RET
 
 .method writeString@[C
 .limit stack 4
-.limit locals 2
+.limit locals 4
+LOAD_ARG 0 ; Copy arg 'arr' to local
+STORE 2
 PUSH 0
-STORE 1 ; Init i
+STORE 3 ; Init i
 L0:
-LOAD_ARG 0 ; Load array parameter 'arr'
-LOAD 1  ; Load local var i
+LOAD_ARG 2 ; Load array parameter 'arr'
+LOAD 3  ; Load local var i
 ALOAD
 PUSH 92 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L1
 JMP L2
 L1:
-LOAD_ARG 0 ; Load array parameter 'arr'
-LOAD 1  ; Load local var i
+LOAD_ARG 2 ; Load array parameter 'arr'
+LOAD 3  ; Load local var i
 ALOAD
 CALL writeChar@C
-LOAD 1 ; Load local 'i'
+LOAD 3 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 1 ; Store local 'i'
+STORE 3 ; Store local 'i'
 POP
 JMP L0
 L2:
@@ -98,120 +102,124 @@ RET
 
 .method intToString@I@[C
 .limit stack 4
-.limit locals 6
+.limit locals 10
+LOAD_ARG 0 ; Copy arg 'x' to local
+STORE 4
+LOAD_ARG 1 ; Copy arg 'arr' to local
+STORE 5
 PUSH 0
-STORE 3 ; Init neg
+STORE 7 ; Init neg
 PUSH 0
-STORE 2 ; Init i
-LOAD_ARG 0  ; Load parameter 'x'
+STORE 6 ; Init i
+LOAD 4  ; Load parameter 'x'
 PUSH 0
 ICMP_EQ
 JNZ L3
 JMP L4
 L3:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2 ; Load local 'i'
+LOAD_ARG 5 ; Load array parameter 'arr'
+LOAD 6 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 2 ; Store local 'i'
+STORE 6 ; Store local 'i'
 PUSH 48 ; Push ASCII for char '0'
 ASTORE ; Store to array element
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2  ; Load local var i
+LOAD_ARG 5 ; Load array parameter 'arr'
+LOAD 6  ; Load local var i
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
 L4:
-LOAD_ARG 0  ; Load parameter 'x'
+LOAD 4  ; Load parameter 'x'
 PUSH 0
 ICMP_LT
 JNZ L5
 JMP L6
 L5:
 PUSH 1
-STORE 3 ; Store to local 'neg'
-LOAD_ARG 0  ; Load parameter 'x'
+STORE 7 ; Store to local 'neg'
+LOAD 4  ; Load parameter 'x'
 INEG
-STORE 0 ; Store to local 'x'
+STORE 4 ; Store to local 'x'
 L6:
 L7:
-LOAD_ARG 0  ; Load parameter 'x'
+LOAD 4  ; Load parameter 'x'
 PUSH 0
 ICMP_GT
 JNZ L8
 JMP L9
 L8:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2 ; Load local 'i'
+LOAD_ARG 5 ; Load array parameter 'arr'
+LOAD 6 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 2 ; Store local 'i'
-LOAD_ARG 0  ; Load parameter 'x'
+STORE 6 ; Store local 'i'
+LOAD 4  ; Load parameter 'x'
 PUSH 10
 IMOD
 PUSH 48 ; Push ASCII for char '0'
 IADD
 ASTORE ; Store to array element
 PUSH 10
-STORE 0 ; Store to local 'x'
+STORE 4 ; Store to local 'x'
 JMP L7
 L9:
-LOAD 3  ; Load local var neg
+LOAD 7  ; Load local var neg
 PUSH 1
 ICMP_EQ
 JNZ L10
 JMP L11
 L10:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2 ; Load local 'i'
+LOAD_ARG 5 ; Load array parameter 'arr'
+LOAD 6 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 2 ; Store local 'i'
+STORE 6 ; Store local 'i'
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
 L11:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2  ; Load local var i
+LOAD_ARG 5 ; Load array parameter 'arr'
+LOAD 6  ; Load local var i
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 PUSH 0
-STORE 4 ; Init j
+STORE 8 ; Init j
 JMP L12
 L13:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 4  ; Load local var j
+LOAD_ARG 5 ; Load array parameter 'arr'
+LOAD 8  ; Load local var j
 ALOAD
-STORE 5 ; Init tmp
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 4  ; Load local var j
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2  ; Load local var i
-LOAD 4  ; Load local var j
+STORE 9 ; Init tmp
+LOAD_ARG 5 ; Load array parameter 'arr'
+LOAD 8  ; Load local var j
+LOAD_ARG 5 ; Load array parameter 'arr'
+LOAD 6  ; Load local var i
+LOAD 8  ; Load local var j
 ISUB
 PUSH 1
 ISUB
 ALOAD
 ASTORE ; Store to array element
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 2  ; Load local var i
-LOAD 4  ; Load local var j
+LOAD_ARG 5 ; Load array parameter 'arr'
+LOAD 6  ; Load local var i
+LOAD 8  ; Load local var j
 ISUB
 PUSH 1
 ISUB
-LOAD 5  ; Load local var tmp
+LOAD 9  ; Load local var tmp
 ASTORE ; Store to array element
 L14:
-LOAD 4 ; Load local 'j'
+LOAD 8 ; Load local 'j'
 DUP
 PUSH 1
 IADD ; ++
-STORE 4 ; Store local 'j'
+STORE 8 ; Store local 'j'
 L12:
-LOAD 4  ; Load local var j
-LOAD 2  ; Load local var i
+LOAD 8  ; Load local var j
+LOAD 6  ; Load local var i
 PUSH 2
 IDIV
 ICMP_LT
@@ -223,156 +231,160 @@ RET
 
 .method doubleToString@F@[C
 .limit stack 4
-.limit locals 15
+.limit locals 21
+LOAD_ARG 0 ; Copy arg 'val' to local
+STORE 10
+LOAD_ARG 1 ; Copy arg 'arr' to local
+STORE 11
 PUSH 0
-STORE 6 ; Init neg
-LOAD_ARG 0  ; Load parameter 'val'
+STORE 12 ; Init neg
+LOAD 10  ; Load parameter 'val'
 PUSH 0
 ICMP_LT
 JNZ L16
 JMP L17
 L16:
 PUSH 1
-STORE 6 ; Store to local 'neg'
-LOAD_ARG 0  ; Load parameter 'val'
+STORE 12 ; Store to local 'neg'
+LOAD 10  ; Load parameter 'val'
 FNEG
-STORE 0 ; Store to local 'val'
+STORE 10 ; Store to local 'val'
 L17:
 PUSH 0
-STORE 7 ; Init intPart
-LOAD_ARG 0  ; Load parameter 'val'
-STORE 8 ; Init temp
+STORE 13 ; Init intPart
+LOAD 10  ; Load parameter 'val'
+STORE 14 ; Init temp
 L18:
-LOAD 8  ; Load local var temp
+LOAD 14  ; Load local var temp
 FPUSH 1.0
 FCMP_GEQ
 JNZ L19
 JMP L20
 L19:
-LOAD 8  ; Load local var temp
+LOAD 14  ; Load local var temp
 FPUSH 1.0
 FSUB
-STORE 8 ; Store to local 'temp'
-LOAD 7  ; Load local var intPart
+STORE 14 ; Store to local 'temp'
+LOAD 13  ; Load local var intPart
 PUSH 1
 IADD
-STORE 7 ; Store to local 'intPart'
+STORE 13 ; Store to local 'intPart'
 JMP L18
 L20:
-LOAD_ARG 0  ; Load parameter 'val'
-LOAD 7  ; Load local var intPart
+LOAD 10  ; Load parameter 'val'
+LOAD 13  ; Load local var intPart
 FSUB
-STORE 9 ; Init frac
+STORE 15 ; Init frac
 PUSH 50
 NEWARRAY C
-STORE 10 ; Store new flattened array to 'intBuf'
-LOAD 7  ; Load local var intPart
-LOAD 10  ; Load local var intBuf
+STORE 16 ; Store new flattened array to 'intBuf'
+LOAD 13  ; Load local var intPart
+LOAD 16  ; Load local var intBuf
 CALL intToString@I@[C
 PUSH 0
-STORE 12 ; Init j
+STORE 18 ; Init j
 PUSH 0
-STORE 11 ; Init i
-LOAD 6  ; Load local var neg
+STORE 17 ; Init i
+LOAD 12  ; Load local var neg
 PUSH 1
 ICMP_EQ
 JNZ L21
 JMP L22
 L21:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 11 ; Load local 'i'
+LOAD_ARG 11 ; Load array parameter 'arr'
+LOAD 17 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 11 ; Store local 'i'
+STORE 17 ; Store local 'i'
 PUSH 45 ; Push ASCII for char '-'
 ASTORE ; Store to array element
 L22:
 L23:
-LOAD 10 ; Load array variable 'intBuf'
-LOAD 12  ; Load local var j
+LOAD 16 ; Load array variable 'intBuf'
+LOAD 18  ; Load local var j
 ALOAD
 PUSH 92 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L24
 JMP L25
 L24:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 11 ; Load local 'i'
+LOAD_ARG 11 ; Load array parameter 'arr'
+LOAD 17 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 11 ; Store local 'i'
-LOAD 10 ; Load array variable 'intBuf'
-LOAD 12 ; Load local 'j'
+STORE 17 ; Store local 'i'
+LOAD 16 ; Load array variable 'intBuf'
+LOAD 18 ; Load local 'j'
 DUP
 PUSH 1
 IADD ; ++
-STORE 12 ; Store local 'j'
+STORE 18 ; Store local 'j'
 ALOAD
 ASTORE ; Store to array element
 JMP L23
 L25:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 11 ; Load local 'i'
+LOAD_ARG 11 ; Load array parameter 'arr'
+LOAD 17 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 11 ; Store local 'i'
+STORE 17 ; Store local 'i'
 PUSH 46 ; Push ASCII for char '.'
 ASTORE ; Store to array element
 PUSH 0
-STORE 13 ; Init k
+STORE 19 ; Init k
 JMP L26
 L27:
-LOAD 9  ; Load local var frac
+LOAD 15  ; Load local var frac
 FPUSH 10.0
 FMUL
-STORE 9 ; Store to local 'frac'
+STORE 15 ; Store to local 'frac'
 PUSH 0
-STORE 14 ; Init digit
+STORE 20 ; Init digit
 L30:
-LOAD 9  ; Load local var frac
+LOAD 15  ; Load local var frac
 FPUSH 1.0
 FCMP_GEQ
 JNZ L31
 JMP L32
 L31:
-LOAD 9  ; Load local var frac
+LOAD 15  ; Load local var frac
 FPUSH 1.0
 FSUB
-STORE 9 ; Store to local 'frac'
-LOAD 14  ; Load local var digit
+STORE 15 ; Store to local 'frac'
+LOAD 20  ; Load local var digit
 PUSH 1
 IADD
-STORE 14 ; Store to local 'digit'
+STORE 20 ; Store to local 'digit'
 JMP L30
 L32:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 11 ; Load local 'i'
+LOAD_ARG 11 ; Load array parameter 'arr'
+LOAD 17 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 11 ; Store local 'i'
+STORE 17 ; Store local 'i'
 PUSH 48 ; Push ASCII for char '0'
-LOAD 14  ; Load local var digit
+LOAD 20  ; Load local var digit
 IADD
 ASTORE ; Store to array element
 L28:
-LOAD 13 ; Load local 'k'
+LOAD 19 ; Load local 'k'
 DUP
 PUSH 1
 IADD ; ++
-STORE 13 ; Store local 'k'
+STORE 19 ; Store local 'k'
 L26:
-LOAD 13  ; Load local var k
+LOAD 19  ; Load local var k
 PUSH 6
 ICMP_LT
 JNZ L27
 JMP L29
 L29:
-LOAD_ARG 1 ; Load array parameter 'arr'
-LOAD 11  ; Load local var i
+LOAD_ARG 11 ; Load array parameter 'arr'
+LOAD 17  ; Load local var i
 PUSH 92 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
@@ -395,7 +407,9 @@ RET
 
 .method VectorInt.push_back@I
 .limit stack 4
-.limit locals 2
+.limit locals 22
+LOAD_ARG 0 ; Copy arg 'val' to local
+STORE 21
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 1000
@@ -407,7 +421,7 @@ LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
-LOAD_ARG 1  ; Load parameter 'val'
+LOAD 21  ; Load parameter 'val'
 ASTORE ; Store to array element
 LOAD -1 ; Load local 'vsize'
 DUP
@@ -449,14 +463,16 @@ RET
 
 .method VectorInt.at@I
 .limit stack 4
-.limit locals 2
-LOAD_ARG 1  ; Load parameter 'index'
+.limit locals 23
+LOAD_ARG 0 ; Copy arg 'index' to local
+STORE 22
+LOAD 22  ; Load parameter 'index'
 PUSH 0
 ICMP_LT
 JNZ L37
 JMP L39
 L39:
-LOAD_ARG 1  ; Load parameter 'index'
+LOAD 22  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GEQ
@@ -469,21 +485,25 @@ RET
 L38:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD_ARG 1  ; Load parameter 'index'
+LOAD 22  ; Load parameter 'index'
 ALOAD
 RET
 .endmethod
 
 .method VectorInt.set@I@I
 .limit stack 4
-.limit locals 3
-LOAD_ARG 1  ; Load parameter 'index'
+.limit locals 25
+LOAD_ARG 0 ; Copy arg 'index' to local
+STORE 23
+LOAD_ARG 1 ; Copy arg 'val' to local
+STORE 24
+LOAD 23  ; Load parameter 'index'
 PUSH 0
 ICMP_LT
 JNZ L40
 JMP L42
 L42:
-LOAD_ARG 1  ; Load parameter 'index'
+LOAD 23  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GEQ
@@ -494,8 +514,8 @@ RET
 L41:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD_ARG 1  ; Load parameter 'index'
-LOAD_ARG 2  ; Load parameter 'val'
+LOAD 23  ; Load parameter 'index'
+LOAD 24  ; Load parameter 'val'
 ASTORE ; Store to array element
 RET
 .endmethod
@@ -529,32 +549,32 @@ RET
 
 .method VectorInt.print
 .limit stack 4
-.limit locals 17
+.limit locals 27
 PUSH 0
-STORE 15 ; Store to local 'i'
+STORE 25 ; Store to local 'i'
 JMP L46
 L47:
 PUSH 50
 NEWARRAY C
-STORE 16 ; Store new flattened array to 'buf'
+STORE 26 ; Store new flattened array to 'buf'
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD 15  ; Load local var i
+LOAD 25  ; Load local var i
 ALOAD
-LOAD 16  ; Load local var buf
+LOAD 26  ; Load local var buf
 CALL intToString@I@[C
-LOAD 16  ; Load local var buf
+LOAD 26  ; Load local var buf
 CALL writeString@[C
 PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L48:
-LOAD 15 ; Load local 'i'
+LOAD 25 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 15 ; Store local 'i'
+STORE 25 ; Store local 'i'
 L46:
-LOAD 15  ; Load local var i
+LOAD 25  ; Load local var i
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_LT
@@ -583,7 +603,9 @@ RET
 
 .method VectorFloat.push_back@F
 .limit stack 4
-.limit locals 2
+.limit locals 28
+LOAD_ARG 0 ; Copy arg 'val' to local
+STORE 27
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 1000
@@ -595,7 +617,7 @@ LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
-LOAD_ARG 1  ; Load parameter 'val'
+LOAD 27  ; Load parameter 'val'
 ASTORE ; Store to array element
 LOAD -1 ; Load local 'vsize'
 DUP
@@ -637,14 +659,16 @@ RET
 
 .method VectorFloat.at@I
 .limit stack 4
-.limit locals 2
-LOAD_ARG 1  ; Load parameter 'index'
+.limit locals 29
+LOAD_ARG 0 ; Copy arg 'index' to local
+STORE 28
+LOAD 28  ; Load parameter 'index'
 PUSH 0
 ICMP_LT
 JNZ L54
 JMP L56
 L56:
-LOAD_ARG 1  ; Load parameter 'index'
+LOAD 28  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GEQ
@@ -657,21 +681,25 @@ RET
 L55:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD_ARG 1  ; Load parameter 'index'
+LOAD 28  ; Load parameter 'index'
 ALOAD
 RET
 .endmethod
 
 .method VectorFloat.set@I@F
 .limit stack 4
-.limit locals 3
-LOAD_ARG 1  ; Load parameter 'index'
+.limit locals 31
+LOAD_ARG 0 ; Copy arg 'index' to local
+STORE 29
+LOAD_ARG 1 ; Copy arg 'val' to local
+STORE 30
+LOAD 29  ; Load parameter 'index'
 PUSH 0
 ICMP_LT
 JNZ L57
 JMP L59
 L59:
-LOAD_ARG 1  ; Load parameter 'index'
+LOAD 29  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GEQ
@@ -682,8 +710,8 @@ RET
 L58:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD_ARG 1  ; Load parameter 'index'
-LOAD_ARG 2  ; Load parameter 'val'
+LOAD 29  ; Load parameter 'index'
+LOAD 30  ; Load parameter 'val'
 ASTORE ; Store to array element
 RET
 .endmethod
@@ -717,32 +745,32 @@ RET
 
 .method VectorFloat.print
 .limit stack 4
-.limit locals 19
+.limit locals 33
 PUSH 0
-STORE 17 ; Store to local 'i'
+STORE 31 ; Store to local 'i'
 JMP L63
 L64:
 PUSH 100
 NEWARRAY C
-STORE 18 ; Store new flattened array to 'buf'
+STORE 32 ; Store new flattened array to 'buf'
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD 17  ; Load local var i
+LOAD 31  ; Load local var i
 ALOAD
-LOAD 18  ; Load local var buf
+LOAD 32  ; Load local var buf
 CALL doubleToString@F@[C
-LOAD 18  ; Load local var buf
+LOAD 32  ; Load local var buf
 CALL writeString@[C
 PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L65:
-LOAD 17 ; Load local 'i'
+LOAD 31 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 17 ; Store local 'i'
+STORE 31 ; Store local 'i'
 L63:
-LOAD 17  ; Load local var i
+LOAD 31  ; Load local var i
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_LT
@@ -771,7 +799,9 @@ RET
 
 .method VectorChar.push_back@C
 .limit stack 4
-.limit locals 2
+.limit locals 34
+LOAD_ARG 0 ; Copy arg 'val' to local
+STORE 33
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 PUSH 1000
@@ -783,7 +813,7 @@ LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
-LOAD_ARG 1  ; Load parameter 'val'
+LOAD 33  ; Load parameter 'val'
 ASTORE ; Store to array element
 LOAD -1 ; Load local 'vsize'
 DUP
@@ -825,14 +855,16 @@ RET
 
 .method VectorChar.at@I
 .limit stack 4
-.limit locals 2
-LOAD_ARG 1  ; Load parameter 'index'
+.limit locals 35
+LOAD_ARG 0 ; Copy arg 'index' to local
+STORE 34
+LOAD 34  ; Load parameter 'index'
 PUSH 0
 ICMP_LT
 JNZ L71
 JMP L73
 L73:
-LOAD_ARG 1  ; Load parameter 'index'
+LOAD 34  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GEQ
@@ -844,21 +876,25 @@ RET
 L72:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD_ARG 1  ; Load parameter 'index'
+LOAD 34  ; Load parameter 'index'
 ALOAD
 RET
 .endmethod
 
 .method VectorChar.set@I@C
 .limit stack 4
-.limit locals 3
-LOAD_ARG 1  ; Load parameter 'index'
+.limit locals 37
+LOAD_ARG 0 ; Copy arg 'index' to local
+STORE 35
+LOAD_ARG 1 ; Copy arg 'val' to local
+STORE 36
+LOAD 35  ; Load parameter 'index'
 PUSH 0
 ICMP_LT
 JNZ L74
 JMP L76
 L76:
-LOAD_ARG 1  ; Load parameter 'index'
+LOAD 35  ; Load parameter 'index'
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_GEQ
@@ -869,8 +905,8 @@ RET
 L75:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD_ARG 1  ; Load parameter 'index'
-LOAD_ARG 2  ; Load parameter 'val'
+LOAD 35  ; Load parameter 'index'
+LOAD 36  ; Load parameter 'val'
 ASTORE ; Store to array element
 RET
 .endmethod
@@ -904,26 +940,26 @@ RET
 
 .method VectorChar.print
 .limit stack 4
-.limit locals 20
+.limit locals 38
 PUSH 0
-STORE 19 ; Store to local 'i'
+STORE 37 ; Store to local 'i'
 JMP L80
 L81:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
 GETFIELD 0
-LOAD 19  ; Load local var i
+LOAD 37  ; Load local var i
 ALOAD
 CALL writeChar@C
 PUSH 32 ; Push ASCII for char ' '
 CALL writeChar@C
 L82:
-LOAD 19 ; Load local 'i'
+LOAD 37 ; Load local 'i'
 DUP
 PUSH 1
 IADD ; ++
-STORE 19 ; Store local 'i'
+STORE 37 ; Store local 'i'
 L80:
-LOAD 19  ; Load local var i
+LOAD 37  ; Load local var i
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
 ICMP_LT

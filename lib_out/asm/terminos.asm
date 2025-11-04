@@ -34,9 +34,11 @@ RET
 
 .method Termios.copyFrom@Termios
 .limit stack 4
-.limit locals 2
+.limit locals 1
+LOAD_ARG 0 ; Copy arg 'src' to local
+STORE 0
 LOAD_ARG 0 ; 'this' for assignment to member 'clflag'
-LOAD_ARG 1  ; Load parameter 'src'
+LOAD 0  ; Load parameter 'src'
 GETFIELD 0 ; Get field 'clflag'
 PUTFIELD 0
 RET
@@ -50,17 +52,19 @@ PUSH 0
 PUSH 2
 LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
+LOAD_ARG 0 ; vm identification
 INVOKEVIRTUAL 3 ; Call TerminalHandler.tcsetattr@I@I@Termios
 RET
 .endmethod
 
 .method TerminalHandler.enableRawMode
 .limit stack 4
-.limit locals 1
+.limit locals 2
 LOAD_ARG 0 ; Load 'this' for method call
 PUSH 0
 LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
+LOAD_ARG 0 ; vm identification
 INVOKEVIRTUAL 2 ; Call TerminalHandler.tcgetattr@I@Termios
 PUSH 19 ; String literal length
 NEWARRAY C ; Create char array for string "Raw mode enabled.\n"
@@ -144,12 +148,13 @@ PUSH 18
 PUSH 1
 SYS_CALL WRITE ; write
 POP
-LOAD 0  ; Load local var raw
+LOAD 1  ; Load local var raw
 LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
+LOAD 1  ; Load local var raw
 INVOKEVIRTUAL 1 ; Call Termios.copyFrom@Termios
-LOAD 0  ; Load local var raw
-LOAD 0  ; Load local var raw
+LOAD 1  ; Load local var raw
+LOAD 1  ; Load local var raw
 GETFIELD 0 ; Get field 'clflag'
 PUSH 4
 IDIV
@@ -159,15 +164,20 @@ PUTFIELD 0 ; Set field 'clflag'
 LOAD_ARG 0 ; Load 'this' for method call
 PUSH 0
 PUSH 2
-LOAD 0  ; Load local var raw
+LOAD 1  ; Load local var raw
+LOAD_ARG 0 ; vm identification
 INVOKEVIRTUAL 3 ; Call TerminalHandler.tcsetattr@I@I@Termios
 RET
 .endmethod
 
 .method TerminalHandler.tcgetattr@I@Termios
 .limit stack 4
-.limit locals 3
-LOAD_ARG 2  ; Load parameter 't'
+.limit locals 4
+LOAD_ARG 0 ; Copy arg 'fd' to local
+STORE 2
+LOAD_ARG 1 ; Copy arg 't' to local
+STORE 3
+LOAD 3  ; Load parameter 't'
 PUSH 1
 PUTFIELD 0 ; Set field 'clflag'
 RET
@@ -175,7 +185,13 @@ RET
 
 .method TerminalHandler.tcsetattr@I@I@Termios
 .limit stack 4
-.limit locals 4
+.limit locals 7
+LOAD_ARG 0 ; Copy arg 'fd' to local
+STORE 4
+LOAD_ARG 1 ; Copy arg 'flag' to local
+STORE 5
+LOAD_ARG 2 ; Copy arg 't' to local
+STORE 6
 PUSH 25 ; String literal length
 NEWARRAY C ; Create char array for string "Termios attributes set.\n"
 DUP ; Duplicate array ref for ASTORE
@@ -291,6 +307,7 @@ RET
 LOAD_ARG 0      ; Push 'this' reference for field 'Eorigtermios'
 NEW Termios
 DUP
+DUP ; for vm identification
 INVOKEVIRTUAL 0 ; Call default ctor for Termios
 PUTFIELD 0 ; Store new instance to 'Eorigtermios'
 RET

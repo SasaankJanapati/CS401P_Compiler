@@ -389,7 +389,7 @@ void insert_symbol(char* name, char* type, char* kind, Node* initializer, Node* 
     if(strcmp(kind, "variable") == 0 || strcmp(kind, "object") == 0) {
         s->address = local_address_counter++;
     } else if(strcmp(kind, "parameter") == 0) {
-        s->address = params++; // Parameters get addresses starting from 0
+        s->address = local_address_counter++; // Parameters get addresses starting from 0
     } else {
         s->address = -1; // Not a stack-allocatable local variable
     }
@@ -1678,6 +1678,7 @@ void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* scop
             int parent_ctor_idx = get_method_vtable_index(parent->name, parent_ctor_sig);
             if (parent_ctor_idx != -1) {
                 emit("LOAD_ARG 0 ; 'this' for parent constructor call");
+                emit("DUP ; for vm identification");
                 emit("INVOKEVIRTUAL %d ; super() call to %s", parent_ctor_idx, parent_ctor_sig);
             }
             free(parent_ctor_sig);
@@ -1750,6 +1751,7 @@ void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* scop
                 } else {
                     emit("NEW %s", field->type);
                     emit("DUP");
+                    emit("DUP ; for vm identification");
                     emit("INVOKEVIRTUAL %d ; Call default ctor for %s", ctor_idx, field->type);
                     emit("PUTFIELD %d ; Store new instance to '%s'", field_idx, field->name);
                 }
@@ -1821,6 +1823,7 @@ void emit_default_value(const char* element_type, SymbolTable* scope, ClassInfo*
         } else {
             emit("NEW %s", element_type);
             emit("DUP");
+            emit("DUP ; for vm identification");
             emit("INVOKEVIRTUAL %d ; Call default ctor for %s", ctor_idx, element_type);
         }
         free(ctor_sig);
@@ -2094,7 +2097,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
                  int field_idx = get_field_index(s->class_name, s->name);
                  emit("GETFIELD %d", field_idx);
             } else if (strcmp(s->kind, "parameter") == 0) {
-                 emit("LOAD_ARG %d  ; Load parameter '%s'", s->address, s->name);
+                 emit("LOAD %d  ; Load parameter '%s'", s->address, s->name);
             } else {
                  emit("LOAD %d  ; Load local var %s", s->address, s->name);
             }
@@ -2144,6 +2147,8 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         //char* mangled_name = get_mangled_name(func_call_node->value, arg_list);
         int method_idx = get_method_vtable_index(object_node->data_type, func_call_node->value);
         if (method_idx != -1) {
+            // Push object reference ('this')
+            generate_code_for_expr(object_node, scope, class_context);// for vm identification
             emit("INVOKEVIRTUAL %d ; Call %s.%s", method_idx, object_node->data_type, func_call_node->value);
         } else {
              fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", func_call_node->value, object_node->data_type);
@@ -2161,6 +2166,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
                     for (int i = 0; i < arg_list->num_children; i++) {
                         generate_code_for_expr(arg_list->children[i], scope, class_context);
                     }
+                    emit("LOAD_ARG 0 ; vm identification"); // for vm identification
                     emit("INVOKEVIRTUAL %d ; Call %s.%s", method_idx, class_context->name, node->value);
                 } else {
                     fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", node->value, class_context->name);
@@ -2229,7 +2235,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             
             // 4. Store the new value back.
             if (strcmp(s->kind, "parameter") == 0) {
-                emit("STORE_ARG %d ; Store param '%s'", s->address, s->name);
+                emit("STORE %d ; Store param '%s'", s->address, s->name);
             } else {
                 emit("STORE %d ; Store local '%s'", s->address, s->name);
             }
@@ -2282,7 +2288,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
 
             // 4. Store the new value back.
             if (strcmp(s->kind, "parameter") == 0) {
-                emit("STORE_ARG %d ; Store param '%s'", s->address, s->name);
+                emit("STORE %d ; Store param '%s'", s->address, s->name);
             } else {
                 emit("STORE %d ; Store local '%s'", s->address, s->name);
             }
@@ -2328,6 +2334,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         }
         int method_idx = get_method_vtable_index(class_name, constructor_name);
         if (method_idx != -1) {
+            emit("DUP ; for vm identification");
             emit("INVOKEVIRTUAL %d ; Call constructor %s.%s", method_idx, class_name, constructor_name);
         } else {
             fprintf(stderr, "Codegen Error: Could not find constructor '%s' in class '%s'\n", constructor_name, class_name);
@@ -2379,7 +2386,7 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         if (strcmp(lval->type, "IDEN") == 0) {
             Symbol* s = lookup_symbol_codegen(lval->value, scope, class_context);
             if (s) {
-                 if (strcmp(s->kind, "member_var") == 0) {
+                 if (strcmp(s->kind, "member_var") == 0 || strcmp(s->kind, "member_obj") == 0 ) {
                     emit("LOAD_ARG 0 ; 'this' for assignment to member '%s'", s->name);
                     generate_code_for_expr(expr, scope, class_context);
                     int field_idx = get_field_index(s->class_name, s->name);
@@ -2612,6 +2619,7 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         fprintf(stderr, "Debug: Constructor signature for '%s': %s\n", s->type, constructor_sig);
         int ctor_idx = get_method_vtable_index(s->type, constructor_sig);
         fprintf(stderr, "Debug: Constructor index for '%s': %d\n", s->type, ctor_idx);
+        emit("DUP ; for identification in vm");
         emit("INVOKEVIRTUAL %d ; Call constructor for %s", ctor_idx, s->type);
         free(constructor_sig);
 
@@ -2793,6 +2801,19 @@ void generate_assembly(Node* node, SymbolTable* scope) {
         }
         emit(".limit stack %d", stack);
         emit(".limit locals %d", locals);
+
+        SymbolTable* func_scope = node->scope_table;
+        for (int i = 0; i < func_scope->count; i++) {
+            Symbol* s = func_scope->symbols[i];
+            if (strcmp(s->kind, "parameter") == 0) {
+                emit("LOAD_ARG %d ; Copy arg '%s' to local", i, s->name);
+                emit("STORE %d", s->address);
+            } else {
+                // Parameters are always declared first in the scope
+                break;
+            }
+        }
+
         generate_assembly(node->children[2], node->scope_table);
         // emit ret for only void functions
         if (strcmp(node->data_type, "void") == 0) {
