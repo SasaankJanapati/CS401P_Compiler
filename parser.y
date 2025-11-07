@@ -158,7 +158,7 @@ char* build_array_type(const char* base_type, Node* index_node) {
         else if (strcmp(base_type,"C")==0) return "C";
         else { 
             char* obj_type = malloc(strlen(base_type) + 3); // L + type + ; + \0
-            sprintf(obj_type, "L%s;", base_type);
+            sprintf(obj_type, "%s", base_type);
             return obj_type;
             } 
     }
@@ -176,7 +176,7 @@ char* build_array_type(const char* base_type, Node* index_node) {
         else if (strcmp(base_type,"C")==0) inner_type = strdup("C");
         else { 
                 char* obj_type = malloc(strlen(base_type) + 3); // L + type + ; + \0
-                sprintf(obj_type, "L%s;", base_type);
+                sprintf(obj_type, "%s", base_type);
                 inner_type = obj_type;
             }
         }
@@ -1022,11 +1022,11 @@ INITIALIZER: EXPR { $$ = $1; }
                $$->data_type = strdup($2);
                add_child($$, $4);
            }
-           | '{' INITLIST '}' { $$ = $2; }
+           | '{' INITLIST '}' { $$ = $2; char* new_type = malloc(strlen($2->data_type) + 3); sprintf(new_type, "[%s", $2->data_type); $$->data_type = new_type; }
            ;
 
-INITLIST: INITLIST ',' INITIALIZER { $$ = $1; add_child($$, $3); }
-        | INITIALIZER              { $$ = create_node("INIT_LIST", NULL); add_child($$, $1); }
+INITLIST: INITLIST ',' INITIALIZER { $$ = $1; add_child($$, $3); $$->data_type = $3->data_type; }
+        | INITIALIZER              { $$ = create_node("INIT_LIST", NULL); add_child($$, $1); $$->data_type = $1->data_type; }
         | /* empty */              { $$ = create_node("INIT_LIST", "empty"); }
         ;
 INDEX: '[' EXPR ']' { $$ = create_node("INDEX", NULL); add_child($$, $2); if (strcmp($2->data_type, "I") != 0) { fprintf(stderr, "Error line %d: Array index must be an integer (got '%s')\n", yylineno, $2->data_type); } }
@@ -1792,13 +1792,13 @@ char* get_base_array_type(const char* mangled_type) {
         case 'I': return strdup("I");
         case 'F': return strdup("F");
         case 'C': return strdup("C");
-        case 'L': { // Object type like LMyClass;
-            char* base_type = strdup(last_bracket + 2); // Skip 'L'
-            char* semicolon = strchr(base_type, ';');
-            if (semicolon) *semicolon = '\0'; // Remove trailing ';'
-            return base_type;
-        }
-        default: return strdup("unknown");
+        // case 'L': { // Object type like LMyClass;
+        //     char* base_type = strdup(last_bracket + 2); // Skip 'L'
+        //     char* semicolon = strchr(base_type, ';');
+        //     if (semicolon) *semicolon = '\0'; // Remove trailing ';'
+        //     return base_type;
+        // }
+        default: return strdup(last_bracket + 1); // Return as is for object types
     }
 }
 
@@ -1982,6 +1982,8 @@ void generate_code_for_lval_address(Node* node, SymbolTable* scope, ClassInfo* c
                 emit("LOAD %d ; Load array variable '%s'", s->address, s->name);
             } else if (strcmp(s->kind, "parameter") == 0) {
                 emit("LOAD_ARG %d ; Load array parameter '%s'", s->address, s->name);
+            } else if (strcmp(s->kind, "object") == 0) {
+                emit("LOAD %d ; Load member array object '%s'", s->address, s->name);
             } else {
                 fprintf(stderr, "Codegen Error: Symbol '%s' is not an array.\n", s->name);
                 return;
