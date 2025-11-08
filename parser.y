@@ -2131,6 +2131,9 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         generate_code_for_lval_address(node, scope, class_context); // Pushes object ref
         int field_idx = get_field_index(node->children[0]->data_type, node->value);
         emit("GETFIELD %d ; Get field '%s'", field_idx, node->value);
+    } else if (strcmp(node->type, "MEMBER_ARRAY_ACCESS") == 0) {
+        generate_code_for_lval_address(node, scope, class_context); // Pushes object ref, index
+        emit("ALOAD");
     } else if (strcmp(node->type, "BIN_OP") == 0) {
         generate_code_for_expr(node->children[0], scope, class_context);
         generate_code_for_expr(node->children[1], scope, class_context);

@@ -53,7 +53,7 @@ PUSH 2
 LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 3 ; Call TerminalHandler.tcsetattr@I@I@Termios
+INVOKEVIRTUAL 3 3; Call TerminalHandler.tcsetattr@I@I@Termios
 RET
 .endmethod
 
@@ -65,7 +65,7 @@ PUSH 0
 LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 2 ; Call TerminalHandler.tcgetattr@I@Termios
+INVOKEVIRTUAL 2 2; Call TerminalHandler.tcgetattr@I@Termios
 PUSH 20 ; String literal length
 NEWARRAY C ; Create char array for string "Raw mode enabled.\n"
 DUP ; Duplicate array ref for ASTORE
@@ -156,7 +156,7 @@ LOAD 1  ; Load local var raw
 LOAD_ARG 0 ; Load 'this' to access member object 'Eorigtermios'
 GETFIELD 0
 LOAD 1  ; Load local var raw
-INVOKEVIRTUAL 1 ; Call Termios.copyFrom@Termios
+INVOKEVIRTUAL 1 1; Call Termios.copyFrom@Termios
 LOAD 1  ; Load local var raw
 LOAD 1  ; Load local var raw
 GETFIELD 0 ; Get field 'clflag'
@@ -170,7 +170,7 @@ PUSH 0
 PUSH 2
 LOAD 1  ; Load local var raw
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 3 ; Call TerminalHandler.tcsetattr@I@I@Termios
+INVOKEVIRTUAL 3 3; Call TerminalHandler.tcsetattr@I@I@Termios
 RET
 .endmethod
 
@@ -316,7 +316,7 @@ LOAD_ARG 0      ; Push 'this' reference for field 'Eorigtermios'
 NEW Termios
 DUP
 DUP ; for vm identification
-INVOKEVIRTUAL 0 ; Call default ctor for Termios
+INVOKEVIRTUAL 0 0; Call default ctor for Termios
 PUTFIELD 0 ; Store new instance to 'Eorigtermios'
 RET
 .endmethod

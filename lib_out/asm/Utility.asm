@@ -191,7 +191,7 @@ IADD
 ALOAD
 LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
-INVOKEVIRTUAL 0 ; Call Utility.swap@I@I
+INVOKEVIRTUAL 0 2; Call Utility.swap@I@I
 L13:
 LOAD 17  ; Load local var j
 PUSH 1
@@ -238,7 +238,7 @@ LOAD 21  ; Load local var end
 ALOAD
 LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
-INVOKEVIRTUAL 0 ; Call Utility.swap@I@I
+INVOKEVIRTUAL 0 2; Call Utility.swap@I@I
 LOAD 20  ; Load local var start
 PUSH 1
 IADD
@@ -259,7 +259,7 @@ LOAD_ARG 0      ; Push 'this' reference for field 'util'
 NEW Utility
 DUP
 DUP ; for vm identification
-INVOKEVIRTUAL 3 ; Call default ctor for Utility
+INVOKEVIRTUAL 3 0; Call default ctor for Utility
 PUTFIELD 0 ; Store new instance to 'util'
 RET
 .endmethod

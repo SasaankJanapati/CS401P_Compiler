@@ -78,7 +78,7 @@ JMP L2
 L1:
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 0 ; Call IOHandler.readChar
+INVOKEVIRTUAL 0 0; Call IOHandler.readChar
 STORE 7 ; Store to local 'c'
 LOAD 7  ; Load local var c
 PUSH 92 ; Push ASCII for char '\n'
@@ -377,7 +377,7 @@ LOAD_ARG 0 ; Load 'this' for method call
 LOAD 21  ; Load local var intPart
 LOAD 24  ; Load local var intBuf
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 4 ; Call IOHandler.intToString@I@[C
+INVOKEVIRTUAL 4 2; Call IOHandler.intToString@I@[C
 PUSH 0
 STORE 26 ; Init j
 PUSH 0
@@ -497,11 +497,11 @@ LOAD_ARG 0 ; Load 'this' for method call
 LOAD 29  ; Load local var buf
 PUSH 50
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 2 ; Call IOHandler.readString@[C@I
+INVOKEVIRTUAL 2 2; Call IOHandler.readString@[C@I
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 29  ; Load local var buf
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 3 ; Call IOHandler.stringToInt@[C
+INVOKEVIRTUAL 3 1; Call IOHandler.stringToInt@[C
 RET
 .endmethod
 
@@ -526,7 +526,7 @@ LOAD_ARG 30 ; Load array parameter 'arr'
 LOAD 31  ; Load local var i
 ALOAD
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 1 ; Call IOHandler.writeChar@C
+INVOKEVIRTUAL 1 1; Call IOHandler.writeChar@C
 LOAD 31 ; Load local 'i'
 DUP
 PUSH 1
@@ -550,11 +550,11 @@ LOAD_ARG 0 ; Load 'this' for method call
 LOAD 32  ; Load parameter 'x'
 LOAD 33  ; Load local var buf
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 4 ; Call IOHandler.intToString@I@[C
+INVOKEVIRTUAL 4 2; Call IOHandler.intToString@I@[C
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 33  ; Load local var buf
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 7 ; Call IOHandler.printString@[C
+INVOKEVIRTUAL 7 1; Call IOHandler.printString@[C
 RET
 .endmethod
 
@@ -570,11 +570,11 @@ LOAD_ARG 0 ; Load 'this' for method call
 LOAD 34  ; Load parameter 'x'
 LOAD 35  ; Load local var buf
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 5 ; Call IOHandler.doubleToString@F@[C
+INVOKEVIRTUAL 5 2; Call IOHandler.doubleToString@F@[C
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 35  ; Load local var buf
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 7 ; Call IOHandler.printString@[C
+INVOKEVIRTUAL 7 1; Call IOHandler.printString@[C
 RET
 .endmethod
 

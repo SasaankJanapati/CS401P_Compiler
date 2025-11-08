@@ -131,7 +131,7 @@ LOAD 6  ; Load local var newGuess
 LOAD 4  ; Load local var guess
 FSUB
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 1 ; Call Arithmetic.abs@F
+INVOKEVIRTUAL 1 1; Call Arithmetic.abs@F
 LOAD 5  ; Load local var eps
 ICMP_LT
 JNZ L14
@@ -197,7 +197,7 @@ LOAD 10  ; Load local var newGuess
 LOAD 8  ; Load local var guess
 FSUB
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 1 ; Call Arithmetic.abs@F
+INVOKEVIRTUAL 1 1; Call Arithmetic.abs@F
 LOAD 9  ; Load local var eps
 ICMP_LT
 JNZ L24
@@ -230,7 +230,7 @@ L26:
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 12  ; Load local var term
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 1 ; Call Arithmetic.abs@F
+INVOKEVIRTUAL 1 1; Call Arithmetic.abs@F
 LOAD 15  ; Load local var eps
 ICMP_GT
 JNZ L27
@@ -273,7 +273,7 @@ L29:
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 17  ; Load local var term
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 1 ; Call Arithmetic.abs@F
+INVOKEVIRTUAL 1 1; Call Arithmetic.abs@F
 LOAD 20  ; Load local var eps
 ICMP_GT
 JNZ L30
@@ -325,7 +325,7 @@ LOAD 21  ; Load parameter 'base'
 LOAD 22  ; Load parameter 'exponent'
 INEG
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 7 ; Call Arithmetic.power@F@I
+INVOKEVIRTUAL 7 2; Call Arithmetic.power@F@I
 RET
 L35:
 PUSH 1
@@ -392,7 +392,7 @@ LOAD 24  ; Load parameter 'base'
 LOAD 25  ; Load parameter 'exp'
 INEG
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 7 ; Call Arithmetic.power@F@I
+INVOKEVIRTUAL 7 2; Call Arithmetic.power@F@I
 FDIV
 RET
 L44:

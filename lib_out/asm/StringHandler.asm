@@ -63,7 +63,7 @@ STORE 5
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 2  ; Load parameter 'str'
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 0 ; Call StringHandler.length@[C
+INVOKEVIRTUAL 0 1; Call StringHandler.length@[C
 STORE 6 ; Init n
 LOAD 3  ; Load parameter 'start'
 PUSH 0
@@ -198,7 +198,7 @@ STORE 13
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 11  ; Load parameter 'str'
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 0 ; Call StringHandler.length@[C
+INVOKEVIRTUAL 0 1; Call StringHandler.length@[C
 STORE 14 ; Init n
 LOAD 12  ; Load parameter 'pos'
 PUSH 0
@@ -262,7 +262,7 @@ STORE 18
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 16  ; Load parameter 'str'
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 0 ; Call StringHandler.length@[C
+INVOKEVIRTUAL 0 1; Call StringHandler.length@[C
 STORE 19 ; Init n
 LOAD 17  ; Load parameter 'pos'
 PUSH 0
@@ -372,7 +372,7 @@ STORE 23
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 23  ; Load parameter 'c'
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 6 ; Call StringHandler.isupper@C
+INVOKEVIRTUAL 6 1; Call StringHandler.isupper@C
 PUSH 1
 ICMP_EQ
 JNZ L40
@@ -397,7 +397,7 @@ STORE 24
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 24  ; Load parameter 'c'
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 5 ; Call StringHandler.islower@C
+INVOKEVIRTUAL 5 1; Call StringHandler.islower@C
 PUSH 1
 ICMP_EQ
 JNZ L42
@@ -422,7 +422,7 @@ STORE 25
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 25  ; Load parameter 'c'
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 5 ; Call StringHandler.islower@C
+INVOKEVIRTUAL 5 1; Call StringHandler.islower@C
 PUSH 1
 ICMP_EQ
 JNZ L44
@@ -431,7 +431,7 @@ L47:
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 25  ; Load parameter 'c'
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 6 ; Call StringHandler.isupper@C
+INVOKEVIRTUAL 6 1; Call StringHandler.isupper@C
 PUSH 1
 ICMP_EQ
 JNZ L44
@@ -453,7 +453,7 @@ STORE 26
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 26  ; Load parameter 'c'
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 9 ; Call StringHandler.isalpha@C
+INVOKEVIRTUAL 9 1; Call StringHandler.isalpha@C
 PUSH 1
 ICMP_EQ
 JNZ L48
@@ -462,7 +462,7 @@ L51:
 LOAD_ARG 0 ; Load 'this' for method call
 LOAD 26  ; Load parameter 'c'
 LOAD_ARG 0 ; vm identification
-INVOKEVIRTUAL 11 ; Call StringHandler.isnum@C
+INVOKEVIRTUAL 11 1; Call StringHandler.isnum@C
 PUSH 1
 ICMP_EQ
 JNZ L48
