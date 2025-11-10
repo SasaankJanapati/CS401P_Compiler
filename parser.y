@@ -92,6 +92,7 @@ typedef struct MethodInfo {
     ParamInfo params[MAX_PARAMS];
     bool is_override;
     bool is_abstract;
+    bool is_inherited;
     int vtable_index; // Index in the vtable for dynamic dispatch
 } MethodInfo;
 
@@ -113,6 +114,7 @@ typedef struct ClassInfo {
     struct SymbolTable* symbol_table; // Symbol table for class scope
 
     int constructors_count;
+    int vtable_size;
 } ClassInfo;
 
 ClassInfo* class_metadata_pool[TABLE_SIZE];
@@ -538,21 +540,21 @@ int get_field_index(const char* class_name, const char* field_name) {
     if (!cls) return -1;
     //fprintf(stderr, "Looking up field index for '%s' in class '%s'\n", field_name, class_name);
     // Calculate base offset from parents
-    int base_offset = 0;
-    for(int i = 0; i < cls->parent_count; i++) {
-        base_offset += get_total_field_count(cls->parents[i]);
-    }
+    // int base_offset = 0;
+    // for(int i = 0; i < cls->parent_count; i++) {
+    //     base_offset += get_total_field_count(cls->parents[i]);
+    // }
     //fprintf(stderr, "Base offset from parents: %d\n", base_offset);
     
     for (int i = 0; i < cls->field_count; i++) {
         //fprintf(stderr, "Checking field '%s' at index %d (base offset %d) against '%s'\n", cls->fields[i].name, i, base_offset, field_name);
-        if (strcmp(cls->fields[i].name, field_name) == 0) return base_offset + i;
+        if (strcmp(cls->fields[i].name, field_name) == 0) return i;
     }
     //fprintf(stderr, "Field '%s' not found in class '%s'. Checking parents...\n", field_name, class_name);
 
-    if(cls->parent_count > 0) {
-        return get_field_index(cls->parents[0]->name, field_name);
-    }
+    // if(cls->parent_count > 0) {
+    //     return get_field_index(cls->parents[0]->name, field_name);
+    // }
 
     return -1;
 }
@@ -562,9 +564,9 @@ int get_field_index(const char* class_name, const char* field_name) {
 int get_method_vtable_index(const char* class_name, const char* mangled_name) {
      ClassInfo* cls = find_class_info(class_name);
     if (!cls) return -1;
-    //fprintf(stderr, "Debug: Looking up method vtable index for '%s' in class '%s'\n", mangled_name, class_name);
+    fprintf(stderr, "Debug: Looking up method vtable index for '%s' in class '%s'\n", mangled_name, class_name);
     MethodInfo* method = find_method_in_hierarchy(NULL, mangled_name, cls);
-    //fprintf(stderr, "Debug: Method lookup result: %s\n", method ? "found" : "not found");
+    fprintf(stderr, "Debug: Method lookup result: %s\n", method ? "found" : "not found");
     if(method) return method->vtable_index;
     
     return -1; // Not found
@@ -709,30 +711,38 @@ char* get_mangled_name(const char* func_name, Node* arg_list_node) {
 MethodInfo* find_method_in_hierarchy(const char* method_name, const char* signature, ClassInfo* class_info) {
     if (!class_info) return NULL;
     for (int i = 0; i < class_info->method_count; i++) {
-        //fprintf(stderr, "Debug: Checking method '%s' with signature '%s' against '%s'\n", class_info->methods[i].name, class_info->methods[i].signature, signature);
+        fprintf(stderr, "Debug: Checking method '%s' with signature '%s' against '%s' %d %d\n", class_info->methods[i].name, class_info->methods[i].signature, signature, i, class_info->methods[i].vtable_index);
         if (strcmp(class_info->methods[i].signature, signature) == 0) {
             return &class_info->methods[i];
         }
     }
-    for (int i = 0; i < class_info->parent_count; i++) {
-        MethodInfo* method = find_method_in_hierarchy(method_name, signature, class_info->parents[i]);
-        if (method) return method;
-    }
+    // for (int i = 0; i < class_info->parent_count; i++) {
+    //     MethodInfo* method = find_method_in_hierarchy(method_name, signature, class_info->parents[i]);
+    //     if (method) return method;
+    // }
     return NULL;
 }
 
 void check_for_override(ClassInfo* child, MethodInfo* new_method) {
+    fprintf(stderr, "Debug: Checking for override of method '%s' with signature '%s' in class '%s'\n", new_method->name, new_method->signature, child->name);
     for (int i = 0; i < child->parent_count; i++) {
         MethodInfo* parent_method = find_method_in_hierarchy(new_method->name, new_method->signature, child->parents[i]);
         if (parent_method) {
             new_method->is_override = true;
-            new_method->vtable_index = parent_method->vtable_index; 
-            return;
+            //parent_method->vtable_index = new_method->vtable_index; 
+            //return;
+        }
+        // now replace parent_method in the child class's vtable
+        for (int j = 0; j < child->method_count; j++) {
+            if (strcmp(child->methods[j].signature, new_method->signature) == 0) {
+                child->methods[j].vtable_index = child->method_count -1;
+                return;
+            }
         }
     }
     new_method->is_override = false;
     // This vtable index assignment needs to be more robust, considering all inherited methods.
-    new_method->vtable_index = child->method_count -1; 
+   // new_method->vtable_index = child->method_count -1; 
 }
 
 
@@ -911,7 +921,11 @@ FUNCDECL: /*TYPE IDEN '(' PARAMLIST ')' ';' {
                 method->signature = mangled_name;
                 method->vtable_index = current_class_info->method_count - 1; // Temporary, will be adjusted in check_for_override
                 method->access_spec = strdup(current_access_spec);
+                method->is_inherited = false;
+                method->is_abstract = false;
                 // TODO: Populate params
+                check_for_override(current_class_info, method);
+                //fprintf(stderr, "Debug: Method '%s' assigned vtable index %d\n", method->signature, method->vtable_index);
               }
               //fprintf(stderr, "Debug: Function '%s' with mangled name '%s' declared.\n", $2, mangled_name);
 
@@ -1212,11 +1226,48 @@ CLASSDECL: CLASS IDEN {
                 //local_address_counter++; // Adjust local address counter
                 enter_scope();
                 current_class_info->symbol_table = current_table;
-           } OPT_INHERIT '{' CLASSBODY '}' ';' {
+           } OPT_INHERIT {
+            // copy parents methods 
+            if (current_class_info->parent_count > 0 && current_class_info->parents[0]) {
+                   for (int i = 0; i < current_class_info->parent_count; i++) {
+                       ClassInfo* parent = current_class_info->parents[i];
+                       if (parent) {
+                       // Inherit the exact size from the parent
+                       for (int m = 0; m < parent->method_count; m++) {
+                           MethodInfo* parent_method = &parent->methods[m];
+                           // Copy method info
+                           MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
+                           method->name = strdup(parent_method->name);
+                           method->return_type = strdup(parent_method->return_type);
+                           method->signature = strdup(parent_method->signature);
+                           method->vtable_index = current_class_info->method_count - 1; // Maintain the same vtable index
+                           method->access_spec = strdup(parent_method->access_spec);
+                           method->is_abstract = parent_method->is_abstract;
+                           method->is_override = parent_method->is_override;
+                           method->is_inherited = true;
+                           fprintf(stderr, "Debug: Inherited method '%s' with vtable index %d from parent '%s'\n", method->signature, method->vtable_index, parent->name);
+                       }
+                       // Update vtable size
+                       fprintf(stderr, "Debug: Class '%s' inheriting vtable_size of %d from '%s'\n", current_class_info->name, parent->vtable_size, parent->name);
+                        current_class_info->vtable_size += parent->vtable_size;
+                        for( int f = 0; f < parent->field_count; f++) {
+                            FieldInfo* parent_field = &parent->fields[f];
+                            FieldInfo* field = &current_class_info->fields[current_class_info->field_count++];
+                            field->name = strdup(parent_field->name);
+                            field->type = strdup(parent_field->type);
+                            field->access_spec = strdup(parent_field->access_spec);
+                            field->initializer = parent_field->initializer ? (parent_field->initializer) : NULL;
+                            field->index_node = parent_field->index_node ? (parent_field->index_node) : NULL;
+                        }
+                       }
+                   }
+               }
+           }
+           '{' CLASSBODY '}' ';' {
             perform_diamond_check(current_class_info);
             check_abstract_implementation(current_class_info);
             $$ = create_node("CLASS_DECL", $2);
-            add_child($$, $4); add_child($$, $6);
+            add_child($$, $4); add_child($$, $7);
             // Default Constructor(To be handled)
             if (current_class_info && current_class_info->constructors_count == 0 && !current_class_info->is_abstract) {
                 fprintf(stderr, "Debug: No constructor found for '%s'. Synthesizing a default constructor node.\n", current_class_info->name);
@@ -1247,7 +1298,7 @@ CLASSDECL: CLASS IDEN {
 
                 // 3. Add the new node to the class body in the AST
                 // $6 is the CLASSBODY node from the grammar rule
-                add_child($6, constructor_node);
+                add_child($7, constructor_node);
             }
             $$->scope_table = current_table;
             exit_scope();
@@ -1262,12 +1313,14 @@ OPT_INHERIT: ':' INHERITLIST { $$ = $2; }
 INHERITLIST: ACCESS IDEN {
                 if (current_class_info && current_class_info->parent_count < MAX_PARENTS) {
                     current_class_info->parent_names[current_class_info->parent_count++] = strdup($2);
+                    current_class_info->parents[current_class_info->parent_count - 1] = find_class_info($2);
                 }
                 $$ = create_node("INHERIT_LIST", NULL);
              }
            | ACCESS IDEN ',' INHERITLIST {
                 if (current_class_info && current_class_info->parent_count < MAX_PARENTS) {
                     current_class_info->parent_names[current_class_info->parent_count++] = strdup($2);
+                    current_class_info->parents[current_class_info->parent_count - 1] = find_class_info($2);
                 }
                 $$ = $4;
              }
@@ -1377,6 +1430,9 @@ OBJDECL: IDEN IDEN {
                 fprintf(stderr, "Error line %d: Cannot instantiate abstract class '%s'\n", yylineno, $1);
             } else if (!cls_info) {
                 fprintf(stderr, "Error line %d: Unknown class type '%s' for object '%s'\n", yylineno, $1, $2);
+            }
+            if(strcmp($1, $5) != 0) {
+                fprintf(stderr, "Error line %d: Constructor name '%s' does not match class name '%s'\n", yylineno, $4, $1);
             }
             $$ = create_node("OBJ_INIT", $2); 
             add_child($$, $7); 
@@ -1677,21 +1733,21 @@ void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* scop
     code_gen_depth++;
 
 
-    for (int i = 0; i < class_info->parent_count; i++) {
-        ClassInfo* parent = class_info->parents[i];
-        if (parent) {
-            // Find the default constructor signature for the parent
-            char* parent_ctor_sig = strdup(parent->name);
-            int parent_ctor_idx = get_method_vtable_index(parent->name, parent_ctor_sig);
-            if (parent_ctor_idx != -1) {
-                emit("LOAD_ARG 0 ; 'this' for parent constructor call");
-                //emit("DUP ; for vm identification");
-                emit("INVOKEVIRTUAL %d 0; super() call to %s", parent_ctor_idx, parent_ctor_sig);
-                emit("POP ; discard fp ");
-            }
-            free(parent_ctor_sig);
-        }
-    }
+    // for (int i = 0; i < class_info->parent_count; i++) {
+    //     ClassInfo* parent = class_info->parents[i];
+    //     if (parent) {
+    //         // Find the default constructor signature for the parent
+    //         char* parent_ctor_sig = strdup(parent->name);
+    //         int parent_ctor_idx = get_method_vtable_index(parent->name, parent_ctor_sig);
+    //         if (parent_ctor_idx != -1) {
+    //             emit("LOAD_ARG 0 ; 'this' for parent constructor call");
+    //             //emit("DUP ; for vm identification");
+    //             emit("INVOKEVIRTUAL %d 0; super() call to %s", parent_ctor_idx, parent_ctor_sig);
+    //             emit("POP ; discard fp ");
+    //         }
+    //         free(parent_ctor_sig);
+    //     }
+    // }
 
     ClassInfo* class_context = class_info; // For generate_code_for_expr
 
@@ -1768,11 +1824,13 @@ void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* scop
 
             } else if (strcmp(field->type, "F") == 0) {
                 // It's a float.
-                emit("FPUSH 0.0 ; Default value for float '%s'", field->name);
+                emit("FPUSH 0.0 ; Default value for float '%s'", field->name);\
+                emit("PUTFIELD %d ; Store 0.0 to '%s'", field_idx, field->name);
             
             } else {
                 // It's an int, char, or bool. Default to 0.
                 emit("PUSH 0      ; Default value for '%s'", field->name);
+                emit("PUTFIELD %d ; Store 0 to '%s'", field_idx, field->name);
             }
         }
         
@@ -1989,7 +2047,7 @@ void generate_code_for_lval_address(Node* node, SymbolTable* scope, ClassInfo* c
             if (strcmp(s->kind, "variable") == 0 ) {
                 emit("LOAD %d ; Load array variable '%s'", s->address, s->name);
             } else if (strcmp(s->kind, "parameter") == 0) {
-                emit("LOAD_ARG %d ; Load array parameter '%s'", s->address, s->name);
+                emit("LOAD %d ; Load array parameter '%s'", s->address, s->name);
             } else if (strcmp(s->kind, "object") == 0) {
                 emit("LOAD %d ; Load member array object '%s'", s->address, s->name);
             } else {
@@ -2160,13 +2218,15 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         Node* func_call_node = node->children[1];
         Node* arg_list = func_call_node->children[0];
         
-        // Push object reference ('this')
-        generate_code_for_expr(object_node, scope, class_context);
+        
 
         // Push arguments
-        for (int i = 0; i < arg_list->num_children; i++) {
+        for (int i = arg_list->num_children - 1; i >= 0; i--) {
             generate_code_for_expr(arg_list->children[i], scope, class_context);
         }
+
+        // Push object reference ('this')
+        generate_code_for_expr(object_node, scope, class_context);
 
         // Invoke
         fprintf(stderr, "Generating code for method call: %s on object of type %s\n", func_call_node->value, object_node->data_type);
@@ -2175,9 +2235,10 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         MethodInfo* method = find_method_in_hierarchy(NULL, func_call_node->value, find_class_info(object_node->data_type));
         if (method_idx != -1) {
             // Push object reference ('this')
-            //generate_code_for_expr(object_node, scope, class_context);// for vm identification
+            generate_code_for_expr(object_node, scope, class_context);// for vm identification
             emit("INVOKEVIRTUAL %d %d; Call %s.%s", method_idx, arg_list->num_children, object_node->data_type, func_call_node->value);
-            if(strcmp(method->return_type,"void")) emit("POP ; discard fp");
+            emit("POP ; discard extra reference ");
+            if(strcmp(method->return_type,"void") == 0) emit("POP ; discard fp");
         } else {
              fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", func_call_node->value, object_node->data_type);
         }
@@ -2191,18 +2252,18 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
                 if (method_idx != -1) {
                     emit("LOAD_ARG 0 ; Load 'this' for method call");
                     Node* arg_list = node->children[0];
-                    for (int i = 0; i < arg_list->num_children; i++) {
+                    for (int i = arg_list->num_children - 1; i >= 0; i--) {
                         generate_code_for_expr(arg_list->children[i], scope, class_context);
                     }
                     //emit("LOAD_ARG 0 ; vm identification"); // for vm identification
                     emit("INVOKEVIRTUAL %d %d; Call %s.%s", method_idx, arg_list->num_children, class_context->name, node->value);
-                    if(strcmp(method->return_type,"void")) emit("POP ; discard fp");
+                    if(strcmp(method->return_type,"void") == 0) emit("POP ; discard fp");
                 } else {
                     fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", node->value, class_context->name);
                 }
             } else {
                 Node* arg_list = node->children[0];
-                for (int i = 0; i < arg_list->num_children; i++) {
+                for (int i = arg_list->num_children - 1; i >= 0; i--) {
                     generate_code_for_expr(arg_list->children[i], scope, class_context);
                 }
                 //char* mangled_name = get_mangled_name(node->value, arg_list);
@@ -2212,7 +2273,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         }
         else {
             Node* arg_list = node->children[0];
-            for (int i = 0; i < arg_list->num_children; i++) {
+            for (int i = arg_list->num_children - 1; i >= 0; i--) {
                 generate_code_for_expr(arg_list->children[i], scope, class_context);
             }
             //char* mangled_name = get_mangled_name(node->value, arg_list);
@@ -2304,7 +2365,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             
             // 1. Load the old value
             if (strcmp(s->kind, "parameter") == 0) {
-                emit("LOAD_ARG %d ; Load param '%s'", s->address, s->name);
+                emit("LOAD %d ; Load param '%s'", s->address, s->name);
             } else {
                 emit("LOAD %d ; Load local '%s'", s->address, s->name);
             }
@@ -2358,7 +2419,7 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         emit("DUP ; Duplicate object ref for constructor call");
         char* constructor_name = get_mangled_name(class_name, node->children[0]);
         Node* arg_list = node->children[0];
-        for (int i = 0; i < arg_list->num_children; i++) {
+        for (int i = arg_list->num_children - 1; i >= 0; i--) {
             generate_code_for_expr(arg_list->children[i], scope, class_context);
         }
         int method_idx = get_method_vtable_index(class_name, constructor_name);
@@ -2643,11 +2704,27 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
             return;
         }
         emit("NEW %s ; Create new object of class %s", class_info->name, s->type);
-        emit("DUP");
-        
+        if(strcmp(s->kind, "member_obj") == 0) {
+            //emit("LOAD_ARG 0 ; 'this' for member variable initialization '%s'", s->name);
+            int field_idx = get_field_index(s->class_name, s->name);
+            emit("PUTFIELD %d", field_idx);
+            //fprintf(stderr, "Debug: Initialized member variable '%s'\n", node->value);
+        } else {
+            emit("STORE %d ; Store new Object %s", s->address, s->name);
+        }
         for (int i = 0; i < arg_list->num_children; i++) {
             generate_code_for_expr(arg_list->children[i], scope, class_context);
         }
+
+        if(strcmp(s->kind, "member_obj") == 0) {
+            emit("LOAD_ARG 0 ; 'this' for member variable initialization '%s'", s->name);
+            int field_idx = get_field_index(s->class_name, s->name);
+            emit("GETFIELD %d", field_idx);
+            //fprintf(stderr, "Debug: Initialized member variable '%s'\n", node->value);
+        } else {
+            emit("LOAD %d ; Store new Object %s", s->address, s->name);
+        }
+         emit("DUP ; Duplicate object ref for constructor call");
 
         char* constructor_sig = get_mangled_name(s->type, arg_list);
         fprintf(stderr, "Debug: Constructor signature for '%s': %s\n", s->type, constructor_sig);
@@ -2662,16 +2739,17 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         //emit("DUP ; for identification in vm");
         emit("INVOKEVIRTUAL %d %d; Call constructor for %s", ctor_idx, args_count, s->type);
         emit("POP ; discard fp");
+        emit("POP ; discard extra reference");
         free(constructor_sig);
 
-        if(strcmp(s->kind, "member_obj") == 0) {
-            //emit("LOAD_ARG 0 ; 'this' for member variable initialization '%s'", s->name);
-            int field_idx = get_field_index(s->class_name, s->name);
-            emit("PUTFIELD %d", field_idx);
-            //fprintf(stderr, "Debug: Initialized member variable '%s'\n", node->value);
-        } else {
-            emit("STORE %d ; Store new Object %s", s->address, s->name);
-        }
+        // if(strcmp(s->kind, "member_obj") == 0) {
+        //     //emit("LOAD_ARG 0 ; 'this' for member variable initialization '%s'", s->name);
+        //     int field_idx = get_field_index(s->class_name, s->name);
+        //     emit("PUTFIELD %d", field_idx);
+        //     //fprintf(stderr, "Debug: Initialized member variable '%s'\n", node->value);
+        // } else {
+        //     emit("STORE %d ; Store new Object %s", s->address, s->name);
+        // }
 
     } else if (strcmp(node->type, "IF") == 0) {
         int true_label = new_label();
@@ -2873,6 +2951,19 @@ void generate_assembly(Node* node, SymbolTable* scope) {
          emit(".limit stack %d", stack);
          emit(".limit locals %d", locals);
          generate_field_initialization_code(current_class_info, node->scope_table);
+         // LOAD ARGS to LOCALS
+         SymbolTable* func_scope = node->scope_table;
+        for (int i = 0; i < func_scope->count; i++) {
+            Symbol* s = func_scope->symbols[i];
+            if (strcmp(s->kind, "parameter") == 0) {
+                emit("LOAD_ARG %d ; Copy arg '%s' to local", i+1, s->name);
+                emit("STORE %d", s->address);
+            } else {
+                // Parameters are always declared first in the scope
+                break;
+            }
+        }
+
          generate_assembly(node->children[1], node->scope_table);
          emit("RET");
          fprintf(asm_file, ".endmethod\n");
@@ -2964,10 +3055,16 @@ int main(int argc, char **argv) {
                         emit("field %s %s %d", cls->fields[j].name, cls->fields[j].type, 3); 
                     }
                 }
+                
 
-                emit("method_count %d", cls->method_count);
+                int method_count = 0 ;
+                for(int j=0; j<cls->method_count; ++j) {
+                    if(!cls->methods[j].is_inherited) method_count++;
+                }
+
+                emit("method_count %d", method_count);
                  for(int j=0; j<cls->method_count; ++j) {
-                    emit("method %s %s.%s", cls->methods[j].name, cls->name, cls->methods[j].signature);
+                   if(!cls->methods[j].is_inherited) emit("method %s %s.%s", cls->methods[j].name, cls->name, cls->methods[j].signature);
                 }
                 emit("class_end");
             }

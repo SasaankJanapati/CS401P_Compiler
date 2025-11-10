@@ -45,22 +45,9 @@ void main() {
     obj.publicMethod();
     anotherObj.anotherMethod();
     anotherObj.anotherVar = obj.publicVar + 10;
-    int i =0;
-    if( 5==5)
-    {
-        i = i + 1;
-    }
-    else
-    {
-        i = i - 1;
-        
-    }
-    int c = compute_sum(3, 4);
-    int d = compute_sum(c,i);
-    int arr[5];
-    arr[4] = d;
-    c = arr[3] + 2;
-    TestClass arrObj[3];
-    arrObj[0] = new TestClass();
-    arrObj[0].publicVar = arr[4];
+    
+
+    TestClass2 obj2 = new TestClass2();
+    obj2.publicMethod();
+    obj2.anotherMethod();
 }

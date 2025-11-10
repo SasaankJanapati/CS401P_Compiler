@@ -21,3 +21,8 @@ class TestClass2 {
     }
 };
 
+int main() {
+    TestClass2 anotherObj = new TestClass2();
+    anotherObj.anotherMethod();
+    return 0;
+}
