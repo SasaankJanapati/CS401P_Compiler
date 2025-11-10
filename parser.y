@@ -1685,8 +1685,9 @@ void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* scop
             int parent_ctor_idx = get_method_vtable_index(parent->name, parent_ctor_sig);
             if (parent_ctor_idx != -1) {
                 emit("LOAD_ARG 0 ; 'this' for parent constructor call");
-                emit("DUP ; for vm identification");
+                //emit("DUP ; for vm identification");
                 emit("INVOKEVIRTUAL %d 0; super() call to %s", parent_ctor_idx, parent_ctor_sig);
+                emit("POP ; discard fp ");
             }
             free(parent_ctor_sig);
         }
@@ -1758,8 +1759,9 @@ void generate_field_initialization_code(ClassInfo* class_info, SymbolTable* scop
                 } else {
                     emit("NEW %s", field->type);
                     emit("DUP");
-                    emit("DUP ; for vm identification");
+                    //emit("DUP ; for vm identification");
                     emit("INVOKEVIRTUAL %d 0; Call default ctor for %s", ctor_idx, field->type);
+                    emit("POP ; discard fp");
                     emit("PUTFIELD %d ; Store new instance to '%s'", field_idx, field->name);
                 }
                 free(default_ctor_sig);
@@ -1835,8 +1837,9 @@ void emit_default_value(const char* element_type, SymbolTable* scope, ClassInfo*
         } else {
             emit("NEW %s", element_type);
             emit("DUP");
-            emit("DUP ; for vm identification");
+            //emit("DUP ; for vm identification");
             emit("INVOKEVIRTUAL %d %d; Call default ctor for %s", ctor_idx, args_count, element_type);
+            emit("POP ; discard fp");
         }
         free(ctor_sig);
     } else {
@@ -2169,10 +2172,12 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         fprintf(stderr, "Generating code for method call: %s on object of type %s\n", func_call_node->value, object_node->data_type);
         //char* mangled_name = get_mangled_name(func_call_node->value, arg_list);
         int method_idx = get_method_vtable_index(object_node->data_type, func_call_node->value);
+        MethodInfo* method = find_method_in_hierarchy(NULL, func_call_node->value, find_class_info(object_node->data_type));
         if (method_idx != -1) {
             // Push object reference ('this')
-            generate_code_for_expr(object_node, scope, class_context);// for vm identification
+            //generate_code_for_expr(object_node, scope, class_context);// for vm identification
             emit("INVOKEVIRTUAL %d %d; Call %s.%s", method_idx, arg_list->num_children, object_node->data_type, func_call_node->value);
+            if(strcmp(method->return_type,"void")) emit("POP ; discard fp");
         } else {
              fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", func_call_node->value, object_node->data_type);
         }
@@ -2189,8 +2194,9 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
                     for (int i = 0; i < arg_list->num_children; i++) {
                         generate_code_for_expr(arg_list->children[i], scope, class_context);
                     }
-                    emit("LOAD_ARG 0 ; vm identification"); // for vm identification
+                    //emit("LOAD_ARG 0 ; vm identification"); // for vm identification
                     emit("INVOKEVIRTUAL %d %d; Call %s.%s", method_idx, arg_list->num_children, class_context->name, node->value);
+                    if(strcmp(method->return_type,"void")) emit("POP ; discard fp");
                 } else {
                     fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", node->value, class_context->name);
                 }
@@ -2357,8 +2363,9 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         }
         int method_idx = get_method_vtable_index(class_name, constructor_name);
         if (method_idx != -1) {
-            emit("DUP ; for vm identification");
+            //emit("DUP ; for vm identification");
             emit("INVOKEVIRTUAL %d %d; Call constructor %s.%s", method_idx, arg_list->num_children, class_name, constructor_name);
+            emit("POP ; discard fp");
         } else {
             fprintf(stderr, "Codegen Error: Could not find constructor '%s' in class '%s'\n", constructor_name, class_name);
         }
@@ -2652,8 +2659,9 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
 
         int ctor_idx = get_method_vtable_index(s->type, constructor_sig);
         fprintf(stderr, "Debug: Constructor index for '%s': %d\n", s->type, ctor_idx);
-        emit("DUP ; for identification in vm");
+        //emit("DUP ; for identification in vm");
         emit("INVOKEVIRTUAL %d %d; Call constructor for %s", ctor_idx, args_count, s->type);
+        emit("POP ; discard fp");
         free(constructor_sig);
 
         if(strcmp(s->kind, "member_obj") == 0) {
