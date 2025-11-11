@@ -81,32 +81,81 @@ public int abs(int x) {
         return sum;
     }
     
-    public float power(float base, int exponent) {
-        if (exponent == 0) return 1;
-        if (exponent < 0) return 1 / power(base, -exponent);
+    // public float power(float base, int exponent) {
+    //     if (exponent == 0) return 1;
+    //     if (exponent < 0) return 1 / power(base, -exponent);
 
-        float result = 1;
-        while (exponent > 0) {
-            if (exponent % 2 == 1) result = result * base;
-            base = base * base;
-            exponent = exponent / 2;
-        }
+    //     float result = 1;
+    //     while (exponent > 0) {
+    //         if (exponent % 2 == 1) result = result * base;
+    //         base = base * base;
+    //         exponent = exponent / 2;
+    //     }
 
-        return result;
+    //     return result;
+    // }
+
+    // public double power(double base, int exp) {
+    //     if (exp == 0) return 1;
+    //     if (exp < 0) return 1.0 / power(base, -exp);
+
+    //     double result = 1;
+    //     while (exp > 0) {
+    //         if (exp % 2 == 1) result *= base;
+    //         base *= base;
+    //         exp /= 2;
+    //     }
+    //     return result;
+    // }
+
+    public double power(double base, int exponent) {
+    double result = 1.0;
+    int exp = exponent;
+
+    // handle negative exponent without recursion
+    if (exp < 0) {
+        exp = -exp;
     }
 
-    public double power(double base, int exp) {
-        if (exp == 0) return 1;
-        if (exp < 0) return 1.0 / power(base, -exp);
-
-        double result = 1;
-        while (exp > 0) {
-            if (exp % 2 == 1) result *= base;
-            base *= base;
-            exp /= 2;
+    while (exp > 0) {
+        if ((exp /2) == 1) {    // odd exponent
+            result *= base;
         }
-        return result;
+        base *= base;
+        exp =exp/2;               // exp = exp / 2
     }
+
+    if (exponent < 0) {
+        result = 1.0 / result;
+    }
+
+    return result;
+}
+
+public float power(float base, int exponent) {
+    float result = 1.0;
+    int exp = exponent;
+
+    // handle negative exponent without recursion
+    if (exp < 0) {
+        exp = -exp;
+    }
+
+    while (exp > 0) {
+        if ((exp / 2) == 1) {     // if odd
+            result *= base;
+        }
+        base *= base;
+        exp=exp/2;               // exp = exp / 2
+    }
+
+    // if original exponent was negative
+    if (exponent < 0) {
+        result = 1.0 / result;
+    }
+
+    return result;
+}
 
 
     public int max(int a, int b) {
@@ -157,4 +206,5 @@ public int abs(int x) {
     return b;
     }
 };
+
 

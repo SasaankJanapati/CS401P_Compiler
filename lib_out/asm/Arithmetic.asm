@@ -295,151 +295,129 @@ RET
 
 .method Arithmetic.power@F@I
 .limit stack 4
-.limit locals 158
+.limit locals 159
 LOAD_ARG 0 ; Copy arg 'base' to local
 STORE 155
 LOAD_ARG 1 ; Copy arg 'exponent' to local
 STORE 156
+FPUSH 1.0
+STORE 157 ; Init result
 LOAD 156  ; Load parameter 'exponent'
+STORE 158 ; Init exp
+LOAD 158  ; Load local var exp
 PUSH 0
-ICMP_EQ
+ICMP_LT
 JNZ L32
 JMP L33
 L32:
-PUSH 1
-RET
-L33:
-LOAD 156  ; Load parameter 'exponent'
-PUSH 0
-ICMP_LT
-JNZ L34
-JMP L35
-L34:
-PUSH 1
-LOAD_ARG 0 ; Load 'this' for method call
-LOAD 156  ; Load parameter 'exponent'
+LOAD 158  ; Load local var exp
 INEG
-LOAD 155  ; Load parameter 'base'
-INVOKEVIRTUAL 7 2; Call Arithmetic.power@F@I
-RET
-L35:
-PUSH 1
-STORE 157 ; Init result
-L36:
-LOAD 156  ; Load parameter 'exponent'
+STORE 158 ; Store to local 'exp'
+L33:
+L34:
+LOAD 158  ; Load local var exp
 PUSH 0
 ICMP_GT
+JNZ L35
+JMP L36
+L35:
+LOAD 158  ; Load local var exp
+PUSH 2
+IDIV
+PUSH 1
+ICMP_EQ
 JNZ L37
 JMP L38
 L37:
-LOAD 156  ; Load parameter 'exponent'
+LOAD 155  ; Load parameter 'base'
+STORE 157 ; Store to local 'result'
+L38:
+LOAD 155  ; Load parameter 'base'
+STORE 155 ; Store to local 'base'
+LOAD 158  ; Load local var exp
 PUSH 2
-IMOD
-PUSH 1
-ICMP_EQ
+IDIV
+STORE 158 ; Store to local 'exp'
+JMP L34
+L36:
+LOAD 156  ; Load parameter 'exponent'
+PUSH 0
+ICMP_LT
 JNZ L39
 JMP L40
 L39:
+FPUSH 1.0
 LOAD 157  ; Load local var result
-LOAD 155  ; Load parameter 'base'
-FMUL
+FDIV
 STORE 157 ; Store to local 'result'
 L40:
-LOAD 155  ; Load parameter 'base'
-LOAD 155  ; Load parameter 'base'
-FMUL
-STORE 155 ; Store to local 'base'
-LOAD 156  ; Load parameter 'exponent'
-PUSH 2
-IDIV
-STORE 156 ; Store to local 'exponent'
-JMP L36
-L38:
 LOAD 157  ; Load local var result
 RET
 .endmethod
 
 .method Arithmetic.power@F@I
 .limit stack 4
-.limit locals 161
+.limit locals 163
 LOAD_ARG 0 ; Copy arg 'base' to local
-STORE 158
-LOAD_ARG 1 ; Copy arg 'exp' to local
 STORE 159
-LOAD 159  ; Load parameter 'exp'
+LOAD_ARG 1 ; Copy arg 'exponent' to local
+STORE 160
+FPUSH 1.0
+STORE 161 ; Init result
+LOAD 160  ; Load parameter 'exponent'
+STORE 162 ; Init exp
+LOAD 162  ; Load local var exp
 PUSH 0
-ICMP_EQ
+ICMP_LT
 JNZ L41
 JMP L42
 L41:
-PUSH 1
-RET
-L42:
-LOAD 159  ; Load parameter 'exp'
-PUSH 0
-ICMP_LT
-JNZ L43
-JMP L44
-L43:
-FPUSH 1.0
-LOAD_ARG 0 ; Load 'this' for method call
-LOAD 159  ; Load parameter 'exp'
+LOAD 162  ; Load local var exp
 INEG
-LOAD 158  ; Load parameter 'base'
-INVOKEVIRTUAL 7 2; Call Arithmetic.power@F@I
-RET
-L44:
-PUSH 1
-STORE 160 ; Init result
-L45:
-LOAD 159  ; Load parameter 'exp'
+STORE 162 ; Store to local 'exp'
+L42:
+L43:
+LOAD 162  ; Load local var exp
 PUSH 0
 ICMP_GT
+JNZ L44
+JMP L45
+L44:
+LOAD 162  ; Load local var exp
+PUSH 2
+IDIV
+PUSH 1
+ICMP_EQ
 JNZ L46
 JMP L47
 L46:
-LOAD 159  ; Load parameter 'exp'
+LOAD 159  ; Load parameter 'base'
+STORE 161 ; Store to local 'result'
+L47:
+LOAD 159  ; Load parameter 'base'
+STORE 159 ; Store to local 'base'
+LOAD 162  ; Load local var exp
 PUSH 2
-IMOD
-PUSH 1
-ICMP_EQ
+IDIV
+STORE 162 ; Store to local 'exp'
+JMP L43
+L45:
+LOAD 160  ; Load parameter 'exponent'
+PUSH 0
+ICMP_LT
 JNZ L48
 JMP L49
 L48:
-LOAD 158  ; Load parameter 'base'
-STORE 160 ; Store to local 'result'
+FPUSH 1.0
+LOAD 161  ; Load local var result
+FDIV
+STORE 161 ; Store to local 'result'
 L49:
-LOAD 158  ; Load parameter 'base'
-STORE 158 ; Store to local 'base'
-PUSH 2
-STORE 159 ; Store to local 'exp'
-JMP L45
-L47:
-LOAD 160  ; Load local var result
+LOAD 161  ; Load local var result
 RET
 .endmethod
 
 .method Arithmetic.max@I@I
-.limit stack 4
-.limit locals 163
-LOAD_ARG 0 ; Copy arg 'a' to local
-STORE 161
-LOAD_ARG 1 ; Copy arg 'b' to local
-STORE 162
-LOAD 161  ; Load parameter 'a'
-LOAD 162  ; Load parameter 'b'
-ICMP_GT
-JNZ L50
-JMP L51
-L50:
-LOAD 161  ; Load parameter 'a'
-RET
-L51:
-LOAD 162  ; Load parameter 'b'
-RET
-.endmethod
-
-.method Arithmetic.max@F@F
 .limit stack 4
 .limit locals 165
 LOAD_ARG 0 ; Copy arg 'a' to local
@@ -448,13 +426,13 @@ LOAD_ARG 1 ; Copy arg 'b' to local
 STORE 164
 LOAD 163  ; Load parameter 'a'
 LOAD 164  ; Load parameter 'b'
-FCMP_GT
-JNZ L52
-JMP L53
-L52:
+ICMP_GT
+JNZ L50
+JMP L51
+L50:
 LOAD 163  ; Load parameter 'a'
 RET
-L53:
+L51:
 LOAD 164  ; Load parameter 'b'
 RET
 .endmethod
@@ -469,17 +447,17 @@ STORE 166
 LOAD 165  ; Load parameter 'a'
 LOAD 166  ; Load parameter 'b'
 FCMP_GT
-JNZ L54
-JMP L55
-L54:
+JNZ L52
+JMP L53
+L52:
 LOAD 165  ; Load parameter 'a'
 RET
-L55:
+L53:
 LOAD 166  ; Load parameter 'b'
 RET
 .endmethod
 
-.method Arithmetic.min@I@I
+.method Arithmetic.max@F@F
 .limit stack 4
 .limit locals 169
 LOAD_ARG 0 ; Copy arg 'a' to local
@@ -488,18 +466,18 @@ LOAD_ARG 1 ; Copy arg 'b' to local
 STORE 168
 LOAD 167  ; Load parameter 'a'
 LOAD 168  ; Load parameter 'b'
-ICMP_LT
-JNZ L56
-JMP L57
-L56:
+FCMP_GT
+JNZ L54
+JMP L55
+L54:
 LOAD 167  ; Load parameter 'a'
 RET
-L57:
+L55:
 LOAD 168  ; Load parameter 'b'
 RET
 .endmethod
 
-.method Arithmetic.min@F@F
+.method Arithmetic.min@I@I
 .limit stack 4
 .limit locals 171
 LOAD_ARG 0 ; Copy arg 'a' to local
@@ -508,13 +486,13 @@ LOAD_ARG 1 ; Copy arg 'b' to local
 STORE 170
 LOAD 169  ; Load parameter 'a'
 LOAD 170  ; Load parameter 'b'
-FCMP_LT
-JNZ L58
-JMP L59
-L58:
+ICMP_LT
+JNZ L56
+JMP L57
+L56:
 LOAD 169  ; Load parameter 'a'
 RET
-L59:
+L57:
 LOAD 170  ; Load parameter 'b'
 RET
 .endmethod
@@ -528,14 +506,34 @@ LOAD_ARG 1 ; Copy arg 'b' to local
 STORE 172
 LOAD 171  ; Load parameter 'a'
 LOAD 172  ; Load parameter 'b'
+FCMP_LT
+JNZ L58
+JMP L59
+L58:
+LOAD 171  ; Load parameter 'a'
+RET
+L59:
+LOAD 172  ; Load parameter 'b'
+RET
+.endmethod
+
+.method Arithmetic.min@F@F
+.limit stack 4
+.limit locals 175
+LOAD_ARG 0 ; Copy arg 'a' to local
+STORE 173
+LOAD_ARG 1 ; Copy arg 'b' to local
+STORE 174
+LOAD 173  ; Load parameter 'a'
+LOAD 174  ; Load parameter 'b'
 FCMP_GT
 JNZ L60
 JMP L61
 L60:
-LOAD 171  ; Load parameter 'a'
+LOAD 173  ; Load parameter 'a'
 RET
 L61:
-LOAD 172  ; Load parameter 'b'
+LOAD 174  ; Load parameter 'b'
 RET
 .endmethod
 

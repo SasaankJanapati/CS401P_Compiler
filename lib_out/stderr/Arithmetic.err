@@ -42,13 +42,6 @@ Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'exp'
 Debug: Checking for override of method 'exp' with signature 'exp@F' in class 'Arithmetic'
 Debug: Functionend 'exp' with mangled name 'exp@F' declared.
-mangled name: power
-Debug: Processing child 0 of 'ARG_LIST'
-mangled name: power
-Debug: Child type: 'IDEN'
-Debug: Processing child 1 of 'ARG_LIST'
-mangled name: power@F
-Debug: Child type: 'UN_OP'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'power'
 Debug: Processing child 1 of 'PARAM_LIST'
@@ -57,13 +50,6 @@ Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'power@F'
 Debug: Checking for override of method 'power' with signature 'power@F@I' in class 'Arithmetic'
 Debug: Functionend 'power' with mangled name 'power@F@I' declared.
-mangled name: power
-Debug: Processing child 0 of 'ARG_LIST'
-mangled name: power
-Debug: Child type: 'IDEN'
-Debug: Processing child 1 of 'ARG_LIST'
-mangled name: power@F
-Debug: Child type: 'UN_OP'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'power'
 Debug: Processing child 1 of 'PARAM_LIST'
@@ -431,129 +417,28 @@ Debug: Method lookup result: found
                 Gen EXPR for: IDEN (sum)
         Gen ASM for: FUNC_DEF (power@F@I) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
-            Gen ASM for: IF () Scope: 2
-              Gen STMT for: IF () Scope: 2
-                Gen BOOL EXPR for: REL_OP (==)
-                  Gen EXPR for: IDEN (exponent)
-                  Gen EXPR for: NUM (0)
-                Gen ASM for: RETURN () Scope: 2
-                  Gen STMT for: RETURN () Scope: 2
-                    Gen EXPR for: NUM (1)
-            Gen ASM for: IF () Scope: 2
-              Gen STMT for: IF () Scope: 2
-                Gen BOOL EXPR for: REL_OP (<)
-                  Gen EXPR for: IDEN (exponent)
-                  Gen EXPR for: NUM (0)
-                Gen ASM for: RETURN () Scope: 2
-                  Gen STMT for: RETURN () Scope: 2
-                    Gen EXPR for: BIN_OP (/)
-                      Gen EXPR for: NUM (1)
-                      Gen EXPR for: FUNC_CALL (power@F@I)
-Debug: Checking method 'abs' with signature 'abs@I' against 'power@F@I' 0 0
-Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 1 1
-Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 2 2
-Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 3 3
-Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 4 4
-Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 5 5
-Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 6 6
-Debug: Checking method 'power' with signature 'power@F@I' against 'power@F@I' 7 7
-Debug: Looking up method vtable index for 'power@F@I' in class 'Arithmetic'
-Debug: Checking method 'abs' with signature 'abs@I' against 'power@F@I' 0 0
-Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 1 1
-Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 2 2
-Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 3 3
-Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 4 4
-Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 5 5
-Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 6 6
-Debug: Checking method 'power' with signature 'power@F@I' against 'power@F@I' 7 7
-Debug: Method lookup result: found
-                        Gen EXPR for: UN_OP (-)
-                          Gen EXPR for: IDEN (exponent)
-                        Gen EXPR for: IDEN (base)
             Gen ASM for: DECL_STMT () Scope: 2
               Gen STMT for: DECL_STMT () Scope: 2
                 Gen ASM for: DECL_LIST () Scope: 2
                   Gen ASM for: VAR_INIT (result) Scope: 2
                     Gen STMT for: VAR_INIT (result) Scope: 2
-                      Gen EXPR for: NUM (1)
-            Gen ASM for: WHILE () Scope: 2
-              Gen STMT for: WHILE () Scope: 2
-                Gen BOOL EXPR for: REL_OP (>)
-                  Gen EXPR for: IDEN (exponent)
-                  Gen EXPR for: NUM (0)
-                Gen ASM for: STATEMENTS () Scope: 2
-                  Gen ASM for: IF () Scope: 3
-                    Gen STMT for: IF () Scope: 3
-                      Gen BOOL EXPR for: REL_OP (==)
-                        Gen EXPR for: BIN_OP (%)
-                          Gen EXPR for: IDEN (exponent)
-                          Gen EXPR for: NUM (2)
-                        Gen EXPR for: NUM (1)
-                      Gen ASM for: ASSIGN () Scope: 3
-                        Gen STMT for: ASSIGN () Scope: 3
-                          Gen EXPR for: BIN_OP (*)
-                            Gen EXPR for: IDEN (result)
-                            Gen EXPR for: IDEN (base)
-                  Gen ASM for: ASSIGN () Scope: 3
-                    Gen STMT for: ASSIGN () Scope: 3
-                      Gen EXPR for: BIN_OP (*)
-                        Gen EXPR for: IDEN (base)
-                        Gen EXPR for: IDEN (base)
-                  Gen ASM for: ASSIGN () Scope: 3
-                    Gen STMT for: ASSIGN () Scope: 3
-                      Gen EXPR for: BIN_OP (/)
-                        Gen EXPR for: IDEN (exponent)
-                        Gen EXPR for: NUM (2)
-            Gen ASM for: RETURN () Scope: 2
-              Gen STMT for: RETURN () Scope: 2
-                Gen EXPR for: IDEN (result)
-        Gen ASM for: FUNC_DEF (power@F@I) Scope: 1
-          Gen ASM for: STATEMENTS () Scope: 2
-            Gen ASM for: IF () Scope: 2
-              Gen STMT for: IF () Scope: 2
-                Gen BOOL EXPR for: REL_OP (==)
-                  Gen EXPR for: IDEN (exp)
-                  Gen EXPR for: NUM (0)
-                Gen ASM for: RETURN () Scope: 2
-                  Gen STMT for: RETURN () Scope: 2
-                    Gen EXPR for: NUM (1)
-            Gen ASM for: IF () Scope: 2
-              Gen STMT for: IF () Scope: 2
-                Gen BOOL EXPR for: REL_OP (<)
-                  Gen EXPR for: IDEN (exp)
-                  Gen EXPR for: NUM (0)
-                Gen ASM for: RETURN () Scope: 2
-                  Gen STMT for: RETURN () Scope: 2
-                    Gen EXPR for: BIN_OP (/)
                       Gen EXPR for: NUM (1.0)
-                      Gen EXPR for: FUNC_CALL (power@F@I)
-Debug: Checking method 'abs' with signature 'abs@I' against 'power@F@I' 0 0
-Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 1 1
-Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 2 2
-Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 3 3
-Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 4 4
-Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 5 5
-Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 6 6
-Debug: Checking method 'power' with signature 'power@F@I' against 'power@F@I' 7 7
-Debug: Looking up method vtable index for 'power@F@I' in class 'Arithmetic'
-Debug: Checking method 'abs' with signature 'abs@I' against 'power@F@I' 0 0
-Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 1 1
-Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 2 2
-Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 3 3
-Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 4 4
-Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 5 5
-Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 6 6
-Debug: Checking method 'power' with signature 'power@F@I' against 'power@F@I' 7 7
-Debug: Method lookup result: found
-                        Gen EXPR for: UN_OP (-)
-                          Gen EXPR for: IDEN (exp)
-                        Gen EXPR for: IDEN (base)
             Gen ASM for: DECL_STMT () Scope: 2
               Gen STMT for: DECL_STMT () Scope: 2
                 Gen ASM for: DECL_LIST () Scope: 2
-                  Gen ASM for: VAR_INIT (result) Scope: 2
-                    Gen STMT for: VAR_INIT (result) Scope: 2
-                      Gen EXPR for: NUM (1)
+                  Gen ASM for: VAR_INIT (exp) Scope: 2
+                    Gen STMT for: VAR_INIT (exp) Scope: 2
+                      Gen EXPR for: IDEN (exponent)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (exp)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: UN_OP (-)
+                        Gen EXPR for: IDEN (exp)
             Gen ASM for: WHILE () Scope: 2
               Gen STMT for: WHILE () Scope: 2
                 Gen BOOL EXPR for: REL_OP (>)
@@ -563,19 +448,96 @@ Debug: Method lookup result: found
                   Gen ASM for: IF () Scope: 3
                     Gen STMT for: IF () Scope: 3
                       Gen BOOL EXPR for: REL_OP (==)
-                        Gen EXPR for: BIN_OP (%)
+                        Gen EXPR for: BIN_OP (/)
                           Gen EXPR for: IDEN (exp)
                           Gen EXPR for: NUM (2)
                         Gen EXPR for: NUM (1)
-                      Gen ASM for: ASSIGN () Scope: 3
-                        Gen STMT for: ASSIGN () Scope: 3
-                          Gen EXPR for: IDEN (base)
+                      Gen ASM for: STATEMENTS () Scope: 3
+                        Gen ASM for: ASSIGN () Scope: 4
+                          Gen STMT for: ASSIGN () Scope: 4
+                            Gen EXPR for: IDEN (base)
                   Gen ASM for: ASSIGN () Scope: 3
                     Gen STMT for: ASSIGN () Scope: 3
                       Gen EXPR for: IDEN (base)
                   Gen ASM for: ASSIGN () Scope: 3
                     Gen STMT for: ASSIGN () Scope: 3
-                      Gen EXPR for: NUM (2)
+                      Gen EXPR for: BIN_OP (/)
+                        Gen EXPR for: IDEN (exp)
+                        Gen EXPR for: NUM (2)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (exponent)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (/)
+                        Gen EXPR for: NUM (1.0)
+                        Gen EXPR for: IDEN (result)
+            Gen ASM for: RETURN () Scope: 2
+              Gen STMT for: RETURN () Scope: 2
+                Gen EXPR for: IDEN (result)
+        Gen ASM for: FUNC_DEF (power@F@I) Scope: 1
+          Gen ASM for: STATEMENTS () Scope: 2
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (result) Scope: 2
+                    Gen STMT for: VAR_INIT (result) Scope: 2
+                      Gen EXPR for: NUM (1.0)
+            Gen ASM for: DECL_STMT () Scope: 2
+              Gen STMT for: DECL_STMT () Scope: 2
+                Gen ASM for: DECL_LIST () Scope: 2
+                  Gen ASM for: VAR_INIT (exp) Scope: 2
+                    Gen STMT for: VAR_INIT (exp) Scope: 2
+                      Gen EXPR for: IDEN (exponent)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (exp)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: UN_OP (-)
+                        Gen EXPR for: IDEN (exp)
+            Gen ASM for: WHILE () Scope: 2
+              Gen STMT for: WHILE () Scope: 2
+                Gen BOOL EXPR for: REL_OP (>)
+                  Gen EXPR for: IDEN (exp)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: IF () Scope: 3
+                    Gen STMT for: IF () Scope: 3
+                      Gen BOOL EXPR for: REL_OP (==)
+                        Gen EXPR for: BIN_OP (/)
+                          Gen EXPR for: IDEN (exp)
+                          Gen EXPR for: NUM (2)
+                        Gen EXPR for: NUM (1)
+                      Gen ASM for: STATEMENTS () Scope: 3
+                        Gen ASM for: ASSIGN () Scope: 4
+                          Gen STMT for: ASSIGN () Scope: 4
+                            Gen EXPR for: IDEN (base)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: IDEN (base)
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (/)
+                        Gen EXPR for: IDEN (exp)
+                        Gen EXPR for: NUM (2)
+            Gen ASM for: IF () Scope: 2
+              Gen STMT for: IF () Scope: 2
+                Gen BOOL EXPR for: REL_OP (<)
+                  Gen EXPR for: IDEN (exponent)
+                  Gen EXPR for: NUM (0)
+                Gen ASM for: STATEMENTS () Scope: 2
+                  Gen ASM for: ASSIGN () Scope: 3
+                    Gen STMT for: ASSIGN () Scope: 3
+                      Gen EXPR for: BIN_OP (/)
+                        Gen EXPR for: NUM (1.0)
+                        Gen EXPR for: IDEN (result)
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
                 Gen EXPR for: IDEN (result)
