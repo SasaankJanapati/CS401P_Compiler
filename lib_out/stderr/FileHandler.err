@@ -89,8 +89,8 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: ASSIGN () Scope: 2
               Gen STMT for: ASSIGN () Scope: 2
                 Gen EXPR for: SYS_CALL (open)
-                  Gen EXPR for: IDEN (filename)
                   Gen EXPR for: IDEN (flags)
+                  Gen EXPR for: IDEN (filename)
             Gen ASM for: EMPTY_STMT () Scope: 2
               Gen STMT for: EMPTY_STMT () Scope: 2
             Gen ASM for: IF () Scope: 2
@@ -149,9 +149,9 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: VAR_INIT (bytesRead) Scope: 2
                     Gen STMT for: VAR_INIT (bytesRead) Scope: 2
                       Gen EXPR for: SYS_CALL (read)
-                        Gen EXPR for: IDEN (buffer)
-                        Gen EXPR for: IDEN (size)
                         Gen EXPR for: IDEN (fd)
+                        Gen EXPR for: IDEN (size)
+                        Gen EXPR for: IDEN (buffer)
             Gen ASM for: EMPTY_STMT () Scope: 2
               Gen STMT for: EMPTY_STMT () Scope: 2
             Gen ASM for: RETURN () Scope: 2
@@ -175,9 +175,9 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: VAR_INIT (bytesWritten) Scope: 2
                     Gen STMT for: VAR_INIT (bytesWritten) Scope: 2
                       Gen EXPR for: SYS_CALL (write)
-                        Gen EXPR for: IDEN (buffer)
-                        Gen EXPR for: IDEN (size)
                         Gen EXPR for: IDEN (fd)
+                        Gen EXPR for: IDEN (size)
+                        Gen EXPR for: IDEN (buffer)
             Gen ASM for: EMPTY_STMT () Scope: 2
               Gen STMT for: EMPTY_STMT () Scope: 2
             Gen ASM for: RETURN () Scope: 2

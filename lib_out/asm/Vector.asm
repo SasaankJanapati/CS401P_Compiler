@@ -61,9 +61,9 @@ LOAD 97 ; Load array variable 'buf'
 PUSH 0
 LOAD 96  ; Load parameter 'c'
 ASTORE ; Store to array element
+PUSH 1
+PUSH 1
 LOAD 97  ; Load local var buf
-PUSH 1
-PUSH 1
 SYS_CALL WRITE ; write
 POP
 RET

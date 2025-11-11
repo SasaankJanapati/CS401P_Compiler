@@ -25,9 +25,9 @@ class_end
 PUSH 1
 NEWARRAY C
 STORE 0 ; Store new flattened array to 'c'
-LOAD 0  ; Load local var c
-PUSH 1
 PUSH 0
+PUSH 1
+LOAD 0  ; Load local var c
 SYS_CALL READ ; read
 POP
 LOAD 0 ; Load array variable 'c'
@@ -50,9 +50,9 @@ LOAD 3 ; Load array variable 'arr'
 PUSH 0
 LOAD 2  ; Load parameter 'c'
 ASTORE ; Store to array element
+PUSH 1
+PUSH 1
 LOAD 3  ; Load local var arr
-PUSH 1
-PUSH 1
 SYS_CALL WRITE ; write
 POP
 RET

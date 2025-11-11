@@ -190,9 +190,9 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: SYS_CALL (read)
-                  Gen EXPR for: IDEN (c)
-                  Gen EXPR for: NUM (1)
                   Gen EXPR for: NUM (0)
+                  Gen EXPR for: NUM (1)
+                  Gen EXPR for: IDEN (c)
             Gen ASM for: EMPTY_STMT () Scope: 2
               Gen STMT for: EMPTY_STMT () Scope: 2
             Gen ASM for: DECL_STMT () Scope: 2
@@ -224,9 +224,9 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: SYS_CALL (write)
+                  Gen EXPR for: NUM (1)
+                  Gen EXPR for: NUM (1)
                   Gen EXPR for: IDEN (arr)
-                  Gen EXPR for: NUM (1)
-                  Gen EXPR for: NUM (1)
             Gen ASM for: EMPTY_STMT () Scope: 2
               Gen STMT for: EMPTY_STMT () Scope: 2
         Gen ASM for: FUNC_DEF (readString@[C@I) Scope: 1

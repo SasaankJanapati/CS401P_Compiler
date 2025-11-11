@@ -2447,16 +2447,16 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         if (strcmp(node->value, "open") == 0) {
             // Stack: ..., filename, mode -> ..., file_handle
             // Grammar args: filename, flags. We'll use flags as the mode.
-            generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: filename
             generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: mode/flags
+            generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: filename
             emit("SYS_CALL OPEN ; open");
         } else if (strcmp(node->value, "read") == 0 || strcmp(node->value, "write") == 0) {
             // Stack: ..., localidx, size, file_handle -> ...
             // Grammar args: fd, buffer, size
             
-            generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: buffer
-            generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: size
             generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: fd
+            generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: size
+            generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: buffer
 
             if (strcmp(node->value, "read") == 0) {
                 emit("SYS_CALL READ ; read");

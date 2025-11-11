@@ -74,8 +74,8 @@ L7:
 L5:
 L2:
 LOAD_ARG 0 ; 'this' for assignment to member 'fd'
-LOAD 65  ; Load parameter 'filename'
 LOAD 67  ; Load local var flags
+LOAD 65  ; Load parameter 'filename'
 SYS_CALL OPEN ; open
 PUTFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
@@ -142,10 +142,10 @@ PUSH 1
 INEG
 RET
 L13:
-LOAD 68  ; Load parameter 'buffer'
-LOAD 69  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
+LOAD 69  ; Load parameter 'size'
+LOAD 68  ; Load parameter 'buffer'
 SYS_CALL READ ; read
 STORE 70 ; Init bytesRead
 LOAD 70  ; Load local var bytesRead
@@ -170,10 +170,10 @@ PUSH 1
 INEG
 RET
 L15:
-LOAD 71  ; Load parameter 'buffer'
-LOAD 72  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
+LOAD 72  ; Load parameter 'size'
+LOAD 71  ; Load parameter 'buffer'
 SYS_CALL WRITE ; write
 STORE 73 ; Init bytesWritten
 LOAD 73  ; Load local var bytesWritten
