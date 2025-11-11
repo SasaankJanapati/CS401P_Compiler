@@ -4,6 +4,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'swap@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'swap@I'
+Debug: Checking for override of method 'swap' with signature 'swap@I@I' in class 'Utility'
 Debug: Functionend 'swap' with mangled name 'swap@I@I' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'swap'
@@ -11,6 +12,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'swap@F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'swap@F'
+Debug: Checking for override of method 'swap' with signature 'swap@F@F' in class 'Utility'
 Debug: Functionend 'swap' with mangled name 'swap@F@F' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'swap2'
@@ -18,6 +20,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'swap2@C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'swap2@C'
+Debug: Checking for override of method 'swap2' with signature 'swap2@C@C' in class 'Utility'
 Debug: Functionend 'swap2' with mangled name 'swap2@C@C' declared.
 Debug: No constructor found for 'Utility'. Synthesizing a default constructor node.
 Debug: Building array type for base type 'I' and index node 'INDEX'
@@ -42,6 +45,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'insert@[I@I@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'insert@[I@I@I'
+Debug: Checking for override of method 'insert' with signature 'insert@[I@I@I@I' in class 'Algorithms'
 Debug: Functionend 'insert' with mangled name 'insert@[I@I@I@I' declared.
 Debug: Building array type for base type 'I' and index node 'INDEX'
 Debug: Processing index node for array access on '[I'
@@ -59,6 +63,7 @@ Debug: Child type: 'ARRAY_ACCESS'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: swap@I
 Debug: Child type: 'ARRAY_ACCESS'
+Debug: Checking method 'swap' with signature 'swap@I@I' against 'swap@I@I' 0 0
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'sort'
 Debug: Mangling param/arg of array type 'I' with 1 dimensions
@@ -66,6 +71,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'sort@[I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'sort@[I'
+Debug: Checking for override of method 'sort' with signature 'sort@[I@I' in class 'Algorithms'
 Debug: Functionend 'sort' with mangled name 'sort@[I@I' declared.
 Debug: Building array type for base type 'I' and index node 'INDEX'
 Debug: Processing index node for array access on '[I'
@@ -79,6 +85,7 @@ Debug: Child type: 'ARRAY_ACCESS'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: swap@I
 Debug: Child type: 'ARRAY_ACCESS'
+Debug: Checking method 'swap' with signature 'swap@I@I' against 'swap@I@I' 0 0
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'reverse'
 Debug: Mangling param/arg of array type 'I' with 1 dimensions
@@ -86,6 +93,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'reverse@[I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'reverse@[I'
+Debug: Checking for override of method 'reverse' with signature 'reverse@[I@I' in class 'Algorithms'
 Debug: Functionend 'reverse' with mangled name 'reverse@[I@I' declared.
 Debug: No constructor found for 'Algorithms'. Synthesizing a default constructor node.
 Gen ASM for: PROGRAM () Scope: 0
@@ -236,17 +244,21 @@ Current scope table number: 2
                               Gen ASM for: EXPR_STMT () Scope: 5
                                 Gen STMT for: EXPR_STMT () Scope: 5
                                   Gen EXPR for: MEMBER_FUNC_ACCESS ()
-                                    Gen EXPR for: IDEN (util)
-Looking up field index for member object 'util' in class 'Algorithms'
-                                    Gen EXPR for: ARRAY_ACCESS (arr)
-                                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
-                                        Gen EXPR for: IDEN (j)
                                     Gen EXPR for: ARRAY_ACCESS (arr)
                                       Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                                         Gen EXPR for: BIN_OP (+)
                                           Gen EXPR for: IDEN (j)
                                           Gen EXPR for: NUM (1)
+                                    Gen EXPR for: ARRAY_ACCESS (arr)
+                                      Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                                        Gen EXPR for: IDEN (j)
+                                    Gen EXPR for: IDEN (util)
+Looking up field index for member object 'util' in class 'Algorithms'
 Generating code for method call: swap@I@I on object of type Utility
+Debug: Looking up method vtable index for 'swap@I@I' in class 'Utility'
+Debug: Checking method 'swap' with signature 'swap@I@I' against 'swap@I@I' 0 0
+Debug: Method lookup result: found
+Debug: Checking method 'swap' with signature 'swap@I@I' against 'swap@I@I' 0 0
                                     Gen EXPR for: IDEN (util)
 Looking up field index for member object 'util' in class 'Algorithms'
                         Gen ASM for: ASSIGN () Scope: 4
@@ -284,15 +296,19 @@ Looking up field index for member object 'util' in class 'Algorithms'
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: MEMBER_FUNC_ACCESS ()
-                        Gen EXPR for: IDEN (util)
-Looking up field index for member object 'util' in class 'Algorithms'
-                        Gen EXPR for: ARRAY_ACCESS (arr)
-                          Gen LVAL ADDR for: ARRAY_ACCESS (arr)
-                            Gen EXPR for: IDEN (start)
                         Gen EXPR for: ARRAY_ACCESS (arr)
                           Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                             Gen EXPR for: IDEN (end)
+                        Gen EXPR for: ARRAY_ACCESS (arr)
+                          Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                            Gen EXPR for: IDEN (start)
+                        Gen EXPR for: IDEN (util)
+Looking up field index for member object 'util' in class 'Algorithms'
 Generating code for method call: swap@I@I on object of type Utility
+Debug: Looking up method vtable index for 'swap@I@I' in class 'Utility'
+Debug: Checking method 'swap' with signature 'swap@I@I' against 'swap@I@I' 0 0
+Debug: Method lookup result: found
+Debug: Checking method 'swap' with signature 'swap@I@I' against 'swap@I@I' 0 0
                         Gen EXPR for: IDEN (util)
 Looking up field index for member object 'util' in class 'Algorithms'
                   Gen ASM for: ASSIGN () Scope: 3
@@ -311,3 +327,9 @@ Generating field initialization for default constructor of class
 Current scope table number: 2
           Generating field initializers for class 'Algorithms'
             Field 'util' has no initializer, generating default.
+Debug: Looking up method vtable index for 'Utility' in class 'Utility'
+Debug: Checking method 'swap' with signature 'swap@I@I' against 'Utility' 0 0
+Debug: Checking method 'swap' with signature 'swap@F@F' against 'Utility' 1 1
+Debug: Checking method 'swap2' with signature 'swap2@C@C' against 'Utility' 2 2
+Debug: Checking method 'Utility' with signature 'Utility' against 'Utility' 3 3
+Debug: Method lookup result: found

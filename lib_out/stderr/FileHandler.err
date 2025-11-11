@@ -3,7 +3,6 @@ Debug: Adding member variable 'isOpen' to class 'FileHandler'
 ---------------Debug: Constructor index for 'FileHandler': 0
 ---------------Debug: Constructor signature for 'FileHandler': FileHandler
 Debug: Building array type for base type 'C' and index node 'INDEX'
-Error line 24: 'open' syscall flags must be a char (got 'I')
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'fopen'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
@@ -11,7 +10,9 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'fopen@[C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'fopen@[C'
+Debug: Checking for override of method 'fopen' with signature 'fopen@[C@I' in class 'FileHandler'
 Debug: Functionend 'fopen' with mangled name 'fopen@[C@I' declared.
+Debug: Checking for override of method 'fclose' with signature 'fclose' in class 'FileHandler'
 Debug: Functionend 'fclose' with mangled name 'fclose' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Processing child 0 of 'PARAM_LIST'
@@ -21,6 +22,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'fread@[C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'fread@[C'
+Debug: Checking for override of method 'fread' with signature 'fread@[C@I' in class 'FileHandler'
 Debug: Functionend 'fread' with mangled name 'fread@[C@I' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Processing child 0 of 'PARAM_LIST'
@@ -30,7 +32,9 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'fwrite@[C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'fwrite@[C'
+Debug: Checking for override of method 'fwrite' with signature 'fwrite@[C@I' in class 'FileHandler'
 Debug: Functionend 'fwrite' with mangled name 'fwrite@[C@I' declared.
+Debug: Checking for override of method 'is_open' with signature 'is_open' in class 'FileHandler'
 Debug: Functionend 'is_open' with mangled name 'is_open' declared.
 Gen ASM for: PROGRAM () Scope: 0
   Gen ASM for: STATEMENTS () Scope: 0
@@ -53,9 +57,8 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: DECL_STMT () Scope: 2
               Gen STMT for: DECL_STMT () Scope: 2
                 Gen ASM for: DECL_LIST () Scope: 2
-                  Gen ASM for: VAR_INIT (flags) Scope: 2
-                    Gen STMT for: VAR_INIT (flags) Scope: 2
-                      Gen EXPR for: NUM (0)
+                  Gen ASM for: VAR_DECL (flags) Scope: 2
+                    Gen STMT for: VAR_DECL (flags) Scope: 2
             Gen ASM for: IF_ELSE () Scope: 2
               Gen STMT for: IF_ELSE () Scope: 2
                 Gen BOOL EXPR for: REL_OP (==)
@@ -64,7 +67,7 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen ASM for: STATEMENTS () Scope: 2
                   Gen ASM for: ASSIGN () Scope: 3
                     Gen STMT for: ASSIGN () Scope: 3
-                      Gen EXPR for: NUM (0)
+                      Gen EXPR for: CHAR_LIT ('r')
                 Gen ASM for: IF_ELSE () Scope: 2
                   Gen STMT for: IF_ELSE () Scope: 2
                     Gen BOOL EXPR for: REL_OP (==)
@@ -73,7 +76,7 @@ Gen ASM for: PROGRAM () Scope: 0
                     Gen ASM for: STATEMENTS () Scope: 2
                       Gen ASM for: ASSIGN () Scope: 3
                         Gen STMT for: ASSIGN () Scope: 3
-                          Gen EXPR for: NUM (577)
+                          Gen EXPR for: CHAR_LIT ('w')
                     Gen ASM for: IF () Scope: 2
                       Gen STMT for: IF () Scope: 2
                         Gen BOOL EXPR for: REL_OP (==)
@@ -82,12 +85,14 @@ Gen ASM for: PROGRAM () Scope: 0
                         Gen ASM for: STATEMENTS () Scope: 2
                           Gen ASM for: ASSIGN () Scope: 3
                             Gen STMT for: ASSIGN () Scope: 3
-                              Gen EXPR for: NUM (1089)
+                              Gen EXPR for: CHAR_LIT ('a')
             Gen ASM for: ASSIGN () Scope: 2
               Gen STMT for: ASSIGN () Scope: 2
                 Gen EXPR for: SYS_CALL (open)
                   Gen EXPR for: IDEN (filename)
                   Gen EXPR for: IDEN (flags)
+            Gen ASM for: EMPTY_STMT () Scope: 2
+              Gen STMT for: EMPTY_STMT () Scope: 2
             Gen ASM for: IF () Scope: 2
               Gen STMT for: IF () Scope: 2
                 Gen BOOL EXPR for: REL_OP (<)
@@ -147,6 +152,8 @@ Gen ASM for: PROGRAM () Scope: 0
                         Gen EXPR for: IDEN (buffer)
                         Gen EXPR for: IDEN (size)
                         Gen EXPR for: IDEN (fd)
+            Gen ASM for: EMPTY_STMT () Scope: 2
+              Gen STMT for: EMPTY_STMT () Scope: 2
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
                 Gen EXPR for: IDEN (bytesRead)
@@ -171,6 +178,8 @@ Gen ASM for: PROGRAM () Scope: 0
                         Gen EXPR for: IDEN (buffer)
                         Gen EXPR for: IDEN (size)
                         Gen EXPR for: IDEN (fd)
+            Gen ASM for: EMPTY_STMT () Scope: 2
+              Gen STMT for: EMPTY_STMT () Scope: 2
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
                 Gen EXPR for: IDEN (bytesWritten)

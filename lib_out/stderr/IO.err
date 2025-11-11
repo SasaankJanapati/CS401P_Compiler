@@ -2,6 +2,7 @@ Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Declaring array 'c' of type '[C'
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'c' has element type 'C'
+Debug: Checking for override of method 'readChar' with signature 'readChar' in class 'IOHandler'
 Debug: Functionend 'readChar' with mangled name 'readChar' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Declaring array 'arr' of type '[C'
@@ -9,6 +10,7 @@ Debug: Processing index node for array access on '[C'
 Debug: Array access 'arr' has element type 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'writeChar'
+Debug: Checking for override of method 'writeChar' with signature 'writeChar@C' in class 'IOHandler'
 Debug: Functionend 'writeChar' with mangled name 'writeChar@C' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
 Debug: Building array type for base type 'C' and index node 'NULL'
@@ -24,6 +26,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'readString@[C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'readString@[C'
+Debug: Checking for override of method 'readString' with signature 'readString@[C@I' in class 'IOHandler'
 Debug: Functionend 'readString' with mangled name 'readString@[C@I' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
 Debug: Building array type for base type 'C' and index node 'NULL'
@@ -37,10 +40,12 @@ Debug: Processing index node for array access on '[C'
 Debug: Array access 'arr' has element type 'C'
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'arr' has element type 'C'
-Error line 40: Type mismatch in assignment. Cannot assign 'C' to 'I'
+Error line 40: Incompatible types in initialization. Cannot assign 'C' to 'I'
+Error line 41: Type mismatch in assignment. Cannot assign 'C' to 'I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'stringToInt'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Checking for override of method 'stringToInt' with signature 'stringToInt@[C' in class 'IOHandler'
 Debug: Functionend 'stringToInt' with mangled name 'stringToInt@[C' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
 Debug: Building array type for base type 'C' and index node 'NULL'
@@ -69,6 +74,7 @@ Debug: Child type: 'PARAM_LIST' 'intToString@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'intToString@I'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Checking for override of method 'intToString' with signature 'intToString@I@[C' in class 'IOHandler'
 Debug: Functionend 'intToString' with mangled name 'intToString@I@[C' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
 Debug: Building array type for base type 'C' and index node 'NULL'
@@ -102,6 +108,7 @@ Debug: Child type: 'PARAM_LIST' 'doubleToString@F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'doubleToString@F'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Checking for override of method 'doubleToString' with signature 'doubleToString@F@[C' in class 'IOHandler'
 Debug: Functionend 'doubleToString' with mangled name 'doubleToString@F@[C' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Declaring array 'buf' of type '[C'
@@ -116,6 +123,7 @@ mangled name: stringToInt
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: stringToInt
 Debug: Child type: 'IDEN'
+Debug: Checking for override of method 'readInt' with signature 'readInt' in class 'IOHandler'
 Debug: Functionend 'readInt' with mangled name 'readInt' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
 Debug: Building array type for base type 'C' and index node 'NULL'
@@ -130,6 +138,7 @@ Debug: Child type: 'ARRAY_ACCESS'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'printString'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Checking for override of method 'printString' with signature 'printString@[C' in class 'IOHandler'
 Debug: Functionend 'printString' with mangled name 'printString@[C' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Declaring array 'buf' of type '[C'
@@ -146,6 +155,7 @@ mangled name: printString
 Debug: Child type: 'IDEN'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'printInt'
+Debug: Checking for override of method 'printInt' with signature 'printInt@I' in class 'IOHandler'
 Debug: Functionend 'printInt' with mangled name 'printInt@I' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Declaring array 'buf' of type '[C'
@@ -162,6 +172,7 @@ mangled name: printString
 Debug: Child type: 'IDEN'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'printDouble'
+Debug: Checking for override of method 'printDouble' with signature 'printDouble@F' in class 'IOHandler'
 Debug: Functionend 'printDouble' with mangled name 'printDouble@F' declared.
 Debug: No constructor found for 'IOHandler'. Synthesizing a default constructor node.
 Gen ASM for: PROGRAM () Scope: 0
@@ -182,6 +193,8 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen EXPR for: IDEN (c)
                   Gen EXPR for: NUM (1)
                   Gen EXPR for: NUM (0)
+            Gen ASM for: EMPTY_STMT () Scope: 2
+              Gen STMT for: EMPTY_STMT () Scope: 2
             Gen ASM for: DECL_STMT () Scope: 2
               Gen STMT for: DECL_STMT () Scope: 2
                 Gen ASM for: DECL_LIST () Scope: 2
@@ -214,6 +227,8 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen EXPR for: IDEN (arr)
                   Gen EXPR for: NUM (1)
                   Gen EXPR for: NUM (1)
+            Gen ASM for: EMPTY_STMT () Scope: 2
+              Gen STMT for: EMPTY_STMT () Scope: 2
         Gen ASM for: FUNC_DEF (readString@[C@I) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: DECL_STMT () Scope: 2
@@ -238,6 +253,10 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: ASSIGN () Scope: 3
                     Gen STMT for: ASSIGN () Scope: 3
                       Gen EXPR for: FUNC_CALL (readChar)
+Debug: Checking method 'readChar' with signature 'readChar' against 'readChar' 0 0
+Debug: Looking up method vtable index for 'readChar' in class 'IOHandler'
+Debug: Checking method 'readChar' with signature 'readChar' against 'readChar' 0 0
+Debug: Method lookup result: found
                   Gen ASM for: IF () Scope: 3
                     Gen STMT for: IF () Scope: 3
                       Gen BOOL EXPR for: BOOL_OP (||)
@@ -315,17 +334,26 @@ Gen ASM for: PROGRAM () Scope: 0
                               Gen EXPR for: IDEN (i)
                           Gen EXPR for: CHAR_LIT ('9')
                       Gen ASM for: STATEMENTS () Scope: 3
+                        Gen ASM for: DECL_STMT () Scope: 4
+                          Gen STMT for: DECL_STMT () Scope: 4
+                            Gen ASM for: DECL_LIST () Scope: 4
+                              Gen ASM for: VAR_INIT (digit) Scope: 4
+                                Gen STMT for: VAR_INIT (digit) Scope: 4
+                                  Gen EXPR for: ARRAY_ACCESS (arr)
+                                    Gen LVAL ADDR for: ARRAY_ACCESS (arr)
+                                      Gen EXPR for: IDEN (i)
+                        Gen ASM for: ASSIGN () Scope: 4
+                          Gen STMT for: ASSIGN () Scope: 4
+                            Gen EXPR for: BIN_OP (-)
+                              Gen EXPR for: IDEN (digit)
+                              Gen EXPR for: CHAR_LIT ('0')
                         Gen ASM for: ASSIGN () Scope: 4
                           Gen STMT for: ASSIGN () Scope: 4
                             Gen EXPR for: BIN_OP (+)
                               Gen EXPR for: BIN_OP (*)
                                 Gen EXPR for: IDEN (num)
                                 Gen EXPR for: NUM (10)
-                              Gen EXPR for: BIN_OP (-)
-                                Gen EXPR for: ARRAY_ACCESS (arr)
-                                  Gen LVAL ADDR for: ARRAY_ACCESS (arr)
-                                    Gen EXPR for: IDEN (i)
-                                Gen EXPR for: CHAR_LIT ('0')
+                              Gen EXPR for: IDEN (digit)
                       Gen ASM for: BREAK () Scope: 3
                         Gen STMT for: BREAK () Scope: 3
                   Gen ASM for: EXPR_STMT () Scope: 3
@@ -527,8 +555,20 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (intToString@I@[C)
-                  Gen EXPR for: IDEN (intPart)
+Debug: Checking method 'readChar' with signature 'readChar' against 'intToString@I@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'intToString@I@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'intToString@I@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'intToString@I@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'intToString@I@[C' 4 4
+Debug: Looking up method vtable index for 'intToString@I@[C' in class 'IOHandler'
+Debug: Checking method 'readChar' with signature 'readChar' against 'intToString@I@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'intToString@I@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'intToString@I@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'intToString@I@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'intToString@I@[C' 4 4
+Debug: Method lookup result: found
                   Gen EXPR for: IDEN (intBuf)
+                  Gen EXPR for: IDEN (intPart)
             Gen ASM for: DECL_STMT () Scope: 2
               Gen STMT for: DECL_STMT () Scope: 2
                 Gen ASM for: DECL_LIST () Scope: 2
@@ -637,11 +677,29 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (readString@[C@I)
-                  Gen EXPR for: IDEN (buf)
+Debug: Checking method 'readChar' with signature 'readChar' against 'readString@[C@I' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'readString@[C@I' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'readString@[C@I' 2 2
+Debug: Looking up method vtable index for 'readString@[C@I' in class 'IOHandler'
+Debug: Checking method 'readChar' with signature 'readChar' against 'readString@[C@I' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'readString@[C@I' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'readString@[C@I' 2 2
+Debug: Method lookup result: found
                   Gen EXPR for: NUM (50)
+                  Gen EXPR for: IDEN (buf)
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
                 Gen EXPR for: FUNC_CALL (stringToInt@[C)
+Debug: Checking method 'readChar' with signature 'readChar' against 'stringToInt@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'stringToInt@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'stringToInt@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'stringToInt@[C' 3 3
+Debug: Looking up method vtable index for 'stringToInt@[C' in class 'IOHandler'
+Debug: Checking method 'readChar' with signature 'readChar' against 'stringToInt@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'stringToInt@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'stringToInt@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'stringToInt@[C' 3 3
+Debug: Method lookup result: found
                   Gen EXPR for: IDEN (buf)
         Gen ASM for: FUNC_DEF (printString@[C) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
@@ -662,6 +720,12 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: FUNC_CALL (writeChar@C)
+Debug: Checking method 'readChar' with signature 'readChar' against 'writeChar@C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'writeChar@C' 1 1
+Debug: Looking up method vtable index for 'writeChar@C' in class 'IOHandler'
+Debug: Checking method 'readChar' with signature 'readChar' against 'writeChar@C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'writeChar@C' 1 1
+Debug: Method lookup result: found
                         Gen EXPR for: ARRAY_ACCESS (arr)
                           Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                             Gen EXPR for: IDEN (i)
@@ -680,11 +744,41 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (intToString@I@[C)
-                  Gen EXPR for: IDEN (x)
+Debug: Checking method 'readChar' with signature 'readChar' against 'intToString@I@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'intToString@I@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'intToString@I@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'intToString@I@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'intToString@I@[C' 4 4
+Debug: Looking up method vtable index for 'intToString@I@[C' in class 'IOHandler'
+Debug: Checking method 'readChar' with signature 'readChar' against 'intToString@I@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'intToString@I@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'intToString@I@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'intToString@I@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'intToString@I@[C' 4 4
+Debug: Method lookup result: found
                   Gen EXPR for: IDEN (buf)
+                  Gen EXPR for: IDEN (x)
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (printString@[C)
+Debug: Checking method 'readChar' with signature 'readChar' against 'printString@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'printString@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'printString@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'printString@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'printString@[C' 4 4
+Debug: Checking method 'doubleToString' with signature 'doubleToString@F@[C' against 'printString@[C' 5 5
+Debug: Checking method 'readInt' with signature 'readInt' against 'printString@[C' 6 6
+Debug: Checking method 'printString' with signature 'printString@[C' against 'printString@[C' 7 7
+Debug: Looking up method vtable index for 'printString@[C' in class 'IOHandler'
+Debug: Checking method 'readChar' with signature 'readChar' against 'printString@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'printString@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'printString@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'printString@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'printString@[C' 4 4
+Debug: Checking method 'doubleToString' with signature 'doubleToString@F@[C' against 'printString@[C' 5 5
+Debug: Checking method 'readInt' with signature 'readInt' against 'printString@[C' 6 6
+Debug: Checking method 'printString' with signature 'printString@[C' against 'printString@[C' 7 7
+Debug: Method lookup result: found
                   Gen EXPR for: IDEN (buf)
         Gen ASM for: FUNC_DEF (printDouble@F) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
@@ -697,11 +791,43 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (doubleToString@F@[C)
-                  Gen EXPR for: IDEN (x)
+Debug: Checking method 'readChar' with signature 'readChar' against 'doubleToString@F@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'doubleToString@F@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'doubleToString@F@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'doubleToString@F@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'doubleToString@F@[C' 4 4
+Debug: Checking method 'doubleToString' with signature 'doubleToString@F@[C' against 'doubleToString@F@[C' 5 5
+Debug: Looking up method vtable index for 'doubleToString@F@[C' in class 'IOHandler'
+Debug: Checking method 'readChar' with signature 'readChar' against 'doubleToString@F@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'doubleToString@F@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'doubleToString@F@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'doubleToString@F@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'doubleToString@F@[C' 4 4
+Debug: Checking method 'doubleToString' with signature 'doubleToString@F@[C' against 'doubleToString@F@[C' 5 5
+Debug: Method lookup result: found
                   Gen EXPR for: IDEN (buf)
+                  Gen EXPR for: IDEN (x)
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (printString@[C)
+Debug: Checking method 'readChar' with signature 'readChar' against 'printString@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'printString@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'printString@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'printString@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'printString@[C' 4 4
+Debug: Checking method 'doubleToString' with signature 'doubleToString@F@[C' against 'printString@[C' 5 5
+Debug: Checking method 'readInt' with signature 'readInt' against 'printString@[C' 6 6
+Debug: Checking method 'printString' with signature 'printString@[C' against 'printString@[C' 7 7
+Debug: Looking up method vtable index for 'printString@[C' in class 'IOHandler'
+Debug: Checking method 'readChar' with signature 'readChar' against 'printString@[C' 0 0
+Debug: Checking method 'writeChar' with signature 'writeChar@C' against 'printString@[C' 1 1
+Debug: Checking method 'readString' with signature 'readString@[C@I' against 'printString@[C' 2 2
+Debug: Checking method 'stringToInt' with signature 'stringToInt@[C' against 'printString@[C' 3 3
+Debug: Checking method 'intToString' with signature 'intToString@I@[C' against 'printString@[C' 4 4
+Debug: Checking method 'doubleToString' with signature 'doubleToString@F@[C' against 'printString@[C' 5 5
+Debug: Checking method 'readInt' with signature 'readInt' against 'printString@[C' 6 6
+Debug: Checking method 'printString' with signature 'printString@[C' against 'printString@[C' 7 7
+Debug: Method lookup result: found
                   Gen EXPR for: IDEN (buf)
         Gen ASM for: CONSTRUCTOR_DEFAULT (IOHandler) Scope: 1
 Generating default constructor: IOHandler.IOHandler

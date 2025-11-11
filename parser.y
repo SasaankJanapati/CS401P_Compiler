@@ -3019,6 +3019,11 @@ int main(int argc, char **argv) {
             return 1;
         }
     }
+    if (argc == 3) {
+        local_address_counter = atoi(argv[2]);
+    } else {
+        local_address_counter = 180;
+    }
     
     yylineno = 1;
     init_symbol_table();
@@ -3115,11 +3120,19 @@ int main(int argc, char **argv) {
         fclose(sym_file);
     }
 
+    // write last used local address counter to file
+    FILE* local_file = fopen("last_index.txt", "w");
+    if (local_file) {
+        fprintf(local_file, "%d\n", local_address_counter);
+        fclose(local_file);
+    }
+
     return 0;
 }
 
 void yyerror(const char* s) {
     fprintf(stderr, "Parse error at line %d: %s\n", yylineno, s);
+    exit(1);
 }
 
 // --- Tree Printing Functions ---

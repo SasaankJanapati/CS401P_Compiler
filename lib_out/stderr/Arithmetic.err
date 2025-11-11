@@ -1,11 +1,14 @@
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'abs'
+Debug: Checking for override of method 'abs' with signature 'abs@I' in class 'Arithmetic'
 Debug: Functionend 'abs' with mangled name 'abs@I' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'abs'
+Debug: Checking for override of method 'abs' with signature 'abs@F' in class 'Arithmetic'
 Debug: Functionend 'abs' with mangled name 'abs@F' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'abs'
+Debug: Checking for override of method 'abs' with signature 'abs@F' in class 'Arithmetic'
 Debug: Functionend 'abs' with mangled name 'abs@F' declared.
 mangled name: abs
 Debug: Processing child 0 of 'ARG_LIST'
@@ -13,6 +16,7 @@ mangled name: abs
 Debug: Child type: 'BIN_OP'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'sqrt'
+Debug: Checking for override of method 'sqrt' with signature 'sqrt@F' in class 'Arithmetic'
 Debug: Functionend 'sqrt' with mangled name 'sqrt@F' declared.
 mangled name: abs
 Debug: Processing child 0 of 'ARG_LIST'
@@ -20,6 +24,7 @@ mangled name: abs
 Debug: Child type: 'BIN_OP'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'sqrt'
+Debug: Checking for override of method 'sqrt' with signature 'sqrt@F' in class 'Arithmetic'
 Debug: Functionend 'sqrt' with mangled name 'sqrt@F' declared.
 mangled name: abs
 Debug: Processing child 0 of 'ARG_LIST'
@@ -27,6 +32,7 @@ mangled name: abs
 Debug: Child type: 'IDEN'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'exp'
+Debug: Checking for override of method 'exp' with signature 'exp@F' in class 'Arithmetic'
 Debug: Functionend 'exp' with mangled name 'exp@F' declared.
 mangled name: abs
 Debug: Processing child 0 of 'ARG_LIST'
@@ -34,6 +40,7 @@ mangled name: abs
 Debug: Child type: 'IDEN'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'exp'
+Debug: Checking for override of method 'exp' with signature 'exp@F' in class 'Arithmetic'
 Debug: Functionend 'exp' with mangled name 'exp@F' declared.
 mangled name: power
 Debug: Processing child 0 of 'ARG_LIST'
@@ -48,6 +55,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'power@F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'power@F'
+Debug: Checking for override of method 'power' with signature 'power@F@I' in class 'Arithmetic'
 Debug: Functionend 'power' with mangled name 'power@F@I' declared.
 mangled name: power
 Debug: Processing child 0 of 'ARG_LIST'
@@ -62,6 +70,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'power@F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'power@F'
+Debug: Checking for override of method 'power' with signature 'power@F@I' in class 'Arithmetic'
 Debug: Functionend 'power' with mangled name 'power@F@I' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'max'
@@ -69,6 +78,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'max@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'max@I'
+Debug: Checking for override of method 'max' with signature 'max@I@I' in class 'Arithmetic'
 Debug: Functionend 'max' with mangled name 'max@I@I' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'max'
@@ -76,6 +86,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'max@F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'max@F'
+Debug: Checking for override of method 'max' with signature 'max@F@F' in class 'Arithmetic'
 Debug: Functionend 'max' with mangled name 'max@F@F' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'max'
@@ -83,6 +94,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'max@F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'max@F'
+Debug: Checking for override of method 'max' with signature 'max@F@F' in class 'Arithmetic'
 Debug: Functionend 'max' with mangled name 'max@F@F' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'min'
@@ -90,6 +102,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'min@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'min@I'
+Debug: Checking for override of method 'min' with signature 'min@I@I' in class 'Arithmetic'
 Debug: Functionend 'min' with mangled name 'min@I@I' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'min'
@@ -97,6 +110,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'min@F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'min@F'
+Debug: Checking for override of method 'min' with signature 'min@F@F' in class 'Arithmetic'
 Debug: Functionend 'min' with mangled name 'min@F@F' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'min'
@@ -104,6 +118,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'min@F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'min@F'
+Debug: Checking for override of method 'min' with signature 'min@F@F' in class 'Arithmetic'
 Debug: Functionend 'min' with mangled name 'min@F@F' declared.
 Debug: No constructor found for 'Arithmetic'. Synthesizing a default constructor node.
 Gen ASM for: PROGRAM () Scope: 0
@@ -210,6 +225,12 @@ Gen ASM for: PROGRAM () Scope: 0
                     Gen STMT for: IF () Scope: 3
                       Gen BOOL EXPR for: REL_OP (<)
                         Gen EXPR for: FUNC_CALL (abs@F)
+Debug: Checking method 'abs' with signature 'abs@I' against 'abs@F' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'abs@F' 1 1
+Debug: Looking up method vtable index for 'abs@F' in class 'Arithmetic'
+Debug: Checking method 'abs' with signature 'abs@I' against 'abs@F' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'abs@F' 1 1
+Debug: Method lookup result: found
                           Gen EXPR for: BIN_OP (-)
                             Gen EXPR for: IDEN (newGuess)
                             Gen EXPR for: IDEN (guess)
@@ -277,6 +298,12 @@ Gen ASM for: PROGRAM () Scope: 0
                     Gen STMT for: IF () Scope: 3
                       Gen BOOL EXPR for: REL_OP (<)
                         Gen EXPR for: FUNC_CALL (abs@F)
+Debug: Checking method 'abs' with signature 'abs@I' against 'abs@F' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'abs@F' 1 1
+Debug: Looking up method vtable index for 'abs@F' in class 'Arithmetic'
+Debug: Checking method 'abs' with signature 'abs@I' against 'abs@F' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'abs@F' 1 1
+Debug: Method lookup result: found
                           Gen EXPR for: BIN_OP (-)
                             Gen EXPR for: IDEN (newGuess)
                             Gen EXPR for: IDEN (guess)
@@ -319,6 +346,12 @@ Gen ASM for: PROGRAM () Scope: 0
               Gen STMT for: WHILE () Scope: 2
                 Gen BOOL EXPR for: REL_OP (>)
                   Gen EXPR for: FUNC_CALL (abs@F)
+Debug: Checking method 'abs' with signature 'abs@I' against 'abs@F' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'abs@F' 1 1
+Debug: Looking up method vtable index for 'abs@F' in class 'Arithmetic'
+Debug: Checking method 'abs' with signature 'abs@I' against 'abs@F' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'abs@F' 1 1
+Debug: Method lookup result: found
                     Gen EXPR for: IDEN (term)
                   Gen EXPR for: IDEN (eps)
                 Gen ASM for: STATEMENTS () Scope: 2
@@ -372,6 +405,12 @@ Gen ASM for: PROGRAM () Scope: 0
               Gen STMT for: WHILE () Scope: 2
                 Gen BOOL EXPR for: REL_OP (>)
                   Gen EXPR for: FUNC_CALL (abs@F)
+Debug: Checking method 'abs' with signature 'abs@I' against 'abs@F' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'abs@F' 1 1
+Debug: Looking up method vtable index for 'abs@F' in class 'Arithmetic'
+Debug: Checking method 'abs' with signature 'abs@I' against 'abs@F' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'abs@F' 1 1
+Debug: Method lookup result: found
                     Gen EXPR for: IDEN (term)
                   Gen EXPR for: IDEN (eps)
                 Gen ASM for: STATEMENTS () Scope: 2
@@ -410,9 +449,27 @@ Gen ASM for: PROGRAM () Scope: 0
                     Gen EXPR for: BIN_OP (/)
                       Gen EXPR for: NUM (1)
                       Gen EXPR for: FUNC_CALL (power@F@I)
-                        Gen EXPR for: IDEN (base)
+Debug: Checking method 'abs' with signature 'abs@I' against 'power@F@I' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 1 1
+Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 2 2
+Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 3 3
+Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 4 4
+Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 5 5
+Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 6 6
+Debug: Checking method 'power' with signature 'power@F@I' against 'power@F@I' 7 7
+Debug: Looking up method vtable index for 'power@F@I' in class 'Arithmetic'
+Debug: Checking method 'abs' with signature 'abs@I' against 'power@F@I' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 1 1
+Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 2 2
+Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 3 3
+Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 4 4
+Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 5 5
+Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 6 6
+Debug: Checking method 'power' with signature 'power@F@I' against 'power@F@I' 7 7
+Debug: Method lookup result: found
                         Gen EXPR for: UN_OP (-)
                           Gen EXPR for: IDEN (exponent)
+                        Gen EXPR for: IDEN (base)
             Gen ASM for: DECL_STMT () Scope: 2
               Gen STMT for: DECL_STMT () Scope: 2
                 Gen ASM for: DECL_LIST () Scope: 2
@@ -470,9 +527,27 @@ Gen ASM for: PROGRAM () Scope: 0
                     Gen EXPR for: BIN_OP (/)
                       Gen EXPR for: NUM (1.0)
                       Gen EXPR for: FUNC_CALL (power@F@I)
-                        Gen EXPR for: IDEN (base)
+Debug: Checking method 'abs' with signature 'abs@I' against 'power@F@I' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 1 1
+Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 2 2
+Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 3 3
+Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 4 4
+Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 5 5
+Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 6 6
+Debug: Checking method 'power' with signature 'power@F@I' against 'power@F@I' 7 7
+Debug: Looking up method vtable index for 'power@F@I' in class 'Arithmetic'
+Debug: Checking method 'abs' with signature 'abs@I' against 'power@F@I' 0 0
+Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 1 1
+Debug: Checking method 'abs' with signature 'abs@F' against 'power@F@I' 2 2
+Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 3 3
+Debug: Checking method 'sqrt' with signature 'sqrt@F' against 'power@F@I' 4 4
+Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 5 5
+Debug: Checking method 'exp' with signature 'exp@F' against 'power@F@I' 6 6
+Debug: Checking method 'power' with signature 'power@F@I' against 'power@F@I' 7 7
+Debug: Method lookup result: found
                         Gen EXPR for: UN_OP (-)
                           Gen EXPR for: IDEN (exp)
+                        Gen EXPR for: IDEN (base)
             Gen ASM for: DECL_STMT () Scope: 2
               Gen STMT for: DECL_STMT () Scope: 2
                 Gen ASM for: DECL_LIST () Scope: 2

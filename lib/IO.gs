@@ -35,12 +35,15 @@ class IOHandler {
             sign = -1;
             i++;
         }
-        while (arr[i] != '\0') {
-            if (arr[i] >= '0' && arr[i] <= '9') {
-                num = num * 10 + (arr[i] - '0');
-            } else break;
-            i++;
-        }
+      while (arr[i] != '\0') {
+    if (arr[i] >= '0' && arr[i] <= '9') {
+        int digit = arr[i];
+        digit = digit - '0';   // now digit is integer form
+        num = num * 10 + digit;
+    } else break;
+    i++;
+}
+
         return sign * num;
     }
 

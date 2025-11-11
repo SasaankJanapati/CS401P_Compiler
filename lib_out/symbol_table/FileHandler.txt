@@ -22,9 +22,9 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-filename             | [C              | parameter    | public       | N/A             | 0            | 17
-mode                 | I               | parameter    | public       | N/A             | 1            | 17
-flags                | I               | variable     | public       | N/A             | 2            | 18
+filename             | [C              | parameter    | public       | N/A             | 65           | 17
+mode                 | I               | parameter    | public       | N/A             | 66           | 17
+flags                | C               | variable     | public       | N/A             | 67           | 18
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -53,9 +53,9 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-buffer               | [C              | parameter    | public       | N/A             | 3            | 42
-size                 | I               | parameter    | public       | N/A             | 4            | 42
-bytesRead            | I               | variable     | public       | N/A             | 5            | 44
+buffer               | [C              | parameter    | public       | N/A             | 68           | 42
+size                 | I               | parameter    | public       | N/A             | 69           | 42
+bytesRead            | I               | variable     | public       | N/A             | 70           | 44
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -64,9 +64,9 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-buffer               | [C              | parameter    | public       | N/A             | 6            | 49
-size                 | I               | parameter    | public       | N/A             | 7            | 49
-bytesWritten         | I               | variable     | public       | N/A             | 8            | 51
+buffer               | [C              | parameter    | public       | N/A             | 71           | 49
+size                 | I               | parameter    | public       | N/A             | 72           | 49
+bytesWritten         | I               | variable     | public       | N/A             | 73           | 51
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared

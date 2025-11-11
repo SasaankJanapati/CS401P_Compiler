@@ -4,6 +4,7 @@ Debug: Array access 'str' has element type 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'length'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Checking for override of method 'length' with signature 'length@[C' in class 'StringHandler'
 Debug: Functionend 'length' with mangled name 'length@[C' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Building array type for base type 'C' and index node 'INDEX'
@@ -35,6 +36,7 @@ Debug: Child type: 'PARAM_LIST' 'substr@[C@I@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'substr@[C@I@I'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Checking for override of method 'substr' with signature 'substr@[C@I@I@[C' in class 'StringHandler'
 Debug: Functionend 'substr' with mangled name 'substr@[C@I@I@[C' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Building array type for base type 'C' and index node 'INDEX'
@@ -50,12 +52,6 @@ Debug: Processing index node for array access on '[C'
 Debug: Array access 's1' has element type 'C'
 Debug: Processing index node for array access on '[C'
 Debug: Array access 's2' has element type 'C'
-Error line 32: Incompatible return type. Function expects 'I' but got 'C'.
-Debug: Processing index node for array access on '[C'
-Debug: Array access 's1' has element type 'C'
-Debug: Processing index node for array access on '[C'
-Debug: Array access 's2' has element type 'C'
-Error line 36: Incompatible return type. Function expects 'I' but got 'C'.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'compare'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
@@ -64,6 +60,7 @@ Debug: Child type: 'PARAM_LIST' 'compare@[C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'compare@[C'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
+Debug: Checking for override of method 'compare' with signature 'compare@[C@[C' in class 'StringHandler'
 Debug: Functionend 'compare' with mangled name 'compare@[C@[C' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 mangled name: length
@@ -87,6 +84,7 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'insert@[C@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'insert@[C@I'
+Debug: Checking for override of method 'insert' with signature 'insert@[C@I@C' in class 'StringHandler'
 Debug: Functionend 'insert' with mangled name 'insert@[C@I@C' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 mangled name: length
@@ -110,12 +108,15 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'erase@[C@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'erase@[C@I'
+Debug: Checking for override of method 'erase' with signature 'erase@[C@I@I' in class 'StringHandler'
 Debug: Functionend 'erase' with mangled name 'erase@[C@I@I' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'islower'
+Debug: Checking for override of method 'islower' with signature 'islower@C' in class 'StringHandler'
 Debug: Functionend 'islower' with mangled name 'islower@C' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'isupper'
+Debug: Checking for override of method 'isupper' with signature 'isupper@C' in class 'StringHandler'
 Debug: Functionend 'isupper' with mangled name 'isupper@C' declared.
 mangled name: isupper
 Debug: Processing child 0 of 'ARG_LIST'
@@ -123,6 +124,7 @@ mangled name: isupper
 Debug: Child type: 'IDEN'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'tolower'
+Debug: Checking for override of method 'tolower' with signature 'tolower@C' in class 'StringHandler'
 Debug: Functionend 'tolower' with mangled name 'tolower@C' declared.
 mangled name: islower
 Debug: Processing child 0 of 'ARG_LIST'
@@ -130,6 +132,7 @@ mangled name: islower
 Debug: Child type: 'IDEN'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'toupper'
+Debug: Checking for override of method 'toupper' with signature 'toupper@C' in class 'StringHandler'
 Debug: Functionend 'toupper' with mangled name 'toupper@C' declared.
 mangled name: islower
 Debug: Processing child 0 of 'ARG_LIST'
@@ -141,6 +144,7 @@ mangled name: isupper
 Debug: Child type: 'IDEN'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'isalpha'
+Debug: Checking for override of method 'isalpha' with signature 'isalpha@C' in class 'StringHandler'
 Debug: Functionend 'isalpha' with mangled name 'isalpha@C' declared.
 mangled name: isalpha
 Debug: Processing child 0 of 'ARG_LIST'
@@ -152,9 +156,11 @@ mangled name: isnum
 Debug: Child type: 'IDEN'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'isalnum'
+Debug: Checking for override of method 'isalnum' with signature 'isalnum@C' in class 'StringHandler'
 Debug: Functionend 'isalnum' with mangled name 'isalnum@C' declared.
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'isnum'
+Debug: Checking for override of method 'isnum' with signature 'isnum@C' in class 'StringHandler'
 Debug: Functionend 'isnum' with mangled name 'isnum@C' declared.
 Debug: No constructor found for 'StringHandler'. Synthesizing a default constructor node.
 Gen ASM for: PROGRAM () Scope: 0
@@ -192,6 +198,10 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: VAR_INIT (n) Scope: 2
                     Gen STMT for: VAR_INIT (n) Scope: 2
                       Gen EXPR for: FUNC_CALL (length@[C)
+Debug: Checking method 'length' with signature 'length@[C' against 'length@[C' 0 0
+Debug: Looking up method vtable index for 'length@[C' in class 'StringHandler'
+Debug: Checking method 'length' with signature 'length@[C' against 'length@[C' 0 0
+Debug: Method lookup result: found
                         Gen EXPR for: IDEN (str)
             Gen ASM for: IF () Scope: 2
               Gen STMT for: IF () Scope: 2
@@ -267,9 +277,9 @@ Gen ASM for: PROGRAM () Scope: 0
                         Gen EXPR for: IDEN (i)
                     Gen EXPR for: CHAR_LIT ('\0')
                 Gen ASM for: STATEMENTS () Scope: 2
-                  Gen ASM for: IF () Scope: 3
-                    Gen STMT for: IF () Scope: 3
-                      Gen BOOL EXPR for: REL_OP (!=)
+                  Gen ASM for: IF_ELSE () Scope: 3
+                    Gen STMT for: IF_ELSE () Scope: 3
+                      Gen BOOL EXPR for: REL_OP (>)
                         Gen EXPR for: ARRAY_ACCESS (s1)
                           Gen LVAL ADDR for: ARRAY_ACCESS (s1)
                             Gen EXPR for: IDEN (i)
@@ -279,26 +289,28 @@ Gen ASM for: PROGRAM () Scope: 0
                       Gen ASM for: STATEMENTS () Scope: 3
                         Gen ASM for: RETURN () Scope: 4
                           Gen STMT for: RETURN () Scope: 4
-                            Gen EXPR for: BIN_OP (-)
-                              Gen EXPR for: ARRAY_ACCESS (s1)
-                                Gen LVAL ADDR for: ARRAY_ACCESS (s1)
-                                  Gen EXPR for: IDEN (i)
-                              Gen EXPR for: ARRAY_ACCESS (s2)
-                                Gen LVAL ADDR for: ARRAY_ACCESS (s2)
-                                  Gen EXPR for: IDEN (i)
+                            Gen EXPR for: NUM (1)
+                      Gen ASM for: IF () Scope: 3
+                        Gen STMT for: IF () Scope: 3
+                          Gen BOOL EXPR for: REL_OP (<)
+                            Gen EXPR for: ARRAY_ACCESS (s1)
+                              Gen LVAL ADDR for: ARRAY_ACCESS (s1)
+                                Gen EXPR for: IDEN (i)
+                            Gen EXPR for: ARRAY_ACCESS (s2)
+                              Gen LVAL ADDR for: ARRAY_ACCESS (s2)
+                                Gen EXPR for: IDEN (i)
+                          Gen ASM for: STATEMENTS () Scope: 3
+                            Gen ASM for: RETURN () Scope: 4
+                              Gen STMT for: RETURN () Scope: 4
+                                Gen EXPR for: UN_OP (-)
+                                  Gen EXPR for: NUM (1)
                   Gen ASM for: EXPR_STMT () Scope: 3
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: POST_INC (++)
                         Gen EXPR for POST-INC/DEC on LVAL type: IDEN
             Gen ASM for: RETURN () Scope: 2
               Gen STMT for: RETURN () Scope: 2
-                Gen EXPR for: BIN_OP (-)
-                  Gen EXPR for: ARRAY_ACCESS (s1)
-                    Gen LVAL ADDR for: ARRAY_ACCESS (s1)
-                      Gen EXPR for: IDEN (i)
-                  Gen EXPR for: ARRAY_ACCESS (s2)
-                    Gen LVAL ADDR for: ARRAY_ACCESS (s2)
-                      Gen EXPR for: IDEN (i)
+                Gen EXPR for: NUM (0)
         Gen ASM for: FUNC_DEF (insert@[C@I@C) Scope: 1
           Gen ASM for: STATEMENTS () Scope: 2
             Gen ASM for: DECL_STMT () Scope: 2
@@ -307,6 +319,10 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: VAR_INIT (n) Scope: 2
                     Gen STMT for: VAR_INIT (n) Scope: 2
                       Gen EXPR for: FUNC_CALL (length@[C)
+Debug: Checking method 'length' with signature 'length@[C' against 'length@[C' 0 0
+Debug: Looking up method vtable index for 'length@[C' in class 'StringHandler'
+Debug: Checking method 'length' with signature 'length@[C' against 'length@[C' 0 0
+Debug: Method lookup result: found
                         Gen EXPR for: IDEN (str)
             Gen ASM for: IF () Scope: 2
               Gen STMT for: IF () Scope: 2
@@ -359,6 +375,10 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: VAR_INIT (n) Scope: 2
                     Gen STMT for: VAR_INIT (n) Scope: 2
                       Gen EXPR for: FUNC_CALL (length@[C)
+Debug: Checking method 'length' with signature 'length@[C' against 'length@[C' 0 0
+Debug: Looking up method vtable index for 'length@[C' in class 'StringHandler'
+Debug: Checking method 'length' with signature 'length@[C' against 'length@[C' 0 0
+Debug: Method lookup result: found
                         Gen EXPR for: IDEN (str)
             Gen ASM for: IF () Scope: 2
               Gen STMT for: IF () Scope: 2
@@ -430,6 +450,22 @@ Gen ASM for: PROGRAM () Scope: 0
               Gen STMT for: IF () Scope: 2
                 Gen BOOL EXPR for: REL_OP (==)
                   Gen EXPR for: FUNC_CALL (isupper@C)
+Debug: Checking method 'length' with signature 'length@[C' against 'isupper@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'isupper@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'isupper@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'isupper@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'isupper@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'isupper@C' 5 5
+Debug: Checking method 'isupper' with signature 'isupper@C' against 'isupper@C' 6 6
+Debug: Looking up method vtable index for 'isupper@C' in class 'StringHandler'
+Debug: Checking method 'length' with signature 'length@[C' against 'isupper@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'isupper@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'isupper@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'isupper@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'isupper@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'isupper@C' 5 5
+Debug: Checking method 'isupper' with signature 'isupper@C' against 'isupper@C' 6 6
+Debug: Method lookup result: found
                     Gen EXPR for: IDEN (c)
                   Gen EXPR for: NUM (1)
                 Gen ASM for: RETURN () Scope: 2
@@ -448,6 +484,20 @@ Gen ASM for: PROGRAM () Scope: 0
               Gen STMT for: IF () Scope: 2
                 Gen BOOL EXPR for: REL_OP (==)
                   Gen EXPR for: FUNC_CALL (islower@C)
+Debug: Checking method 'length' with signature 'length@[C' against 'islower@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'islower@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'islower@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'islower@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'islower@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'islower@C' 5 5
+Debug: Looking up method vtable index for 'islower@C' in class 'StringHandler'
+Debug: Checking method 'length' with signature 'length@[C' against 'islower@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'islower@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'islower@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'islower@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'islower@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'islower@C' 5 5
+Debug: Method lookup result: found
                     Gen EXPR for: IDEN (c)
                   Gen EXPR for: NUM (1)
                 Gen ASM for: RETURN () Scope: 2
@@ -467,10 +517,40 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen BOOL EXPR for: BOOL_OP (||)
                   Gen BOOL EXPR for: REL_OP (==)
                     Gen EXPR for: FUNC_CALL (islower@C)
+Debug: Checking method 'length' with signature 'length@[C' against 'islower@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'islower@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'islower@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'islower@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'islower@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'islower@C' 5 5
+Debug: Looking up method vtable index for 'islower@C' in class 'StringHandler'
+Debug: Checking method 'length' with signature 'length@[C' against 'islower@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'islower@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'islower@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'islower@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'islower@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'islower@C' 5 5
+Debug: Method lookup result: found
                       Gen EXPR for: IDEN (c)
                     Gen EXPR for: NUM (1)
                   Gen BOOL EXPR for: REL_OP (==)
                     Gen EXPR for: FUNC_CALL (isupper@C)
+Debug: Checking method 'length' with signature 'length@[C' against 'isupper@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'isupper@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'isupper@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'isupper@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'isupper@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'isupper@C' 5 5
+Debug: Checking method 'isupper' with signature 'isupper@C' against 'isupper@C' 6 6
+Debug: Looking up method vtable index for 'isupper@C' in class 'StringHandler'
+Debug: Checking method 'length' with signature 'length@[C' against 'isupper@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'isupper@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'isupper@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'isupper@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'isupper@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'isupper@C' 5 5
+Debug: Checking method 'isupper' with signature 'isupper@C' against 'isupper@C' 6 6
+Debug: Method lookup result: found
                       Gen EXPR for: IDEN (c)
                     Gen EXPR for: NUM (1)
         Gen ASM for: FUNC_DEF (isalnum@C) Scope: 1
@@ -480,10 +560,58 @@ Gen ASM for: PROGRAM () Scope: 0
                 Gen BOOL EXPR for: BOOL_OP (||)
                   Gen BOOL EXPR for: REL_OP (==)
                     Gen EXPR for: FUNC_CALL (isalpha@C)
+Debug: Checking method 'length' with signature 'length@[C' against 'isalpha@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'isalpha@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'isalpha@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'isalpha@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'isalpha@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'isalpha@C' 5 5
+Debug: Checking method 'isupper' with signature 'isupper@C' against 'isalpha@C' 6 6
+Debug: Checking method 'tolower' with signature 'tolower@C' against 'isalpha@C' 7 7
+Debug: Checking method 'toupper' with signature 'toupper@C' against 'isalpha@C' 8 8
+Debug: Checking method 'isalpha' with signature 'isalpha@C' against 'isalpha@C' 9 9
+Debug: Looking up method vtable index for 'isalpha@C' in class 'StringHandler'
+Debug: Checking method 'length' with signature 'length@[C' against 'isalpha@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'isalpha@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'isalpha@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'isalpha@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'isalpha@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'isalpha@C' 5 5
+Debug: Checking method 'isupper' with signature 'isupper@C' against 'isalpha@C' 6 6
+Debug: Checking method 'tolower' with signature 'tolower@C' against 'isalpha@C' 7 7
+Debug: Checking method 'toupper' with signature 'toupper@C' against 'isalpha@C' 8 8
+Debug: Checking method 'isalpha' with signature 'isalpha@C' against 'isalpha@C' 9 9
+Debug: Method lookup result: found
                       Gen EXPR for: IDEN (c)
                     Gen EXPR for: NUM (1)
                   Gen BOOL EXPR for: REL_OP (==)
                     Gen EXPR for: FUNC_CALL (isnum@C)
+Debug: Checking method 'length' with signature 'length@[C' against 'isnum@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'isnum@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'isnum@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'isnum@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'isnum@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'isnum@C' 5 5
+Debug: Checking method 'isupper' with signature 'isupper@C' against 'isnum@C' 6 6
+Debug: Checking method 'tolower' with signature 'tolower@C' against 'isnum@C' 7 7
+Debug: Checking method 'toupper' with signature 'toupper@C' against 'isnum@C' 8 8
+Debug: Checking method 'isalpha' with signature 'isalpha@C' against 'isnum@C' 9 9
+Debug: Checking method 'isalnum' with signature 'isalnum@C' against 'isnum@C' 10 10
+Debug: Checking method 'isnum' with signature 'isnum@C' against 'isnum@C' 11 11
+Debug: Looking up method vtable index for 'isnum@C' in class 'StringHandler'
+Debug: Checking method 'length' with signature 'length@[C' against 'isnum@C' 0 0
+Debug: Checking method 'substr' with signature 'substr@[C@I@I@[C' against 'isnum@C' 1 1
+Debug: Checking method 'compare' with signature 'compare@[C@[C' against 'isnum@C' 2 2
+Debug: Checking method 'insert' with signature 'insert@[C@I@C' against 'isnum@C' 3 3
+Debug: Checking method 'erase' with signature 'erase@[C@I@I' against 'isnum@C' 4 4
+Debug: Checking method 'islower' with signature 'islower@C' against 'isnum@C' 5 5
+Debug: Checking method 'isupper' with signature 'isupper@C' against 'isnum@C' 6 6
+Debug: Checking method 'tolower' with signature 'tolower@C' against 'isnum@C' 7 7
+Debug: Checking method 'toupper' with signature 'toupper@C' against 'isnum@C' 8 8
+Debug: Checking method 'isalpha' with signature 'isalpha@C' against 'isnum@C' 9 9
+Debug: Checking method 'isalnum' with signature 'isalnum@C' against 'isnum@C' 10 10
+Debug: Checking method 'isnum' with signature 'isnum@C' against 'isnum@C' 11 11
+Debug: Method lookup result: found
                       Gen EXPR for: IDEN (c)
                     Gen EXPR for: NUM (1)
         Gen ASM for: FUNC_DEF (isnum@C) Scope: 1

@@ -28,12 +28,15 @@ class StringHandler {
    public int compare(char s1[10000], char s2[10000]) {
         int i = 0;
         while (s1[i] != '\0' && s2[i] != '\0') {
-            if (s1[i] != s2[i]) {
-                return (s1[i] - s2[i]);
+            if (s1[i] > s2[i]) {
+                return 1;
             }
+            else if(s1[i]<s2[i]){
+                return -1;
+            }                 
             i++;
         }
-        return s1[i] - s2[i];
+        return 0;
     }
 
     public void insert(char str[10000], int pos, char c) {

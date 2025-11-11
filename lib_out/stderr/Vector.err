@@ -90,13 +90,17 @@ Debug: Processing index node for array access on '[I'
 Debug: Array access 'arr' has element type 'I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'push_back'
+Debug: Checking for override of method 'push_back' with signature 'push_back@I' in class 'VectorInt'
 Debug: Functionend 'push_back' with mangled name 'push_back@I' declared.
+Debug: Checking for override of method 'pop_back' with signature 'pop_back' in class 'VectorInt'
 Debug: Functionend 'pop_back' with mangled name 'pop_back' declared.
+Debug: Checking for override of method 'size' with signature 'size' in class 'VectorInt'
 Debug: Functionend 'size' with mangled name 'size' declared.
 Debug: Processing index node for array access on '[I'
 Debug: Array access 'arr' has element type 'I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'at'
+Debug: Checking for override of method 'at' with signature 'at@I' in class 'VectorInt'
 Debug: Functionend 'at' with mangled name 'at@I' declared.
 Debug: Processing index node for array access on '[I'
 Debug: Array access 'arr' has element type 'I'
@@ -106,8 +110,11 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'set@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'set@I'
+Debug: Checking for override of method 'set' with signature 'set@I@I' in class 'VectorInt'
 Debug: Functionend 'set' with mangled name 'set@I@I' declared.
+Debug: Checking for override of method 'clear' with signature 'clear' in class 'VectorInt'
 Debug: Functionend 'clear' with mangled name 'clear' declared.
+Debug: Checking for override of method 'empty' with signature 'empty' in class 'VectorInt'
 Debug: Functionend 'empty' with mangled name 'empty' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Declaring array 'buf' of type '[C'
@@ -132,6 +139,7 @@ mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
 Debug: Child type: 'CHAR_LIT'
+Debug: Checking for override of method 'print' with signature 'print' in class 'VectorInt'
 Debug: Functionend 'print' with mangled name 'print' declared.
 Debug: Building array type for base type 'F' and index node 'INDEX'
 Debug: Declaring array 'arr' of type '[F'
@@ -143,13 +151,17 @@ Debug: Processing index node for array access on '[F'
 Debug: Array access 'arr' has element type 'F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'push_back'
+Debug: Checking for override of method 'push_back' with signature 'push_back@F' in class 'VectorFloat'
 Debug: Functionend 'push_back' with mangled name 'push_back@F' declared.
+Debug: Checking for override of method 'pop_back' with signature 'pop_back' in class 'VectorFloat'
 Debug: Functionend 'pop_back' with mangled name 'pop_back' declared.
+Debug: Checking for override of method 'size' with signature 'size' in class 'VectorFloat'
 Debug: Functionend 'size' with mangled name 'size' declared.
 Debug: Processing index node for array access on '[F'
 Debug: Array access 'arr' has element type 'F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'at'
+Debug: Checking for override of method 'at' with signature 'at@I' in class 'VectorFloat'
 Debug: Functionend 'at' with mangled name 'at@I' declared.
 Debug: Processing index node for array access on '[F'
 Debug: Array access 'arr' has element type 'F'
@@ -159,8 +171,11 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'set@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'set@I'
+Debug: Checking for override of method 'set' with signature 'set@I@F' in class 'VectorFloat'
 Debug: Functionend 'set' with mangled name 'set@I@F' declared.
+Debug: Checking for override of method 'clear' with signature 'clear' in class 'VectorFloat'
 Debug: Functionend 'clear' with mangled name 'clear' declared.
+Debug: Checking for override of method 'empty' with signature 'empty' in class 'VectorFloat'
 Debug: Functionend 'empty' with mangled name 'empty' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Declaring array 'buf' of type '[C'
@@ -185,6 +200,7 @@ mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
 Debug: Child type: 'CHAR_LIT'
+Debug: Checking for override of method 'print' with signature 'print' in class 'VectorFloat'
 Debug: Functionend 'print' with mangled name 'print' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
 Debug: Declaring array 'arr' of type '[C'
@@ -196,13 +212,17 @@ Debug: Processing index node for array access on '[C'
 Debug: Array access 'arr' has element type 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'push_back'
+Debug: Checking for override of method 'push_back' with signature 'push_back@C' in class 'VectorChar'
 Debug: Functionend 'push_back' with mangled name 'push_back@C' declared.
+Debug: Checking for override of method 'pop_back' with signature 'pop_back' in class 'VectorChar'
 Debug: Functionend 'pop_back' with mangled name 'pop_back' declared.
+Debug: Checking for override of method 'size' with signature 'size' in class 'VectorChar'
 Debug: Functionend 'size' with mangled name 'size' declared.
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'arr' has element type 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'at'
+Debug: Checking for override of method 'at' with signature 'at@I' in class 'VectorChar'
 Debug: Functionend 'at' with mangled name 'at@I' declared.
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'arr' has element type 'C'
@@ -212,8 +232,11 @@ Debug: Processing child 1 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_LIST' 'set@I'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'set@I'
+Debug: Checking for override of method 'set' with signature 'set@I@C' in class 'VectorChar'
 Debug: Functionend 'set' with mangled name 'set@I@C' declared.
+Debug: Checking for override of method 'clear' with signature 'clear' in class 'VectorChar'
 Debug: Functionend 'clear' with mangled name 'clear' declared.
+Debug: Checking for override of method 'empty' with signature 'empty' in class 'VectorChar'
 Debug: Functionend 'empty' with mangled name 'empty' declared.
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'arr' has element type 'C'
@@ -229,6 +252,7 @@ mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
 Debug: Child type: 'CHAR_LIT'
+Debug: Checking for override of method 'print' with signature 'print' in class 'VectorChar'
 Debug: Functionend 'print' with mangled name 'print' declared.
 Gen ASM for: PROGRAM () Scope: 0
   Gen ASM for: STATEMENTS () Scope: 0
@@ -251,6 +275,8 @@ Gen ASM for: PROGRAM () Scope: 0
               Gen EXPR for: IDEN (buf)
               Gen EXPR for: NUM (1)
               Gen EXPR for: NUM (1)
+        Gen ASM for: EMPTY_STMT () Scope: 1
+          Gen STMT for: EMPTY_STMT () Scope: 1
     Gen ASM for: FUNC_DEF (writeString@[C) Scope: 0
       Gen ASM for: STATEMENTS () Scope: 1
         Gen ASM for: DECL_STMT () Scope: 1
@@ -464,8 +490,8 @@ Gen ASM for: PROGRAM () Scope: 0
         Gen ASM for: EXPR_STMT () Scope: 1
           Gen STMT for: EXPR_STMT () Scope: 1
             Gen EXPR for: FUNC_CALL (intToString@I@[C)
-              Gen EXPR for: IDEN (intPart)
               Gen EXPR for: IDEN (intBuf)
+              Gen EXPR for: IDEN (intPart)
         Gen ASM for: DECL_STMT () Scope: 1
           Gen STMT for: DECL_STMT () Scope: 1
             Gen ASM for: DECL_LIST () Scope: 1
@@ -679,17 +705,44 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 4
                     Gen STMT for: EXPR_STMT () Scope: 4
                       Gen EXPR for: FUNC_CALL (intToString@I@[C)
+Debug: Checking method 'VectorInt' with signature 'VectorInt' against 'intToString@I@[C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@I' against 'intToString@I@[C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'intToString@I@[C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'intToString@I@[C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'intToString@I@[C' 4 4
+Debug: Checking method 'set' with signature 'set@I@I' against 'intToString@I@[C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'intToString@I@[C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'intToString@I@[C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'intToString@I@[C' 8 8
+                        Gen EXPR for: IDEN (buf)
                         Gen EXPR for: ARRAY_ACCESS (arr)
                           Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                             Gen EXPR for: IDEN (i)
-                        Gen EXPR for: IDEN (buf)
                   Gen ASM for: EXPR_STMT () Scope: 4
                     Gen STMT for: EXPR_STMT () Scope: 4
                       Gen EXPR for: FUNC_CALL (writeString@[C)
+Debug: Checking method 'VectorInt' with signature 'VectorInt' against 'writeString@[C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@I' against 'writeString@[C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'writeString@[C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'writeString@[C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'writeString@[C' 4 4
+Debug: Checking method 'set' with signature 'set@I@I' against 'writeString@[C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'writeString@[C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'writeString@[C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'writeString@[C' 8 8
                         Gen EXPR for: IDEN (buf)
                   Gen ASM for: EXPR_STMT () Scope: 4
                     Gen STMT for: EXPR_STMT () Scope: 4
                       Gen EXPR for: FUNC_CALL (writeChar@C)
+Debug: Checking method 'VectorInt' with signature 'VectorInt' against 'writeChar@C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@I' against 'writeChar@C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'writeChar@C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'writeChar@C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'writeChar@C' 4 4
+Debug: Checking method 'set' with signature 'set@I@I' against 'writeChar@C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'writeChar@C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'writeChar@C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'writeChar@C' 8 8
                         Gen EXPR for: CHAR_LIT (' ')
                 Gen EXPR for: POST_INC (++)
                   Gen EXPR for POST-INC/DEC on LVAL type: IDEN
@@ -699,6 +752,15 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (writeChar@C)
+Debug: Checking method 'VectorInt' with signature 'VectorInt' against 'writeChar@C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@I' against 'writeChar@C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'writeChar@C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'writeChar@C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'writeChar@C' 4 4
+Debug: Checking method 'set' with signature 'set@I@I' against 'writeChar@C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'writeChar@C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'writeChar@C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'writeChar@C' 8 8
                   Gen EXPR for: CHAR_LIT ('\n')
     Gen ASM for: CLASS_DECL (VectorFloat) Scope: 0
       Gen ASM for: CLASS_BODY () Scope: 1
@@ -816,17 +878,44 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 4
                     Gen STMT for: EXPR_STMT () Scope: 4
                       Gen EXPR for: FUNC_CALL (doubleToString@F@[C)
+Debug: Checking method 'VectorFloat' with signature 'VectorFloat' against 'doubleToString@F@[C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@F' against 'doubleToString@F@[C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'doubleToString@F@[C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'doubleToString@F@[C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'doubleToString@F@[C' 4 4
+Debug: Checking method 'set' with signature 'set@I@F' against 'doubleToString@F@[C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'doubleToString@F@[C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'doubleToString@F@[C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'doubleToString@F@[C' 8 8
+                        Gen EXPR for: IDEN (buf)
                         Gen EXPR for: ARRAY_ACCESS (arr)
                           Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                             Gen EXPR for: IDEN (i)
-                        Gen EXPR for: IDEN (buf)
                   Gen ASM for: EXPR_STMT () Scope: 4
                     Gen STMT for: EXPR_STMT () Scope: 4
                       Gen EXPR for: FUNC_CALL (writeString@[C)
+Debug: Checking method 'VectorFloat' with signature 'VectorFloat' against 'writeString@[C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@F' against 'writeString@[C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'writeString@[C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'writeString@[C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'writeString@[C' 4 4
+Debug: Checking method 'set' with signature 'set@I@F' against 'writeString@[C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'writeString@[C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'writeString@[C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'writeString@[C' 8 8
                         Gen EXPR for: IDEN (buf)
                   Gen ASM for: EXPR_STMT () Scope: 4
                     Gen STMT for: EXPR_STMT () Scope: 4
                       Gen EXPR for: FUNC_CALL (writeChar@C)
+Debug: Checking method 'VectorFloat' with signature 'VectorFloat' against 'writeChar@C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@F' against 'writeChar@C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'writeChar@C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'writeChar@C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'writeChar@C' 4 4
+Debug: Checking method 'set' with signature 'set@I@F' against 'writeChar@C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'writeChar@C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'writeChar@C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'writeChar@C' 8 8
                         Gen EXPR for: CHAR_LIT (' ')
                 Gen EXPR for: POST_INC (++)
                   Gen EXPR for POST-INC/DEC on LVAL type: IDEN
@@ -836,6 +925,15 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (writeChar@C)
+Debug: Checking method 'VectorFloat' with signature 'VectorFloat' against 'writeChar@C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@F' against 'writeChar@C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'writeChar@C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'writeChar@C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'writeChar@C' 4 4
+Debug: Checking method 'set' with signature 'set@I@F' against 'writeChar@C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'writeChar@C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'writeChar@C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'writeChar@C' 8 8
                   Gen EXPR for: CHAR_LIT ('\n')
     Gen ASM for: CLASS_DECL (VectorChar) Scope: 0
       Gen ASM for: CLASS_BODY () Scope: 1
@@ -946,12 +1044,30 @@ Gen ASM for: PROGRAM () Scope: 0
                   Gen ASM for: EXPR_STMT () Scope: 4
                     Gen STMT for: EXPR_STMT () Scope: 4
                       Gen EXPR for: FUNC_CALL (writeChar@C)
+Debug: Checking method 'VectorChar' with signature 'VectorChar' against 'writeChar@C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@C' against 'writeChar@C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'writeChar@C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'writeChar@C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'writeChar@C' 4 4
+Debug: Checking method 'set' with signature 'set@I@C' against 'writeChar@C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'writeChar@C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'writeChar@C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'writeChar@C' 8 8
                         Gen EXPR for: ARRAY_ACCESS (arr)
                           Gen LVAL ADDR for: ARRAY_ACCESS (arr)
                             Gen EXPR for: IDEN (i)
                   Gen ASM for: EXPR_STMT () Scope: 4
                     Gen STMT for: EXPR_STMT () Scope: 4
                       Gen EXPR for: FUNC_CALL (writeChar@C)
+Debug: Checking method 'VectorChar' with signature 'VectorChar' against 'writeChar@C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@C' against 'writeChar@C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'writeChar@C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'writeChar@C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'writeChar@C' 4 4
+Debug: Checking method 'set' with signature 'set@I@C' against 'writeChar@C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'writeChar@C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'writeChar@C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'writeChar@C' 8 8
                         Gen EXPR for: CHAR_LIT (' ')
                 Gen EXPR for: POST_INC (++)
                   Gen EXPR for POST-INC/DEC on LVAL type: IDEN
@@ -961,4 +1077,13 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: FUNC_CALL (writeChar@C)
+Debug: Checking method 'VectorChar' with signature 'VectorChar' against 'writeChar@C' 0 0
+Debug: Checking method 'push_back' with signature 'push_back@C' against 'writeChar@C' 1 1
+Debug: Checking method 'pop_back' with signature 'pop_back' against 'writeChar@C' 2 2
+Debug: Checking method 'size' with signature 'size' against 'writeChar@C' 3 3
+Debug: Checking method 'at' with signature 'at@I' against 'writeChar@C' 4 4
+Debug: Checking method 'set' with signature 'set@I@C' against 'writeChar@C' 5 5
+Debug: Checking method 'clear' with signature 'clear' against 'writeChar@C' 6 6
+Debug: Checking method 'empty' with signature 'empty' against 'writeChar@C' 7 7
+Debug: Checking method 'print' with signature 'print' against 'writeChar@C' 8 8
                   Gen EXPR for: CHAR_LIT ('\n')

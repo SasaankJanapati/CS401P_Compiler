@@ -15,11 +15,11 @@ class FileHandler {
     };
 
     public int fopen(char filename[10000], int mode) {
-        int flags = 0;
+        char flags;
 
-        if (mode == 0){       flags = 0; }                   // read
-        else if (mode == 1){  flags = 577;} // write (create/truncate)
-        else if (mode == 2){  flags = 1089;} // append
+        if (mode == 0){       flags = 'r'; }                   // read
+        else if (mode == 1){  flags = 'w';} // write (create/truncate)
+        else if (mode == 2){  flags = 'a';} // append
 
         fd = sys_open(filename, flags);; // using syscall
         if (fd < 0) {
