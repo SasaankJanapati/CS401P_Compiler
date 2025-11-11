@@ -115,6 +115,7 @@ typedef struct ClassInfo {
 
     int constructors_count;
     int vtable_size;
+    bool is_imported;
 } ClassInfo;
 
 ClassInfo* class_metadata_pool[TABLE_SIZE];
@@ -3047,13 +3048,14 @@ int main(int argc, char **argv) {
             emit(".class_metadata");
             int class_count = 0;
             for (int i = 0; i < class_pool_count; i++) {
-                if (!class_metadata_pool[i]->is_abstract) {
+                if (!class_metadata_pool[i]->is_abstract && !class_metadata_pool[i]->is_imported) {
                     class_count++;
                 }
             }
             emit("class_count %d", class_count);
             for (int i = 0; i < class_pool_count; i++) {
                 if (class_metadata_pool[i]->is_abstract) continue;
+                if (class_metadata_pool[i]->is_imported) continue;
                 ClassInfo* cls = class_metadata_pool[i];
                 int super_idx = (cls->parent_count > 0) ? get_class_index(cls->parent_names[0]) : -1;
                 if ( cls-> parent_count > 0) {
@@ -3182,6 +3184,7 @@ void process_import(const char* class_name) {
     // Create new ClassInfo for the imported class
     imported_class_info = (ClassInfo*)calloc(1, sizeof(ClassInfo));
     imported_class_info->name = strdup(class_name);
+    imported_class_info->is_imported = true;
     class_metadata_pool[class_pool_count++] = imported_class_info;
 
     while (fgets(line, sizeof(line), file)) {
