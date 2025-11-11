@@ -150,6 +150,7 @@ bool in_class_func = false;
 void insert_symbol(char* name, char* type, char* kind, Node* initializer, Node* index_node);
 ClassInfo* find_class_info(const char* class_name);
 char* get_base_array_type(const char* mangled_type);
+void process_import(const char* class_name);
 
 // Helper function to recursively build a nested type string for multi-dimensional arrays
 char* build_array_type(const char* base_type, Node* index_node) {
@@ -818,8 +819,8 @@ S: STMNTS M  { $$ = create_node("PROGRAM", NULL); add_child($$, $1); root = $$; 
  | error    { yyerrok; $$ = create_node("PROGRAM", "error"); root = $$; }
  ;
 
-IMPORTDECLS: IMPORT IDEN ';' { $$ = create_node("IMPORT", $2); }
-            | IMPORTDECLS IMPORT IDEN ';' { $$ = $1; add_child($$, create_node("IMPORT", $3)); }
+IMPORTDECLS: IMPORT IDEN ';' { process_import($2); $$ = create_node("IMPORT", $2); }
+            | IMPORTDECLS IMPORT IDEN ';' { process_import($3); $$ = $1; add_child($$, create_node("IMPORT", $3)); }
           ;
 
 STMNTS: STMNTS M A { $$ = $1; if ($3 != NULL) add_child($$, $3); }
@@ -3159,3 +3160,76 @@ void write_tree_to_file(Node* node, FILE* file, int level) {
     }
 }
 
+void process_import(const char* class_name) {
+    char filepath[256];
+    sprintf(filepath, "lib_out/symbol_table/%s.txt", class_name);
+    FILE* file = fopen(filepath, "r");
+    if (!file) {
+        fprintf(stderr, "Warning: Could not open symbol table file for imported class '%s' at '%s'\n", class_name, filepath);
+        return;
+    }
+
+    char line[512];
+    ClassInfo* imported_class_info = NULL;
+
+    // Check if class is already imported
+    if (find_class_info(class_name) != NULL) {
+        fclose(file);
+        return;
+    }
+
+    // Create new ClassInfo for the imported class
+    imported_class_info = (ClassInfo*)calloc(1, sizeof(ClassInfo));
+    imported_class_info->name = strdup(class_name);
+    class_metadata_pool[class_pool_count++] = imported_class_info;
+
+    while (fgets(line, sizeof(line), file)) {
+        // Trim leading/trailing whitespace from line
+        char* start = line;
+        while(isspace(*start)) start++;
+        char* end = start + strlen(start) - 1;
+        while(end > start && isspace(*end)) end--;
+        *(end + 1) = '\0';
+
+        char name[100], type[100], kind[100], access[100], class_col[100];
+        int line_addr, line_decl;
+
+        // Use a more robust parsing method for the line
+        char* p_name = strtok(start, "|");
+        char* p_type = strtok(NULL, "|");
+        char* p_kind = strtok(NULL, "|");
+        char* p_access = strtok(NULL, "|");
+        char* p_class = strtok(NULL, "|");
+        char* p_addr = strtok(NULL, "|");
+        char* p_decl = strtok(NULL, "|");
+
+        if (p_name && p_type && p_kind && p_access && p_class && p_addr && p_decl) {
+            // Trim whitespace from each part
+            while(isspace(*p_name)) p_name++; char* end_name = p_name + strlen(p_name) - 1; while(end_name > p_name && isspace(*end_name)) end_name--; *(end_name + 1) = '\0';
+            while(isspace(*p_type)) p_type++; char* end_type = p_type + strlen(p_type) - 1; while(end_type > p_type && isspace(*end_type)) end_type--; *(end_type + 1) = '\0';
+            while(isspace(*p_kind)) p_kind++; char* end_kind = p_kind + strlen(p_kind) - 1; while(end_kind > p_kind && isspace(*end_kind)) end_kind--; *(end_kind + 1) = '\0';
+            
+            strcpy(name, p_name);
+            strcpy(type, p_type);
+            strcpy(kind, p_kind);
+
+            if (strcmp(name, "Name") == 0) continue; // Skip header
+
+            if (imported_class_info) {
+                 if (strcmp(kind, "member_func") == 0 || strcmp(kind, "constructor") == 0) {
+                    MethodInfo* method = &imported_class_info->methods[imported_class_info->method_count++];
+                    method->name = strdup(name); // This is the mangled name
+                    method->return_type = strdup(type);
+                    method->signature = strdup(name); // The mangled name is the signature
+                    method->vtable_index = imported_class_info->method_count - 1;
+                } else if (strcmp(kind, "member_var") == 0) {
+                    FieldInfo* field = &imported_class_info->fields[imported_class_info->field_count++];
+                    field->name = strdup(name);
+                    field->type = strdup(type);
+                }
+            }
+        }
+    }
+
+    fclose(file);
+}
