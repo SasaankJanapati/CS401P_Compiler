@@ -28,7 +28,7 @@ class Cat : public Animal {
 };
 
 int main() {
-    Animal a = new Animal(); // Error: Cannot instantiate an abstract class.
+    //Animal a = new Animal(); // Error: Cannot instantiate an abstract class.
     Dog d = new Dog();
     d.makeSound(); // Outputs: Woof!
     Cat c = new Cat();

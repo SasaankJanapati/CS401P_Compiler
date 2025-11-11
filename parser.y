@@ -723,7 +723,7 @@ MethodInfo* find_method_in_hierarchy(const char* method_name, const char* signat
     return NULL;
 }
 
-void check_for_override(ClassInfo* child, MethodInfo* new_method) {
+bool check_for_override(ClassInfo* child, MethodInfo* new_method) {
     fprintf(stderr, "Debug: Checking for override of method '%s' with signature '%s' in class '%s'\n", new_method->name, new_method->signature, child->name);
     for (int i = 0; i < child->parent_count; i++) {
         MethodInfo* parent_method = find_method_in_hierarchy(new_method->name, new_method->signature, child->parents[i]);
@@ -735,14 +735,16 @@ void check_for_override(ClassInfo* child, MethodInfo* new_method) {
         // now replace parent_method in the child class's vtable
         for (int j = 0; j < child->method_count; j++) {
             if (strcmp(child->methods[j].signature, new_method->signature) == 0) {
-                child->methods[j].vtable_index = child->method_count -1;
-                return;
+                //child->methods[j].vtable_index = child->method_count -1;
+                child->methods[j] = *new_method;
+                return true;
             }
         }
     }
     new_method->is_override = false;
     // This vtable index assignment needs to be more robust, considering all inherited methods.
    // new_method->vtable_index = child->method_count -1; 
+    return false;
 }
 
 
@@ -915,7 +917,9 @@ FUNCDECL: /*TYPE IDEN '(' PARAMLIST ')' ';' {
               //fprintf(stderr, "Debug: Function '%s' with mangled name '%s' declared.\n", $2, mangled_name);
               //fprintf(stderr, "Debug: Current class context: %s\n", current_class_name ? current_class_name : "None");
               if (current_class_info) {
-                MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
+                //MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
+                MethodInfo* method = malloc(sizeof(MethodInfo));
+                // check for method override
                 method->name = strdup($2);
                 method->return_type = strdup($1->value);
                 method->signature = mangled_name;
@@ -923,8 +927,14 @@ FUNCDECL: /*TYPE IDEN '(' PARAMLIST ')' ';' {
                 method->access_spec = strdup(current_access_spec);
                 method->is_inherited = false;
                 method->is_abstract = false;
+                if(check_for_override(current_class_info, method)) {
+                    fprintf(stderr, "Debug: Method '%s' is an override.\n", method->signature);
+                } else {
+                    method->vtable_index = current_class_info->method_count++;
+                }
+                current_class_info->methods[current_class_info->method_count - 1] = *method;
                 // TODO: Populate params
-                check_for_override(current_class_info, method);
+                
                 //fprintf(stderr, "Debug: Method '%s' assigned vtable index %d\n", method->signature, method->vtable_index);
               }
               //fprintf(stderr, "Debug: Function '%s' with mangled name '%s' declared.\n", $2, mangled_name);
@@ -1180,7 +1190,7 @@ TERM: LVAL { $$ = $1; }
     | DEC LVAL { $$ = create_node("PRE_DEC", "--"); add_child($$, $2); $$->data_type = strdup($2->data_type); }
     ;
 
-SYSCALL: SYS_OPEN '(' EXPR ',' EXPR ')' ';' {  // filename flags 
+SYSCALL: SYS_OPEN '(' EXPR ',' EXPR ')' {  // filename flags 
             $$ = create_node("SYS_CALL", "open");
             add_child($$, $3);
             add_child($$, $5);
@@ -1194,21 +1204,21 @@ SYSCALL: SYS_OPEN '(' EXPR ',' EXPR ')' ';' {  // filename flags
             add_child($$, $3);
             $$->data_type = strdup("I");
          }
-        | SYS_READ '(' EXPR ',' EXPR ',' EXPR ')' ';' {  // fd buffer size
+        | SYS_READ '(' EXPR ',' EXPR ',' EXPR ')' {  // fd buffer size
             $$ = create_node("SYS_CALL", "read");
             add_child($$, $3);
             add_child($$, $5);
             add_child($$, $7);
             $$->data_type = strdup("I");
          }
-        | SYS_WRITE '(' EXPR ',' EXPR ',' EXPR ')' ';' { // fd buffer size
+        | SYS_WRITE '(' EXPR ',' EXPR ',' EXPR ')' { // fd buffer size
             $$ = create_node("SYS_CALL", "write");
             add_child($$, $3);
             add_child($$, $5);
             add_child($$, $7);
             $$->data_type = strdup("I");
          }
-        | SYS_EXIT '(' EXPR ')' ';' { // status
+        | SYS_EXIT '(' EXPR ')' { // status
             $$ = create_node("SYS_CALL", "exit");
             add_child($$, $3);
             $$->data_type = strdup("I");
@@ -3028,8 +3038,15 @@ int main(int argc, char **argv) {
 
             // --- Emit Metadata Section ---
             emit(".class_metadata");
-            emit("class_count %d", class_pool_count);
+            int class_count = 0;
             for (int i = 0; i < class_pool_count; i++) {
+                if (!class_metadata_pool[i]->is_abstract) {
+                    class_count++;
+                }
+            }
+            emit("class_count %d", class_count);
+            for (int i = 0; i < class_pool_count; i++) {
+                if (class_metadata_pool[i]->is_abstract) continue;
                 ClassInfo* cls = class_metadata_pool[i];
                 int super_idx = (cls->parent_count > 0) ? get_class_index(cls->parent_names[0]) : -1;
                 if ( cls-> parent_count > 0) {
