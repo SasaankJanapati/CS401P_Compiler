@@ -914,7 +914,7 @@ FUNCDECL: /*TYPE IDEN '(' PARAMLIST ')' ';' {
               exit_scope();
               
               char* mangled_name = get_mangled_name($2, $5);
-              insert_symbol($2, $1->value, current_class_name ? "member_func" : "function", NULL, NULL);
+              insert_symbol(mangled_name, $1->value, current_class_name ? "member_func" : "function", NULL, NULL);
               //fprintf(stderr, "Debug: Function '%s' with mangled name '%s' declared.\n", $2, mangled_name);
               //fprintf(stderr, "Debug: Current class context: %s\n", current_class_name ? current_class_name : "None");
               if (current_class_info) {
@@ -1310,6 +1310,7 @@ CLASSDECL: CLASS IDEN {
                 // 3. Add the new node to the class body in the AST
                 // $6 is the CLASSBODY node from the grammar rule
                 add_child($7, constructor_node);
+                insert_symbol(current_class_info->name, "constructor", "member_func", NULL, NULL);
             }
             $$->scope_table = current_table;
             exit_scope();
@@ -1368,7 +1369,7 @@ CONSTRUCTOR: IDEN '(' {
                 SymbolTable* ctor_scope = current_table;
                 exit_scope();
                 char* mangled_name = get_mangled_name($1, $4);
-                insert_symbol($1, "constructor", "member_func", NULL, NULL);
+                insert_symbol(mangled_name, "constructor", "member_func", NULL, NULL);
                 current_class_info->constructors_count++;
                 if (current_class_info) {
                     MethodInfo* method = &current_class_info->methods[current_class_info->method_count++];
@@ -3184,45 +3185,34 @@ void process_import(const char* class_name) {
     class_metadata_pool[class_pool_count++] = imported_class_info;
 
     while (fgets(line, sizeof(line), file)) {
-        // Trim leading/trailing whitespace from line
-        char* start = line;
-        while(isspace(*start)) start++;
-        char* end = start + strlen(start) - 1;
-        while(end > start && isspace(*end)) end--;
-        *(end + 1) = '\0';
-
-        char name[100], type[100], kind[100], access[100], class_col[100];
-        int line_addr, line_decl;
-
-        // Use a more robust parsing method for the line
-        char* p_name = strtok(start, "|");
-        char* p_type = strtok(NULL, "|");
-        char* p_kind = strtok(NULL, "|");
-        char* p_access = strtok(NULL, "|");
-        char* p_class = strtok(NULL, "|");
-        char* p_addr = strtok(NULL, "|");
-        char* p_decl = strtok(NULL, "|");
-
-        if (p_name && p_type && p_kind && p_access && p_class && p_addr && p_decl) {
-            // Trim whitespace from each part
-            while(isspace(*p_name)) p_name++; char* end_name = p_name + strlen(p_name) - 1; while(end_name > p_name && isspace(*end_name)) end_name--; *(end_name + 1) = '\0';
-            while(isspace(*p_type)) p_type++; char* end_type = p_type + strlen(p_type) - 1; while(end_type > p_type && isspace(*end_type)) end_type--; *(end_type + 1) = '\0';
-            while(isspace(*p_kind)) p_kind++; char* end_kind = p_kind + strlen(p_kind) - 1; while(end_kind > p_kind && isspace(*end_kind)) end_kind--; *(end_kind + 1) = '\0';
-            
-            strcpy(name, p_name);
-            strcpy(type, p_type);
-            strcpy(kind, p_kind);
+        char name[100], type[100], kind[100];
+        // This parsing is fragile. A more robust method (like strtok) is better.
+        if (sscanf(line, " %[^|] | %[^|] | %[^|]", name, type, kind) == 3) {
+            // Trim trailing spaces from parsed parts
+            char* end;
+            end = name + strlen(name) - 1; while(end > name && isspace((unsigned char)*end)) end--; *(end+1) = 0;
+            end = type + strlen(type) - 1; while(end > type && isspace((unsigned char)*end)) end--; *(end+1) = 0;
+            end = kind + strlen(kind) - 1; while(end > kind && isspace((unsigned char)*end)) end--; *(end+1) = 0;
 
             if (strcmp(name, "Name") == 0) continue; // Skip header
 
             if (imported_class_info) {
-                 if (strcmp(kind, "member_func") == 0 || strcmp(kind, "constructor") == 0) {
+                 if (strstr(kind, "member_func") != NULL || strstr(kind, "constructor") != NULL) {
                     MethodInfo* method = &imported_class_info->methods[imported_class_info->method_count++];
-                    method->name = strdup(name); // This is the mangled name
+                    // The 'name' from the file IS the mangled signature
+                    method->signature = strdup(name); 
                     method->return_type = strdup(type);
-                    method->signature = strdup(name); // The mangled name is the signature
+                    // Extract simple name for 'name' field if needed, though signature is key
+                    char* at_ptr = strchr(name, '@');
+                    if (at_ptr) {
+                        *at_ptr = '\0';
+                        method->name = strdup(name);
+                        *at_ptr = '@'; // restore for other uses if any
+                    } else {
+                        method->name = strdup(name);
+                    }
                     method->vtable_index = imported_class_info->method_count - 1;
-                } else if (strcmp(kind, "member_var") == 0) {
+                } else if (strstr(kind, "member_var") != NULL) {
                     FieldInfo* field = &imported_class_info->fields[imported_class_info->field_count++];
                     field->name = strdup(name);
                     field->type = strdup(type);

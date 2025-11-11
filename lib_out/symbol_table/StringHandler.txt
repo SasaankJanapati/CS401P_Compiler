@@ -6,18 +6,19 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 1 (Parent Scope: 0) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-length               | I               | member_func  | public       | N/A             | -1           | 10
-substr               | void            | member_func  | public       | N/A             | -1           | 24
-compare              | I               | member_func  | public       | N/A             | -1           | 40
-insert               | void            | member_func  | public       | N/A             | -1           | 51
-erase                | void            | member_func  | public       | N/A             | -1           | 62
-islower              | B               | member_func  | public       | N/A             | -1           | 67
-isupper              | B               | member_func  | public       | N/A             | -1           | 72
-tolower              | C               | member_func  | public       | N/A             | -1           | 78
-toupper              | C               | member_func  | public       | N/A             | -1           | 84
-isalpha              | B               | member_func  | public       | N/A             | -1           | 89
-isalnum              | B               | member_func  | public       | N/A             | -1           | 94
-isnum                | B               | member_func  | public       | N/A             | -1           | 99
+length@[C            | I               | member_func  | public       | N/A             | -1           | 10
+substr@[C@I@I@[C     | void            | member_func  | public       | N/A             | -1           | 24
+compare@[C@[C        | I               | member_func  | public       | N/A             | -1           | 40
+insert@[C@I@C        | void            | member_func  | public       | N/A             | -1           | 51
+erase@[C@I@I         | void            | member_func  | public       | N/A             | -1           | 62
+islower@C            | B               | member_func  | public       | N/A             | -1           | 67
+isupper@C            | B               | member_func  | public       | N/A             | -1           | 72
+tolower@C            | C               | member_func  | public       | N/A             | -1           | 78
+toupper@C            | C               | member_func  | public       | N/A             | -1           | 84
+isalpha@C            | B               | member_func  | public       | N/A             | -1           | 89
+isalnum@C            | B               | member_func  | public       | N/A             | -1           | 94
+isnum@C              | B               | member_func  | public       | N/A             | -1           | 99
+StringHandler        | constructor     | member_func  | public       | N/A             | -1           | 100
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared

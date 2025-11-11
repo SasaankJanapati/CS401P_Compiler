@@ -7,15 +7,16 @@ Name                 | Type            | Kind         | Access       | Class    
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
 readChar             | C               | member_func  | public       | N/A             | -1           | 9
-writeChar            | void            | member_func  | public       | N/A             | -1           | 16
-readString           | void            | member_func  | public       | N/A             | -1           | 29
-stringToInt          | I               | member_func  | public       | N/A             | -1           | 48
-intToString          | void            | member_func  | public       | N/A             | -1           | 77
-doubleToString       | void            | member_func  | public       | N/A             | -1           | 129
+writeChar@C          | void            | member_func  | public       | N/A             | -1           | 16
+readString@[C@I      | void            | member_func  | public       | N/A             | -1           | 29
+stringToInt@[C       | I               | member_func  | public       | N/A             | -1           | 48
+intToString@I@[C     | void            | member_func  | public       | N/A             | -1           | 77
+doubleToString@F@[C  | void            | member_func  | public       | N/A             | -1           | 129
 readInt              | I               | member_func  | public       | N/A             | -1           | 137
-printString          | void            | member_func  | public       | N/A             | -1           | 146
-printInt             | void            | member_func  | public       | N/A             | -1           | 153
-printDouble          | void            | member_func  | public       | N/A             | -1           | 160
+printString@[C       | void            | member_func  | public       | N/A             | -1           | 146
+printInt@I           | void            | member_func  | public       | N/A             | -1           | 153
+printDouble@F        | void            | member_func  | public       | N/A             | -1           | 160
+IOHandler            | constructor     | member_func  | public       | N/A             | -1           | 161
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared

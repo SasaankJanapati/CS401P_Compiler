@@ -6,9 +6,10 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 1 (Parent Scope: 0) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-swap                 | void            | member_func  | public       | N/A             | -1           | 8
-swap                 | void            | member_func  | public       | N/A             | -1           | 15
-swap2                | void            | member_func  | public       | N/A             | -1           | 22
+swap@I@I             | void            | member_func  | public       | N/A             | -1           | 8
+swap@F@F             | void            | member_func  | public       | N/A             | -1           | 15
+swap2@C@C            | void            | member_func  | public       | N/A             | -1           | 22
+Utility              | constructor     | member_func  | public       | N/A             | -1           | 23
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -39,9 +40,10 @@ Name                 | Type            | Kind         | Access       | Class    
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
 util                 | Utility         | member_obj   | public       | Algorithms      | -1           | 28
-insert               | void            | member_func  | public       | N/A             | -1           | 46
-sort                 | void            | member_func  | public       | N/A             | -1           | 70
-reverse              | void            | member_func  | public       | N/A             | -1           | 82
+insert@[I@I@I@I      | void            | member_func  | public       | N/A             | -1           | 46
+sort@[I@I            | void            | member_func  | public       | N/A             | -1           | 70
+reverse@[I@I         | void            | member_func  | public       | N/A             | -1           | 82
+Algorithms           | constructor     | member_func  | public       | N/A             | -1           | 92
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared

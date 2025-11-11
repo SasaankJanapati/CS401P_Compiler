@@ -2,10 +2,10 @@
 --- Scope: 0 (Parent Scope: -1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-writeChar            | void            | function     | private      | N/A             | -1           | 6
-writeString          | void            | function     | private      | N/A             | -1           | 14
-intToString          | void            | function     | private      | N/A             | -1           | 39
-doubleToString       | void            | function     | private      | N/A             | -1           | 90
+writeChar@C          | void            | function     | private      | N/A             | -1           | 6
+writeString@[C       | void            | function     | private      | N/A             | -1           | 14
+intToString@I@[C     | void            | function     | private      | N/A             | -1           | 39
+doubleToString@F@[C  | void            | function     | private      | N/A             | -1           | 90
 
 --- Scope: 1 (Parent Scope: 0) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -102,11 +102,11 @@ Name                 | Type            | Kind         | Access       | Class    
 arr                  | [I              | member_var   | private      | VectorInt       | -1           | 98
 vsize                | I               | member_var   | private      | VectorInt       | -1           | 99
 VectorInt            | constructor     | member_func  | public       | N/A             | -1           | 104
-push_back            | void            | member_func  | public       | N/A             | -1           | 112
+push_back@I          | void            | member_func  | public       | N/A             | -1           | 112
 pop_back             | void            | member_func  | public       | N/A             | -1           | 117
 size                 | I               | member_func  | public       | N/A             | -1           | 122
-at                   | I               | member_func  | public       | N/A             | -1           | 128
-set                  | void            | member_func  | public       | N/A             | -1           | 134
+at@I                 | I               | member_func  | public       | N/A             | -1           | 128
+set@I@I              | void            | member_func  | public       | N/A             | -1           | 134
 clear                | void            | member_func  | public       | N/A             | -1           | 139
 empty                | B               | member_func  | public       | N/A             | -1           | 144
 print                | void            | member_func  | public       | N/A             | -1           | 156
@@ -171,11 +171,11 @@ Name                 | Type            | Kind         | Access       | Class    
 arr                  | [F              | member_var   | private      | VectorFloat     | -1           | 164
 vsize                | I               | member_var   | private      | VectorFloat     | -1           | 165
 VectorFloat          | constructor     | member_func  | public       | N/A             | -1           | 170
-push_back            | void            | member_func  | public       | N/A             | -1           | 178
+push_back@F          | void            | member_func  | public       | N/A             | -1           | 178
 pop_back             | void            | member_func  | public       | N/A             | -1           | 183
 size                 | I               | member_func  | public       | N/A             | -1           | 188
-at                   | F               | member_func  | public       | N/A             | -1           | 194
-set                  | void            | member_func  | public       | N/A             | -1           | 200
+at@I                 | F               | member_func  | public       | N/A             | -1           | 194
+set@I@F              | void            | member_func  | public       | N/A             | -1           | 200
 clear                | void            | member_func  | public       | N/A             | -1           | 205
 empty                | B               | member_func  | public       | N/A             | -1           | 210
 print                | void            | member_func  | public       | N/A             | -1           | 222
@@ -240,11 +240,11 @@ Name                 | Type            | Kind         | Access       | Class    
 arr                  | [C              | member_var   | private      | VectorChar      | -1           | 230
 vsize                | I               | member_var   | private      | VectorChar      | -1           | 231
 VectorChar           | constructor     | member_func  | public       | N/A             | -1           | 236
-push_back            | void            | member_func  | public       | N/A             | -1           | 244
+push_back@C          | void            | member_func  | public       | N/A             | -1           | 244
 pop_back             | void            | member_func  | public       | N/A             | -1           | 249
 size                 | I               | member_func  | public       | N/A             | -1           | 254
-at                   | C               | member_func  | public       | N/A             | -1           | 260
-set                  | void            | member_func  | public       | N/A             | -1           | 266
+at@I                 | C               | member_func  | public       | N/A             | -1           | 260
+set@I@C              | void            | member_func  | public       | N/A             | -1           | 266
 clear                | void            | member_func  | public       | N/A             | -1           | 271
 empty                | B               | member_func  | public       | N/A             | -1           | 276
 print                | void            | member_func  | public       | N/A             | -1           | 286

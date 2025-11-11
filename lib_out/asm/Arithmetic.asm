@@ -387,7 +387,6 @@ LOAD 159  ; Load parameter 'exp'
 INEG
 LOAD 158  ; Load parameter 'base'
 INVOKEVIRTUAL 7 2; Call Arithmetic.power@F@I
-FDIV
 RET
 L44:
 PUSH 1

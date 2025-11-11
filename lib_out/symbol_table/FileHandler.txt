@@ -9,10 +9,10 @@ Name                 | Type            | Kind         | Access       | Class    
 fd                   | I               | member_var   | private      | FileHandler     | -1           | 9
 isOpen               | I               | member_var   | private      | FileHandler     | -1           | 10
 FileHandler          | constructor     | member_func  | public       | N/A             | -1           | 15
-fopen                | I               | member_func  | public       | N/A             | -1           | 32
+fopen@[C@I           | I               | member_func  | public       | N/A             | -1           | 32
 fclose               | void            | member_func  | public       | N/A             | -1           | 40
-fread                | I               | member_func  | public       | N/A             | -1           | 46
-fwrite               | I               | member_func  | public       | N/A             | -1           | 53
+fread@[C@I           | I               | member_func  | public       | N/A             | -1           | 46
+fwrite@[C@I          | I               | member_func  | public       | N/A             | -1           | 53
 is_open              | I               | member_func  | public       | N/A             | -1           | 58
 
 --- Scope: 2 (Parent Scope: 1) ---

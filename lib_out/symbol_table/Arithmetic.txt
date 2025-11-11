@@ -6,21 +6,22 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 1 (Parent Scope: 0) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-abs                  | I               | member_func  | public       | N/A             | -1           | 8
-abs                  | F               | member_func  | public       | N/A             | -1           | 16
-abs                  | F               | member_func  | public       | N/A             | -1           | 23
-sqrt                 | F               | member_func  | public       | N/A             | -1           | 39
-sqrt                 | F               | member_func  | public       | N/A             | -1           | 53
-exp                  | F               | member_func  | public       | N/A             | -1           | 68
-exp                  | F               | member_func  | public       | N/A             | -1           | 82
-power                | F               | member_func  | public       | N/A             | -1           | 96
-power                | F               | member_func  | public       | N/A             | -1           | 109
-max                  | I               | member_func  | public       | N/A             | -1           | 118
-max                  | F               | member_func  | public       | N/A             | -1           | 126
-max                  | F               | member_func  | public       | N/A             | -1           | 134
-min                  | I               | member_func  | public       | N/A             | -1           | 142
-min                  | F               | member_func  | public       | N/A             | -1           | 150
-min                  | F               | member_func  | public       | N/A             | -1           | 158
+abs@I                | I               | member_func  | public       | N/A             | -1           | 8
+abs@F                | F               | member_func  | public       | N/A             | -1           | 16
+abs@F                | F               | member_func  | public       | N/A             | -1           | 23
+sqrt@F               | F               | member_func  | public       | N/A             | -1           | 39
+sqrt@F               | F               | member_func  | public       | N/A             | -1           | 53
+exp@F                | F               | member_func  | public       | N/A             | -1           | 68
+exp@F                | F               | member_func  | public       | N/A             | -1           | 82
+power@F@I            | F               | member_func  | public       | N/A             | -1           | 96
+power@F@I            | F               | member_func  | public       | N/A             | -1           | 109
+max@I@I              | I               | member_func  | public       | N/A             | -1           | 118
+max@F@F              | F               | member_func  | public       | N/A             | -1           | 126
+max@F@F              | F               | member_func  | public       | N/A             | -1           | 134
+min@I@I              | I               | member_func  | public       | N/A             | -1           | 142
+min@F@F              | F               | member_func  | public       | N/A             | -1           | 150
+min@F@F              | F               | member_func  | public       | N/A             | -1           | 158
+Arithmetic           | constructor     | member_func  | public       | N/A             | -1           | 159
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
