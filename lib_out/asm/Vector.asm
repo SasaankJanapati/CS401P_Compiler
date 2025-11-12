@@ -61,9 +61,9 @@ LOAD 97 ; Load array variable 'buf'
 PUSH 0
 LOAD 96  ; Load parameter 'c'
 ASTORE ; Store to array element
-PUSH 1
-PUSH 1
 LOAD 97  ; Load local var buf
+PUSH 1
+PUSH 1
 SYS_CALL WRITE ; write
 POP
 RET
@@ -80,7 +80,7 @@ L0:
 LOAD 98 ; Load array parameter 'arr'
 LOAD 99  ; Load local var i
 ALOAD
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L1
 JMP L2
@@ -127,7 +127,7 @@ PUSH 48 ; Push ASCII for char '0'
 ASTORE ; Store to array element
 LOAD 101 ; Load array parameter 'arr'
 LOAD 102  ; Load local var i
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
 L4:
@@ -183,7 +183,7 @@ ASTORE ; Store to array element
 L11:
 LOAD 101 ; Load array parameter 'arr'
 LOAD 102  ; Load local var i
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 PUSH 0
 STORE 104 ; Init j
@@ -304,7 +304,7 @@ L23:
 LOAD 112 ; Load array variable 'intBuf'
 LOAD 114  ; Load local var j
 ALOAD
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L24
 JMP L25
@@ -385,7 +385,7 @@ JMP L29
 L29:
 LOAD 107 ; Load array parameter 'arr'
 LOAD 113  ; Load local var i
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
 .endmethod
@@ -409,7 +409,7 @@ RET
 .method VectorInt.push_back@I
 .limit stack 4
 .limit locals 118
-LOAD_ARG 0 ; Copy arg 'val' to local
+LOAD_ARG 1 ; Copy arg 'val' to local
 STORE 117
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
@@ -465,7 +465,7 @@ RET
 .method VectorInt.at@I
 .limit stack 4
 .limit locals 119
-LOAD_ARG 0 ; Copy arg 'index' to local
+LOAD_ARG 1 ; Copy arg 'index' to local
 STORE 118
 LOAD 118  ; Load parameter 'index'
 PUSH 0
@@ -494,9 +494,9 @@ RET
 .method VectorInt.set@I@I
 .limit stack 4
 .limit locals 121
-LOAD_ARG 0 ; Copy arg 'index' to local
+LOAD_ARG 1 ; Copy arg 'index' to local
 STORE 119
-LOAD_ARG 1 ; Copy arg 'val' to local
+LOAD_ARG 2 ; Copy arg 'val' to local
 STORE 120
 LOAD 119  ; Load parameter 'index'
 PUSH 0
@@ -582,7 +582,7 @@ ICMP_LT
 JNZ L47
 JMP L49
 L49:
-PUSH 92 ; Push ASCII for char '\n'
+PUSH 10 ; Push ASCII for char '\n'
 CALL writeChar@C
 RET
 .endmethod
@@ -606,7 +606,7 @@ RET
 .method VectorFloat.push_back@F
 .limit stack 4
 .limit locals 124
-LOAD_ARG 0 ; Copy arg 'val' to local
+LOAD_ARG 1 ; Copy arg 'val' to local
 STORE 123
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
@@ -662,7 +662,7 @@ RET
 .method VectorFloat.at@I
 .limit stack 4
 .limit locals 125
-LOAD_ARG 0 ; Copy arg 'index' to local
+LOAD_ARG 1 ; Copy arg 'index' to local
 STORE 124
 LOAD 124  ; Load parameter 'index'
 PUSH 0
@@ -691,9 +691,9 @@ RET
 .method VectorFloat.set@I@F
 .limit stack 4
 .limit locals 127
-LOAD_ARG 0 ; Copy arg 'index' to local
+LOAD_ARG 1 ; Copy arg 'index' to local
 STORE 125
-LOAD_ARG 1 ; Copy arg 'val' to local
+LOAD_ARG 2 ; Copy arg 'val' to local
 STORE 126
 LOAD 125  ; Load parameter 'index'
 PUSH 0
@@ -779,7 +779,7 @@ ICMP_LT
 JNZ L64
 JMP L66
 L66:
-PUSH 92 ; Push ASCII for char '\n'
+PUSH 10 ; Push ASCII for char '\n'
 CALL writeChar@C
 RET
 .endmethod
@@ -803,7 +803,7 @@ RET
 .method VectorChar.push_back@C
 .limit stack 4
 .limit locals 130
-LOAD_ARG 0 ; Copy arg 'val' to local
+LOAD_ARG 1 ; Copy arg 'val' to local
 STORE 129
 LOAD_ARG 0 ; Load 'this' to access member 'vsize'
 GETFIELD 1
@@ -859,7 +859,7 @@ RET
 .method VectorChar.at@I
 .limit stack 4
 .limit locals 131
-LOAD_ARG 0 ; Copy arg 'index' to local
+LOAD_ARG 1 ; Copy arg 'index' to local
 STORE 130
 LOAD 130  ; Load parameter 'index'
 PUSH 0
@@ -874,7 +874,7 @@ ICMP_GEQ
 JNZ L71
 JMP L72
 L71:
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 RET
 L72:
 LOAD_ARG 0 ; Load 'this' to access member array 'arr'
@@ -887,9 +887,9 @@ RET
 .method VectorChar.set@I@C
 .limit stack 4
 .limit locals 133
-LOAD_ARG 0 ; Copy arg 'index' to local
+LOAD_ARG 1 ; Copy arg 'index' to local
 STORE 131
-LOAD_ARG 1 ; Copy arg 'val' to local
+LOAD_ARG 2 ; Copy arg 'val' to local
 STORE 132
 LOAD 131  ; Load parameter 'index'
 PUSH 0
@@ -969,7 +969,7 @@ ICMP_LT
 JNZ L81
 JMP L83
 L83:
-PUSH 92 ; Push ASCII for char '\n'
+PUSH 10 ; Push ASCII for char '\n'
 CALL writeChar@C
 RET
 .endmethod

@@ -25,9 +25,9 @@ class_end
 PUSH 1
 NEWARRAY C
 STORE 0 ; Store new flattened array to 'c'
-PUSH 0
+PUSH 0 ; Push address of buffer variable 'c'
 PUSH 1
-LOAD 0  ; Load local var c
+PUSH 0
 SYS_CALL READ ; read
 POP
 LOAD 0 ; Load array variable 'c'
@@ -41,7 +41,7 @@ RET
 .method IOHandler.writeChar@C
 .limit stack 4
 .limit locals 4
-LOAD_ARG 0 ; Copy arg 'c' to local
+LOAD_ARG 1 ; Copy arg 'c' to local
 STORE 2
 PUSH 1
 NEWARRAY C
@@ -50,9 +50,9 @@ LOAD 3 ; Load array variable 'arr'
 PUSH 0
 LOAD 2  ; Load parameter 'c'
 ASTORE ; Store to array element
-PUSH 1
-PUSH 1
 LOAD 3  ; Load local var arr
+PUSH 1
+PUSH 1
 SYS_CALL WRITE ; write
 POP
 RET
@@ -61,9 +61,9 @@ RET
 .method IOHandler.readString@[C@I
 .limit stack 4
 .limit locals 8
-LOAD_ARG 0 ; Copy arg 'arr' to local
+LOAD_ARG 1 ; Copy arg 'arr' to local
 STORE 4
-LOAD_ARG 1 ; Copy arg 'size' to local
+LOAD_ARG 2 ; Copy arg 'size' to local
 STORE 5
 PUSH 0
 STORE 6 ; Init i
@@ -77,16 +77,17 @@ JNZ L1
 JMP L2
 L1:
 LOAD_ARG 0 ; Load 'this' for method call
-INVOKEVIRTUAL 0 0; Call IOHandler.readChar
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 0 1; Call IOHandler.readChar
 STORE 7 ; Store to local 'c'
 LOAD 7  ; Load local var c
-PUSH 92 ; Push ASCII for char '\n'
+PUSH 10 ; Push ASCII for char '\n'
 ICMP_EQ
 JNZ L3
 JMP L5
 L5:
 LOAD 7  ; Load local var c
-PUSH 92 ; Push ASCII for char '\r'
+PUSH 13 ; Push ASCII for char '\r'
 ICMP_EQ
 JNZ L3
 JMP L4
@@ -107,7 +108,7 @@ JMP L0
 L2:
 LOAD 4 ; Load array parameter 'arr'
 LOAD 6  ; Load local var i
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
 .endmethod
@@ -115,7 +116,7 @@ RET
 .method IOHandler.stringToInt@[C
 .limit stack 4
 .limit locals 13
-LOAD_ARG 0 ; Copy arg 'arr' to local
+LOAD_ARG 1 ; Copy arg 'arr' to local
 STORE 8
 PUSH 1
 STORE 11 ; Init sign
@@ -145,7 +146,7 @@ L8:
 LOAD 8 ; Load array parameter 'arr'
 LOAD 9  ; Load local var i
 ALOAD
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L9
 JMP L10
@@ -201,9 +202,9 @@ RET
 .method IOHandler.intToString@I@[C
 .limit stack 4
 .limit locals 19
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 13
-LOAD_ARG 1 ; Copy arg 'arr' to local
+LOAD_ARG 2 ; Copy arg 'arr' to local
 STORE 14
 PUSH 0
 STORE 15 ; Init i
@@ -225,7 +226,7 @@ PUSH 48 ; Push ASCII for char '0'
 ASTORE ; Store to array element
 LOAD 14 ; Load array parameter 'arr'
 LOAD 15  ; Load local var i
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
 L16:
@@ -281,7 +282,7 @@ ASTORE ; Store to array element
 L23:
 LOAD 14 ; Load array parameter 'arr'
 LOAD 15  ; Load local var i
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 PUSH 0
 STORE 17 ; Init j
@@ -330,9 +331,9 @@ RET
 .method IOHandler.doubleToString@F@[C
 .limit stack 4
 .limit locals 30
-LOAD_ARG 0 ; Copy arg 'val' to local
+LOAD_ARG 1 ; Copy arg 'val' to local
 STORE 19
-LOAD_ARG 1 ; Copy arg 'arr' to local
+LOAD_ARG 2 ; Copy arg 'arr' to local
 STORE 20
 PUSH 0
 STORE 21 ; Init neg
@@ -376,10 +377,11 @@ STORE 24 ; Init frac
 PUSH 50
 NEWARRAY C
 STORE 25 ; Store new flattened array to 'intBuf'
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 25  ; Load local var intBuf
 LOAD 22  ; Load local var intPart
-INVOKEVIRTUAL 4 2; Call IOHandler.intToString@I@[C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 4 3; Call IOHandler.intToString@I@[C
 POP ; discard fp
 PUSH 0
 STORE 27 ; Init j
@@ -404,7 +406,7 @@ L35:
 LOAD 25 ; Load array variable 'intBuf'
 LOAD 27  ; Load local var j
 ALOAD
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L36
 JMP L37
@@ -485,7 +487,7 @@ JMP L41
 L41:
 LOAD 20 ; Load array parameter 'arr'
 LOAD 26  ; Load local var i
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
 .endmethod
@@ -496,21 +498,23 @@ RET
 PUSH 50
 NEWARRAY C
 STORE 30 ; Store new flattened array to 'buf'
-LOAD_ARG 0 ; Load 'this' for method call
 PUSH 50
 LOAD 30  ; Load local var buf
-INVOKEVIRTUAL 2 2; Call IOHandler.readString@[C@I
-POP ; discard fp
 LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 2 3; Call IOHandler.readString@[C@I
+POP ; discard fp
 LOAD 30  ; Load local var buf
-INVOKEVIRTUAL 3 1; Call IOHandler.stringToInt@[C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 3 2; Call IOHandler.stringToInt@[C
 RET
 .endmethod
 
 .method IOHandler.printString@[C
 .limit stack 4
 .limit locals 33
-LOAD_ARG 0 ; Copy arg 'arr' to local
+LOAD_ARG 1 ; Copy arg 'arr' to local
 STORE 31
 PUSH 0
 STORE 32 ; Init i
@@ -518,16 +522,17 @@ L45:
 LOAD 31 ; Load array parameter 'arr'
 LOAD 32  ; Load local var i
 ALOAD
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L46
 JMP L47
 L46:
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 31 ; Load array parameter 'arr'
 LOAD 32  ; Load local var i
 ALOAD
-INVOKEVIRTUAL 1 1; Call IOHandler.writeChar@C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 1 2; Call IOHandler.writeChar@C
 POP ; discard fp
 LOAD 32 ; Load local 'i'
 DUP
@@ -543,19 +548,21 @@ RET
 .method IOHandler.printInt@I
 .limit stack 4
 .limit locals 35
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 33
 PUSH 50
 NEWARRAY C
 STORE 34 ; Store new flattened array to 'buf'
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 34  ; Load local var buf
 LOAD 33  ; Load parameter 'x'
-INVOKEVIRTUAL 4 2; Call IOHandler.intToString@I@[C
-POP ; discard fp
 LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 4 3; Call IOHandler.intToString@I@[C
+POP ; discard fp
 LOAD 34  ; Load local var buf
-INVOKEVIRTUAL 7 1; Call IOHandler.printString@[C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 7 2; Call IOHandler.printString@[C
 POP ; discard fp
 RET
 .endmethod
@@ -563,19 +570,21 @@ RET
 .method IOHandler.printDouble@F
 .limit stack 4
 .limit locals 37
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 35
 PUSH 100
 NEWARRAY C
 STORE 36 ; Store new flattened array to 'buf'
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 36  ; Load local var buf
 LOAD 35  ; Load parameter 'x'
-INVOKEVIRTUAL 5 2; Call IOHandler.doubleToString@F@[C
-POP ; discard fp
 LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 5 3; Call IOHandler.doubleToString@F@[C
+POP ; discard fp
 LOAD 36  ; Load local var buf
-INVOKEVIRTUAL 7 1; Call IOHandler.printString@[C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 7 2; Call IOHandler.printString@[C
 POP ; discard fp
 RET
 .endmethod

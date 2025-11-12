@@ -27,7 +27,7 @@ class_end
 .method Arithmetic.abs@I
 .limit stack 4
 .limit locals 135
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 134
 LOAD 134  ; Load parameter 'x'
 PUSH 0
@@ -46,7 +46,7 @@ RET
 .method Arithmetic.abs@F
 .limit stack 4
 .limit locals 136
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 135
 LOAD 135  ; Load parameter 'x'
 PUSH 0
@@ -65,7 +65,7 @@ RET
 .method Arithmetic.abs@F
 .limit stack 4
 .limit locals 137
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 136
 LOAD 136  ; Load parameter 'x'
 PUSH 0
@@ -84,7 +84,7 @@ RET
 .method Arithmetic.sqrt@F
 .limit stack 4
 .limit locals 141
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 137
 LOAD 137  ; Load parameter 'x'
 PUSH 0
@@ -126,11 +126,12 @@ FDIV
 FADD
 FMUL
 STORE 140 ; Init newGuess
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 140  ; Load local var newGuess
 LOAD 138  ; Load local var guess
 FSUB
-INVOKEVIRTUAL 1 1; Call Arithmetic.abs@F
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 1 2; Call Arithmetic.abs@F
 LOAD 139  ; Load local var eps
 ICMP_LT
 JNZ L14
@@ -149,7 +150,7 @@ RET
 .method Arithmetic.sqrt@F
 .limit stack 4
 .limit locals 145
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 141
 LOAD 141  ; Load parameter 'x'
 PUSH 0
@@ -191,11 +192,12 @@ FDIV
 FADD
 FMUL
 STORE 144 ; Init newGuess
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 144  ; Load local var newGuess
 LOAD 142  ; Load local var guess
 FSUB
-INVOKEVIRTUAL 1 1; Call Arithmetic.abs@F
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 1 2; Call Arithmetic.abs@F
 LOAD 143  ; Load local var eps
 ICMP_LT
 JNZ L24
@@ -214,7 +216,7 @@ RET
 .method Arithmetic.exp@F
 .limit stack 4
 .limit locals 150
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 145
 PUSH 1
 STORE 146 ; Init term
@@ -225,9 +227,10 @@ STORE 148 ; Init n
 FPUSH 0.0000000000001
 STORE 149 ; Init eps
 L26:
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 146  ; Load local var term
-INVOKEVIRTUAL 1 1; Call Arithmetic.abs@F
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 1 2; Call Arithmetic.abs@F
 LOAD 149  ; Load local var eps
 ICMP_GT
 JNZ L27
@@ -256,7 +259,7 @@ RET
 .method Arithmetic.exp@F
 .limit stack 4
 .limit locals 155
-LOAD_ARG 0 ; Copy arg 'x' to local
+LOAD_ARG 1 ; Copy arg 'x' to local
 STORE 150
 PUSH 1
 STORE 151 ; Init term
@@ -267,9 +270,10 @@ STORE 153 ; Init n
 FPUSH 0.0000000000001
 STORE 154 ; Init eps
 L29:
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 151  ; Load local var term
-INVOKEVIRTUAL 1 1; Call Arithmetic.abs@F
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 1 2; Call Arithmetic.abs@F
 LOAD 154  ; Load local var eps
 ICMP_GT
 JNZ L30
@@ -296,9 +300,9 @@ RET
 .method Arithmetic.power@F@I
 .limit stack 4
 .limit locals 159
-LOAD_ARG 0 ; Copy arg 'base' to local
+LOAD_ARG 1 ; Copy arg 'base' to local
 STORE 155
-LOAD_ARG 1 ; Copy arg 'exponent' to local
+LOAD_ARG 2 ; Copy arg 'exponent' to local
 STORE 156
 FPUSH 1.0
 STORE 157 ; Init result
@@ -358,9 +362,9 @@ RET
 .method Arithmetic.power@F@I
 .limit stack 4
 .limit locals 163
-LOAD_ARG 0 ; Copy arg 'base' to local
+LOAD_ARG 1 ; Copy arg 'base' to local
 STORE 159
-LOAD_ARG 1 ; Copy arg 'exponent' to local
+LOAD_ARG 2 ; Copy arg 'exponent' to local
 STORE 160
 FPUSH 1.0
 STORE 161 ; Init result
@@ -420,9 +424,9 @@ RET
 .method Arithmetic.max@I@I
 .limit stack 4
 .limit locals 165
-LOAD_ARG 0 ; Copy arg 'a' to local
+LOAD_ARG 1 ; Copy arg 'a' to local
 STORE 163
-LOAD_ARG 1 ; Copy arg 'b' to local
+LOAD_ARG 2 ; Copy arg 'b' to local
 STORE 164
 LOAD 163  ; Load parameter 'a'
 LOAD 164  ; Load parameter 'b'
@@ -440,9 +444,9 @@ RET
 .method Arithmetic.max@F@F
 .limit stack 4
 .limit locals 167
-LOAD_ARG 0 ; Copy arg 'a' to local
+LOAD_ARG 1 ; Copy arg 'a' to local
 STORE 165
-LOAD_ARG 1 ; Copy arg 'b' to local
+LOAD_ARG 2 ; Copy arg 'b' to local
 STORE 166
 LOAD 165  ; Load parameter 'a'
 LOAD 166  ; Load parameter 'b'
@@ -460,9 +464,9 @@ RET
 .method Arithmetic.max@F@F
 .limit stack 4
 .limit locals 169
-LOAD_ARG 0 ; Copy arg 'a' to local
+LOAD_ARG 1 ; Copy arg 'a' to local
 STORE 167
-LOAD_ARG 1 ; Copy arg 'b' to local
+LOAD_ARG 2 ; Copy arg 'b' to local
 STORE 168
 LOAD 167  ; Load parameter 'a'
 LOAD 168  ; Load parameter 'b'
@@ -480,9 +484,9 @@ RET
 .method Arithmetic.min@I@I
 .limit stack 4
 .limit locals 171
-LOAD_ARG 0 ; Copy arg 'a' to local
+LOAD_ARG 1 ; Copy arg 'a' to local
 STORE 169
-LOAD_ARG 1 ; Copy arg 'b' to local
+LOAD_ARG 2 ; Copy arg 'b' to local
 STORE 170
 LOAD 169  ; Load parameter 'a'
 LOAD 170  ; Load parameter 'b'
@@ -500,9 +504,9 @@ RET
 .method Arithmetic.min@F@F
 .limit stack 4
 .limit locals 173
-LOAD_ARG 0 ; Copy arg 'a' to local
+LOAD_ARG 1 ; Copy arg 'a' to local
 STORE 171
-LOAD_ARG 1 ; Copy arg 'b' to local
+LOAD_ARG 2 ; Copy arg 'b' to local
 STORE 172
 LOAD 171  ; Load parameter 'a'
 LOAD 172  ; Load parameter 'b'
@@ -520,9 +524,9 @@ RET
 .method Arithmetic.min@F@F
 .limit stack 4
 .limit locals 175
-LOAD_ARG 0 ; Copy arg 'a' to local
+LOAD_ARG 1 ; Copy arg 'a' to local
 STORE 173
-LOAD_ARG 1 ; Copy arg 'b' to local
+LOAD_ARG 2 ; Copy arg 'b' to local
 STORE 174
 LOAD 173  ; Load parameter 'a'
 LOAD 174  ; Load parameter 'b'

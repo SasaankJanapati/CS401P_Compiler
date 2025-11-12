@@ -14,7 +14,7 @@ Debug: Array access 'arr' has element type 'C'
 mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
-Debug: Child type: 'ARRAY_ACCESS'
+Debug: Child type: 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'writeString'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
@@ -54,10 +54,10 @@ Debug: Declaring array 'intBuf' of type '[C'
 mangled name: intToString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: intToString
-Debug: Child type: 'IDEN'
+Debug: Child type: 'I'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: intToString@I
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'arr' has element type 'C'
 Debug: Processing index node for array access on '[C'
@@ -123,22 +123,22 @@ Debug: Array access 'arr' has element type 'I'
 mangled name: intToString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: intToString
-Debug: Child type: 'ARRAY_ACCESS'
+Debug: Child type: 'I'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: intToString@I
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 mangled name: writeString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeString
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
-Debug: Child type: 'CHAR_LIT'
+Debug: Child type: 'C'
 mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
-Debug: Child type: 'CHAR_LIT'
+Debug: Child type: 'C'
 Debug: Checking for override of method 'print' with signature 'print' in class 'VectorInt'
 Debug: Functionend 'print' with mangled name 'print' declared.
 Debug: Building array type for base type 'F' and index node 'INDEX'
@@ -184,22 +184,22 @@ Debug: Array access 'arr' has element type 'F'
 mangled name: doubleToString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: doubleToString
-Debug: Child type: 'ARRAY_ACCESS'
+Debug: Child type: 'F'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: doubleToString@F
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 mangled name: writeString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeString
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
-Debug: Child type: 'CHAR_LIT'
+Debug: Child type: 'C'
 mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
-Debug: Child type: 'CHAR_LIT'
+Debug: Child type: 'C'
 Debug: Checking for override of method 'print' with signature 'print' in class 'VectorFloat'
 Debug: Functionend 'print' with mangled name 'print' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX'
@@ -243,15 +243,15 @@ Debug: Array access 'arr' has element type 'C'
 mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
-Debug: Child type: 'ARRAY_ACCESS'
+Debug: Child type: 'C'
 mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
-Debug: Child type: 'CHAR_LIT'
+Debug: Child type: 'C'
 mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
-Debug: Child type: 'CHAR_LIT'
+Debug: Child type: 'C'
 Debug: Checking for override of method 'print' with signature 'print' in class 'VectorChar'
 Debug: Functionend 'print' with mangled name 'print' declared.
 Gen ASM for: PROGRAM () Scope: 0
@@ -272,9 +272,9 @@ Gen ASM for: PROGRAM () Scope: 0
         Gen ASM for: EXPR_STMT () Scope: 1
           Gen STMT for: EXPR_STMT () Scope: 1
             Gen EXPR for: SYS_CALL (write)
-              Gen EXPR for: NUM (1)
-              Gen EXPR for: NUM (1)
               Gen EXPR for: IDEN (buf)
+              Gen EXPR for: NUM (1)
+              Gen EXPR for: NUM (1)
         Gen ASM for: EMPTY_STMT () Scope: 1
           Gen STMT for: EMPTY_STMT () Scope: 1
     Gen ASM for: FUNC_DEF (writeString@[C) Scope: 0

@@ -24,9 +24,9 @@ class_end
 .method Utility.swap@I@I
 .limit stack 4
 .limit locals 77
-LOAD_ARG 0 ; Copy arg 'a' to local
+LOAD_ARG 1 ; Copy arg 'a' to local
 STORE 74
-LOAD_ARG 1 ; Copy arg 'b' to local
+LOAD_ARG 2 ; Copy arg 'b' to local
 STORE 75
 LOAD 74  ; Load parameter 'a'
 STORE 76 ; Init temp
@@ -40,9 +40,9 @@ RET
 .method Utility.swap@F@F
 .limit stack 4
 .limit locals 80
-LOAD_ARG 0 ; Copy arg 'a' to local
+LOAD_ARG 1 ; Copy arg 'a' to local
 STORE 77
-LOAD_ARG 1 ; Copy arg 'b' to local
+LOAD_ARG 2 ; Copy arg 'b' to local
 STORE 78
 LOAD 77  ; Load parameter 'a'
 STORE 79 ; Init temp
@@ -56,9 +56,9 @@ RET
 .method Utility.swap2@C@C
 .limit stack 4
 .limit locals 83
-LOAD_ARG 0 ; Copy arg 'a' to local
+LOAD_ARG 1 ; Copy arg 'a' to local
 STORE 80
-LOAD_ARG 1 ; Copy arg 'b' to local
+LOAD_ARG 2 ; Copy arg 'b' to local
 STORE 81
 LOAD 80  ; Load parameter 'a'
 STORE 82 ; Init temp
@@ -78,13 +78,13 @@ RET
 .method Algorithms.insert@[I@I@I@I
 .limit stack 4
 .limit locals 88
-LOAD_ARG 0 ; Copy arg 'arr' to local
+LOAD_ARG 1 ; Copy arg 'arr' to local
 STORE 83
-LOAD_ARG 1 ; Copy arg 'n' to local
+LOAD_ARG 2 ; Copy arg 'n' to local
 STORE 84
-LOAD_ARG 2 ; Copy arg 'pos' to local
+LOAD_ARG 3 ; Copy arg 'pos' to local
 STORE 85
-LOAD_ARG 3 ; Copy arg 'value' to local
+LOAD_ARG 4 ; Copy arg 'value' to local
 STORE 86
 LOAD 85  ; Load parameter 'pos'
 PUSH 0
@@ -139,9 +139,9 @@ RET
 .method Algorithms.sort@[I@I
 .limit stack 4
 .limit locals 92
-LOAD_ARG 0 ; Copy arg 'arr' to local
+LOAD_ARG 1 ; Copy arg 'arr' to local
 STORE 88
-LOAD_ARG 1 ; Copy arg 'n' to local
+LOAD_ARG 2 ; Copy arg 'n' to local
 STORE 89
 PUSH 0
 STORE 90 ; Init i
@@ -191,8 +191,7 @@ LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
-INVOKEVIRTUAL 0 2; Call Utility.swap@I@I
-POP ; discard extra reference 
+INVOKEVIRTUAL 0 3; Call Utility.swap@I@I
 POP ; discard fp
 L13:
 LOAD 91  ; Load local var j
@@ -213,9 +212,9 @@ RET
 .method Algorithms.reverse@[I@I
 .limit stack 4
 .limit locals 96
-LOAD_ARG 0 ; Copy arg 'arr' to local
+LOAD_ARG 1 ; Copy arg 'arr' to local
 STORE 92
-LOAD_ARG 1 ; Copy arg 'n' to local
+LOAD_ARG 2 ; Copy arg 'n' to local
 STORE 93
 PUSH 0
 STORE 94 ; Init start
@@ -240,8 +239,7 @@ LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member object 'util'
 GETFIELD 0
-INVOKEVIRTUAL 0 2; Call Utility.swap@I@I
-POP ; discard extra reference 
+INVOKEVIRTUAL 0 3; Call Utility.swap@I@I
 POP ; discard fp
 LOAD 94  ; Load local var start
 PUSH 1

@@ -24,7 +24,7 @@ class_end
 .method StringHandler.length@[C
 .limit stack 4
 .limit locals 39
-LOAD_ARG 0 ; Copy arg 'str' to local
+LOAD_ARG 1 ; Copy arg 'str' to local
 STORE 37
 PUSH 0
 STORE 38 ; Init len
@@ -32,7 +32,7 @@ L0:
 LOAD 37 ; Load array parameter 'str'
 LOAD 38  ; Load local var len
 ALOAD
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L1
 JMP L2
@@ -52,17 +52,18 @@ RET
 .method StringHandler.substr@[C@I@I@[C
 .limit stack 4
 .limit locals 45
-LOAD_ARG 0 ; Copy arg 'str' to local
+LOAD_ARG 1 ; Copy arg 'str' to local
 STORE 39
-LOAD_ARG 1 ; Copy arg 'start' to local
+LOAD_ARG 2 ; Copy arg 'start' to local
 STORE 40
-LOAD_ARG 2 ; Copy arg 'len' to local
+LOAD_ARG 3 ; Copy arg 'len' to local
 STORE 41
-LOAD_ARG 3 ; Copy arg 'res' to local
+LOAD_ARG 4 ; Copy arg 'res' to local
 STORE 42
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 39  ; Load parameter 'str'
-INVOKEVIRTUAL 0 1; Call StringHandler.length@[C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 0 2; Call StringHandler.length@[C
 STORE 43 ; Init n
 LOAD 40  ; Load parameter 'start'
 PUSH 0
@@ -78,7 +79,7 @@ JMP L4
 L3:
 LOAD 42 ; Load array parameter 'res'
 PUSH 0
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
 L4:
@@ -117,7 +118,7 @@ JMP L9
 L9:
 LOAD 42 ; Load array parameter 'res'
 LOAD 44  ; Load local var i
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
 .endmethod
@@ -125,9 +126,9 @@ RET
 .method StringHandler.compare@[C@[C
 .limit stack 4
 .limit locals 48
-LOAD_ARG 0 ; Copy arg 's1' to local
+LOAD_ARG 1 ; Copy arg 's1' to local
 STORE 45
-LOAD_ARG 1 ; Copy arg 's2' to local
+LOAD_ARG 2 ; Copy arg 's2' to local
 STORE 46
 PUSH 0
 STORE 47 ; Init i
@@ -135,7 +136,7 @@ L11:
 LOAD 45 ; Load array parameter 's1'
 LOAD 47  ; Load local var i
 ALOAD
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L14
 JMP L13
@@ -143,7 +144,7 @@ L14:
 LOAD 46 ; Load array parameter 's2'
 LOAD 47  ; Load local var i
 ALOAD
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ICMP_NEQ
 JNZ L12
 JMP L13
@@ -192,15 +193,16 @@ RET
 .method StringHandler.insert@[C@I@C
 .limit stack 4
 .limit locals 53
-LOAD_ARG 0 ; Copy arg 'str' to local
+LOAD_ARG 1 ; Copy arg 'str' to local
 STORE 48
-LOAD_ARG 1 ; Copy arg 'pos' to local
+LOAD_ARG 2 ; Copy arg 'pos' to local
 STORE 49
-LOAD_ARG 2 ; Copy arg 'c' to local
+LOAD_ARG 3 ; Copy arg 'c' to local
 STORE 50
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 48  ; Load parameter 'str'
-INVOKEVIRTUAL 0 1; Call StringHandler.length@[C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 0 2; Call StringHandler.length@[C
 STORE 51 ; Init n
 LOAD 49  ; Load parameter 'pos'
 PUSH 0
@@ -255,15 +257,16 @@ RET
 .method StringHandler.erase@[C@I@I
 .limit stack 4
 .limit locals 58
-LOAD_ARG 0 ; Copy arg 'str' to local
+LOAD_ARG 1 ; Copy arg 'str' to local
 STORE 53
-LOAD_ARG 1 ; Copy arg 'pos' to local
+LOAD_ARG 2 ; Copy arg 'pos' to local
 STORE 54
-LOAD_ARG 2 ; Copy arg 'len' to local
+LOAD_ARG 3 ; Copy arg 'len' to local
 STORE 55
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 53  ; Load parameter 'str'
-INVOKEVIRTUAL 0 1; Call StringHandler.length@[C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 0 2; Call StringHandler.length@[C
 STORE 56 ; Init n
 LOAD 54  ; Load parameter 'pos'
 PUSH 0
@@ -310,7 +313,7 @@ LOAD 53 ; Load array parameter 'str'
 LOAD 56  ; Load local var n
 LOAD 55  ; Load parameter 'len'
 ISUB
-PUSH 92 ; Push ASCII for char '\0'
+PUSH 0 ; Push ASCII for char '\0'
 ASTORE ; Store to array element
 RET
 .endmethod
@@ -318,7 +321,7 @@ RET
 .method StringHandler.islower@C
 .limit stack 4
 .limit locals 59
-LOAD_ARG 0 ; Copy arg 'c' to local
+LOAD_ARG 1 ; Copy arg 'c' to local
 STORE 58
 LOAD 58  ; Load parameter 'c'
 PUSH 97 ; Push ASCII for char 'a'
@@ -343,7 +346,7 @@ RET
 .method StringHandler.isupper@C
 .limit stack 4
 .limit locals 60
-LOAD_ARG 0 ; Copy arg 'c' to local
+LOAD_ARG 1 ; Copy arg 'c' to local
 STORE 59
 LOAD 59  ; Load parameter 'c'
 PUSH 65 ; Push ASCII for char 'A'
@@ -368,11 +371,12 @@ RET
 .method StringHandler.tolower@C
 .limit stack 4
 .limit locals 61
-LOAD_ARG 0 ; Copy arg 'c' to local
+LOAD_ARG 1 ; Copy arg 'c' to local
 STORE 60
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 60  ; Load parameter 'c'
-INVOKEVIRTUAL 6 1; Call StringHandler.isupper@C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 6 2; Call StringHandler.isupper@C
 PUSH 1
 ICMP_EQ
 JNZ L43
@@ -392,11 +396,12 @@ RET
 .method StringHandler.toupper@C
 .limit stack 4
 .limit locals 62
-LOAD_ARG 0 ; Copy arg 'c' to local
+LOAD_ARG 1 ; Copy arg 'c' to local
 STORE 61
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 61  ; Load parameter 'c'
-INVOKEVIRTUAL 5 1; Call StringHandler.islower@C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 5 2; Call StringHandler.islower@C
 PUSH 1
 ICMP_EQ
 JNZ L45
@@ -416,19 +421,21 @@ RET
 .method StringHandler.isalpha@C
 .limit stack 4
 .limit locals 63
-LOAD_ARG 0 ; Copy arg 'c' to local
+LOAD_ARG 1 ; Copy arg 'c' to local
 STORE 62
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 62  ; Load parameter 'c'
-INVOKEVIRTUAL 5 1; Call StringHandler.islower@C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 5 2; Call StringHandler.islower@C
 PUSH 1
 ICMP_EQ
 JNZ L47
 JMP L50
 L50:
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 62  ; Load parameter 'c'
-INVOKEVIRTUAL 6 1; Call StringHandler.isupper@C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 6 2; Call StringHandler.isupper@C
 PUSH 1
 ICMP_EQ
 JNZ L47
@@ -445,19 +452,21 @@ RET
 .method StringHandler.isalnum@C
 .limit stack 4
 .limit locals 64
-LOAD_ARG 0 ; Copy arg 'c' to local
+LOAD_ARG 1 ; Copy arg 'c' to local
 STORE 63
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 63  ; Load parameter 'c'
-INVOKEVIRTUAL 9 1; Call StringHandler.isalpha@C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 9 2; Call StringHandler.isalpha@C
 PUSH 1
 ICMP_EQ
 JNZ L51
 JMP L54
 L54:
-LOAD_ARG 0 ; Load 'this' for method call
 LOAD 63  ; Load parameter 'c'
-INVOKEVIRTUAL 11 1; Call StringHandler.isnum@C
+LOAD_ARG 0 ; Load 'this' for method call
+LOAD_ARG 0 ; vm identification
+INVOKEVIRTUAL 11 2; Call StringHandler.isnum@C
 PUSH 1
 ICMP_EQ
 JNZ L51
@@ -474,7 +483,7 @@ RET
 .method StringHandler.isnum@C
 .limit stack 4
 .limit locals 65
-LOAD_ARG 0 ; Copy arg 'c' to local
+LOAD_ARG 1 ; Copy arg 'c' to local
 STORE 64
 LOAD 64  ; Load parameter 'c'
 PUSH 48 ; Push ASCII for char '0'

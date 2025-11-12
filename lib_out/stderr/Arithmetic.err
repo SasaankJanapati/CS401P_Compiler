@@ -13,7 +13,7 @@ Debug: Functionend 'abs' with mangled name 'abs@F' declared.
 mangled name: abs
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: abs
-Debug: Child type: 'BIN_OP'
+Debug: Child type: 'F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'sqrt'
 Debug: Checking for override of method 'sqrt' with signature 'sqrt@F' in class 'Arithmetic'
@@ -21,7 +21,7 @@ Debug: Functionend 'sqrt' with mangled name 'sqrt@F' declared.
 mangled name: abs
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: abs
-Debug: Child type: 'BIN_OP'
+Debug: Child type: 'F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'sqrt'
 Debug: Checking for override of method 'sqrt' with signature 'sqrt@F' in class 'Arithmetic'
@@ -29,7 +29,7 @@ Debug: Functionend 'sqrt' with mangled name 'sqrt@F' declared.
 mangled name: abs
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: abs
-Debug: Child type: 'IDEN'
+Debug: Child type: 'F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'exp'
 Debug: Checking for override of method 'exp' with signature 'exp@F' in class 'Arithmetic'
@@ -37,7 +37,7 @@ Debug: Functionend 'exp' with mangled name 'exp@F' declared.
 mangled name: abs
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: abs
-Debug: Child type: 'IDEN'
+Debug: Child type: 'F'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'exp'
 Debug: Checking for override of method 'exp' with signature 'exp@F' in class 'Arithmetic'

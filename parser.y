@@ -699,7 +699,7 @@ char* get_mangled_name(const char* func_name, Node* arg_list_node) {
             fprintf(stderr, "Debug: Processing child %d of '%s'\n", i, arg_list_node->type);
             fprintf(stderr, "mangled name: %s\n", mangled_name);
             Node* expr_or_param = arg_list_node->children[i];
-            fprintf(stderr, "Debug: Child type: '%s'\n", expr_or_param->type);
+            fprintf(stderr, "Debug: Child type: '%s'\n", expr_or_param->data_type);
             strcat(mangled_name, "@");
             // Arg lists have a different structure than param lists
             strcat(mangled_name, expr_or_param->data_type ? expr_or_param->data_type : "unknown");
@@ -2139,6 +2139,30 @@ void generate_code_for_lval_address(Node* node, SymbolTable* scope, ClassInfo* c
     code_gen_depth--;
 }
 
+void generate_code_for_buffer(Node* node, SymbolTable* scope, ClassInfo* class_context) {
+    if (!node) return;
+    debug_print("Gen BUFFER for: %s (%s)", node->type, node->value ? node->value : "");
+    code_gen_depth++;
+
+    // The buffer argument must be an L-value (a variable) so we can get its address.
+    if (strcmp(node->type, "IDEN") == 0) {
+        Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
+        if (s) {
+            // The VM expects the index of the local variable, which is s->address.
+            emit("PUSH %d ; Push address of buffer variable '%s'", s->address, s->name);
+        } else {
+            fprintf(stderr, "Codegen Error: Undefined buffer variable '%s' for syscall.\n", node->value);
+            emit("PUSH -1 ; Error: undefined buffer");
+        }
+    } else {
+        // If the buffer is not a simple variable (e.g., an expression or literal), it's an error
+        // because the VM's syscalls require a local variable index to operate on.
+        fprintf(stderr, "Codegen Error: Syscall buffer must be a variable, not an expression of type '%s'.\n", node->type);
+        emit("PUSH -1 ; Error: buffer not a variable");
+    }
+    code_gen_depth--;
+}
+
 void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_context) {
     if (!node) return;
     debug_print("Gen EXPR for: %s (%s)", node->type, node->value ? node->value : "");
@@ -2159,12 +2183,39 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         emit("PUSH %d ; String literal length", len+1); // +1 for null terminator
         emit("NEWARRAY C ; Create char array for string \"%s\"", content);
         
-        // Loop to populate the array
-        for (int i = 0; i < len; i++) {
+        // Loop to populate the array, handling escape characters
+        int array_idx = 0;
+        for (int i = 0; i < len; i++, array_idx++) {
             emit("DUP ; Duplicate array ref for ASTORE");
-            emit("PUSH %d ; Push index %d", i, i);
-            // Push the ASCII value of the character
-            emit("PUSH %d ; Push char '%c'", (int)content[i], content[i]);
+            emit("PUSH %d ; Push index %d", array_idx, array_idx);
+            
+            char char_to_push = content[i];
+            char comment_char = char_to_push;
+
+            if (content[i] == '\\' && i + 1 < len) {
+                i++; // Move to the character after '\'
+                if (content[i] == 'x' && i + 2 < len) {
+                    // Handle hex escape sequence \xHH
+                    char hex[3] = { content[i+1], content[i+2], '\0' };
+                    char_to_push = (char)strtol(hex, NULL, 16);
+                    emit("PUSH %d ; Push hex escape '\\x%s'", (int)char_to_push, hex);
+                    i += 2; // Move past the hex digits
+                } else {
+                    switch (content[i]) {
+                        case 'n': char_to_push = '\n'; comment_char = 'n'; break;
+                        case 't': char_to_push = '\t'; comment_char = 't'; break;
+                        case 'r': char_to_push = '\r'; comment_char = 'r'; break;
+                        case '\\': char_to_push = '\\'; comment_char = '\\'; break;
+                        case '\"': char_to_push = '\"'; comment_char = '\"'; break;
+                        case '\'': char_to_push = '\''; comment_char = '\''; break;
+                        default: char_to_push = content[i]; comment_char = content[i]; break; // Treat as literal if escape is unknown
+                    }
+                    emit("PUSH %d ; Push escaped char '\\%c'", (int)char_to_push, comment_char);
+                }
+            } else {
+                // Push the ASCII value of the character
+                emit("PUSH %d ; Push char '%c'", (int)char_to_push, comment_char);
+            }
             emit("ASTORE ; Store char in array");
         }
 
@@ -2176,7 +2227,19 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         
         free(content);
     } else if(strcmp(node->type, "CHAR_LIT") == 0) {
-        int ascii_val = (int)node->value[1];
+        // Handle character literal, including escape sequences
+        char char_value = node->value[1]; // Default to the character itself
+        if (node->value[1] == '\\' && node->value[2] != '\0') {
+            switch (node->value[2]) {
+                case 'n': char_value = '\n'; break;
+                case '0': char_value = '\0'; break;
+                case 't': char_value = '\t'; break;
+                case 'r': char_value = '\r'; break; 
+                case '\\': char_value = '\\'; break;
+                default: char_value = node->value[2]; break; // Unknown escape, treat   
+            }
+        }
+        int ascii_val = (int)char_value;
         emit("PUSH %d ; Push ASCII for char %s", ascii_val, node->value);
     } else if (strcmp(node->type, "IDEN") == 0) {
         Symbol* s = lookup_symbol_codegen(node->value, scope, class_context);
@@ -2249,8 +2312,8 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         if (method_idx != -1) {
             // Push object reference ('this')
             generate_code_for_expr(object_node, scope, class_context);// for vm identification
-            emit("INVOKEVIRTUAL %d %d; Call %s.%s", method_idx, arg_list->num_children, object_node->data_type, func_call_node->value);
-            emit("POP ; discard extra reference ");
+            emit("INVOKEVIRTUAL %d %d; Call %s.%s", method_idx, arg_list->num_children+1, object_node->data_type, func_call_node->value);
+            //emit("POP ; discard extra reference ");
             if(strcmp(method->return_type,"void") == 0) emit("POP ; discard fp");
         } else {
              fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", func_call_node->value, object_node->data_type);
@@ -2263,13 +2326,14 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
             if (method) {
                 int method_idx = get_method_vtable_index(class_context->name, node->value);
                 if (method_idx != -1) {
-                    emit("LOAD_ARG 0 ; Load 'this' for method call");
+                    
                     Node* arg_list = node->children[0];
                     for (int i = arg_list->num_children - 1; i >= 0; i--) {
                         generate_code_for_expr(arg_list->children[i], scope, class_context);
                     }
-                    //emit("LOAD_ARG 0 ; vm identification"); // for vm identification
-                    emit("INVOKEVIRTUAL %d %d; Call %s.%s", method_idx, arg_list->num_children, class_context->name, node->value);
+                    emit("LOAD_ARG 0 ; Load 'this' for method call");
+                    emit("LOAD_ARG 0 ; vm identification"); // for vm identification
+                    emit("INVOKEVIRTUAL %d %d; Call %s.%s", method_idx, arg_list->num_children+1, class_context->name, node->value);
                     if(strcmp(method->return_type,"void") == 0) emit("POP ; discard fp");
                 } else {
                     fprintf(stderr, "Codegen Error: Could not find method '%s' in class '%s'\n", node->value, class_context->name);
@@ -2447,20 +2511,24 @@ void generate_code_for_expr(Node* node, SymbolTable* scope, ClassInfo* class_con
         if (strcmp(node->value, "open") == 0) {
             // Stack: ..., filename, mode -> ..., file_handle
             // Grammar args: filename, flags. We'll use flags as the mode.
-            generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: mode/flags
             generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: filename
+            generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: mode/flags
             emit("SYS_CALL OPEN ; open");
         } else if (strcmp(node->value, "read") == 0 || strcmp(node->value, "write") == 0) {
             // Stack: ..., localidx, size, file_handle -> ...
             // Grammar args: fd, buffer, size
-            
-            generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: fd
-            generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: size
-            generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: buffer
 
+            
             if (strcmp(node->value, "read") == 0) {
+                generate_code_for_buffer(node->children[1], scope, class_context); // Arg 2: buffer
+                generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: size
+                generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: fd
+
                 emit("SYS_CALL READ ; read");
             } else { // write
+                generate_code_for_expr(node->children[1], scope, class_context); // Arg 2: buffer
+                generate_code_for_expr(node->children[2], scope, class_context); // Arg 3: size
+                generate_code_for_expr(node->children[0], scope, class_context); // Arg 1: fd
                 emit("SYS_CALL WRITE ; write");
             }
         } else if (strcmp(node->value, "close") == 0) {
@@ -2750,9 +2818,9 @@ void generate_code_for_statement(Node* node, SymbolTable* scope, ClassInfo* clas
         int ctor_idx = get_method_vtable_index(s->type, constructor_sig);
         fprintf(stderr, "Debug: Constructor index for '%s': %d\n", s->type, ctor_idx);
         //emit("DUP ; for identification in vm");
-        emit("INVOKEVIRTUAL %d %d; Call constructor for %s", ctor_idx, args_count, s->type);
+        emit("INVOKEVIRTUAL %d %d; Call constructor for %s", ctor_idx, args_count+1, s->type);
         emit("POP ; discard fp");
-        emit("POP ; discard extra reference");
+        //emit("POP ; discard extra reference");
         free(constructor_sig);
 
         // if(strcmp(s->kind, "member_obj") == 0) {
@@ -2938,7 +3006,7 @@ void generate_assembly(Node* node, SymbolTable* scope) {
         for (int i = 0; i < func_scope->count; i++) {
             Symbol* s = func_scope->symbols[i];
             if (strcmp(s->kind, "parameter") == 0) {
-                emit("LOAD_ARG %d ; Copy arg '%s' to local", i, s->name);
+                emit("LOAD_ARG %d ; Copy arg '%s' to local", current_class_name ? i+1 : i, s->name);
                 emit("STORE %d", s->address);
             } else {
                 // Parameters are always declared first in the scope

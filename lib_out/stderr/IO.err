@@ -83,10 +83,10 @@ Debug: Declaring array 'intBuf' of type '[C'
 mangled name: intToString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: intToString
-Debug: Child type: 'IDEN'
+Debug: Child type: 'I'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: intToString@I
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'arr' has element type 'C'
 Debug: Processing index node for array access on '[C'
@@ -115,14 +115,14 @@ Debug: Declaring array 'buf' of type '[C'
 mangled name: readString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: readString
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: readString@[C
-Debug: Child type: 'NUM'
+Debug: Child type: 'I'
 mangled name: stringToInt
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: stringToInt
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 Debug: Checking for override of method 'readInt' with signature 'readInt' in class 'IOHandler'
 Debug: Functionend 'readInt' with mangled name 'readInt' declared.
 Debug: Building array type for base type 'C' and index node 'INDEX_EMPTY'
@@ -134,7 +134,7 @@ Debug: Array access 'arr' has element type 'C'
 mangled name: writeChar
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: writeChar
-Debug: Child type: 'ARRAY_ACCESS'
+Debug: Child type: 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'printString'
 Debug: Mangling param/arg of array type 'C' with 1 dimensions
@@ -145,14 +145,14 @@ Debug: Declaring array 'buf' of type '[C'
 mangled name: intToString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: intToString
-Debug: Child type: 'IDEN'
+Debug: Child type: 'I'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: intToString@I
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 mangled name: printString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: printString
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'printInt'
 Debug: Checking for override of method 'printInt' with signature 'printInt@I' in class 'IOHandler'
@@ -162,14 +162,14 @@ Debug: Declaring array 'buf' of type '[C'
 mangled name: doubleToString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: doubleToString
-Debug: Child type: 'IDEN'
+Debug: Child type: 'F'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: doubleToString@F
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 mangled name: printString
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: printString
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'printDouble'
 Debug: Checking for override of method 'printDouble' with signature 'printDouble@F' in class 'IOHandler'
@@ -190,9 +190,9 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: SYS_CALL (read)
-                  Gen EXPR for: NUM (0)
+                  Gen BUFFER for: IDEN (c)
                   Gen EXPR for: NUM (1)
-                  Gen EXPR for: IDEN (c)
+                  Gen EXPR for: NUM (0)
             Gen ASM for: EMPTY_STMT () Scope: 2
               Gen STMT for: EMPTY_STMT () Scope: 2
             Gen ASM for: DECL_STMT () Scope: 2
@@ -224,9 +224,9 @@ Gen ASM for: PROGRAM () Scope: 0
             Gen ASM for: EXPR_STMT () Scope: 2
               Gen STMT for: EXPR_STMT () Scope: 2
                 Gen EXPR for: SYS_CALL (write)
-                  Gen EXPR for: NUM (1)
-                  Gen EXPR for: NUM (1)
                   Gen EXPR for: IDEN (arr)
+                  Gen EXPR for: NUM (1)
+                  Gen EXPR for: NUM (1)
             Gen ASM for: EMPTY_STMT () Scope: 2
               Gen STMT for: EMPTY_STMT () Scope: 2
         Gen ASM for: FUNC_DEF (readString@[C@I) Scope: 1

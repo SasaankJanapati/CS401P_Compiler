@@ -50,7 +50,7 @@ extern int yylineno;
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.str_val = strdup(yytext); return IDEN; }
 [0-9]+\.[0-9]+  { yylval.str_val = strdup(yytext); return NUM; }
 [0-9]+          { yylval.str_val = strdup(yytext); return NUM; }
-\"[^\"]*\"      { yylval.str_val = strdup(yytext); return STR; }
+\"(\\.|[^"\\])*\" { yylval.str_val = strdup(yytext); return STR; }
 '(\\.|[^\\'])' { yylval.str_val = strdup(yytext); return CHR; }
 
 "+="            { return PASN; }

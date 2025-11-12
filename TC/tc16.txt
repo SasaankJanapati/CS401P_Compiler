@@ -20,4 +20,5 @@ void main() {
     test.are[0] = 10;
     TestArrayInit test2[2] = {new TestArrayInit(), new TestArrayInit()};
     test2[1].chars[2] = 'z';
+    test2[1].chars[2];
 }

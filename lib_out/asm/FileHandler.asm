@@ -38,9 +38,9 @@ RET
 .method FileHandler.fopen@[C@I
 .limit stack 4
 .limit locals 68
-LOAD_ARG 0 ; Copy arg 'filename' to local
+LOAD_ARG 1 ; Copy arg 'filename' to local
 STORE 65
-LOAD_ARG 1 ; Copy arg 'mode' to local
+LOAD_ARG 2 ; Copy arg 'mode' to local
 STORE 66
 LOAD 66  ; Load parameter 'mode'
 PUSH 0
@@ -74,8 +74,8 @@ L7:
 L5:
 L2:
 LOAD_ARG 0 ; 'this' for assignment to member 'fd'
-LOAD 67  ; Load local var flags
 LOAD 65  ; Load parameter 'filename'
+LOAD 67  ; Load local var flags
 SYS_CALL OPEN ; open
 PUTFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
@@ -127,9 +127,9 @@ RET
 .method FileHandler.fread@[C@I
 .limit stack 4
 .limit locals 71
-LOAD_ARG 0 ; Copy arg 'buffer' to local
+LOAD_ARG 1 ; Copy arg 'buffer' to local
 STORE 68
-LOAD_ARG 1 ; Copy arg 'size' to local
+LOAD_ARG 2 ; Copy arg 'size' to local
 STORE 69
 LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
@@ -142,10 +142,10 @@ PUSH 1
 INEG
 RET
 L13:
+PUSH 68 ; Push address of buffer variable 'buffer'
+LOAD 69  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
-LOAD 69  ; Load parameter 'size'
-LOAD 68  ; Load parameter 'buffer'
 SYS_CALL READ ; read
 STORE 70 ; Init bytesRead
 LOAD 70  ; Load local var bytesRead
@@ -155,9 +155,9 @@ RET
 .method FileHandler.fwrite@[C@I
 .limit stack 4
 .limit locals 74
-LOAD_ARG 0 ; Copy arg 'buffer' to local
+LOAD_ARG 1 ; Copy arg 'buffer' to local
 STORE 71
-LOAD_ARG 1 ; Copy arg 'size' to local
+LOAD_ARG 2 ; Copy arg 'size' to local
 STORE 72
 LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
@@ -170,10 +170,10 @@ PUSH 1
 INEG
 RET
 L15:
+LOAD 71  ; Load parameter 'buffer'
+LOAD 72  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
-LOAD 72  ; Load parameter 'size'
-LOAD 71  ; Load parameter 'buffer'
 SYS_CALL WRITE ; write
 STORE 73 ; Init bytesWritten
 LOAD 73  ; Load local var bytesWritten

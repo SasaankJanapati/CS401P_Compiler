@@ -59,10 +59,10 @@ Debug: Array access 'arr' has element type 'I'
 mangled name: swap
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: swap
-Debug: Child type: 'ARRAY_ACCESS'
+Debug: Child type: 'I'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: swap@I
-Debug: Child type: 'ARRAY_ACCESS'
+Debug: Child type: 'I'
 Debug: Checking method 'swap' with signature 'swap@I@I' against 'swap@I@I' 0 0
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'sort'
@@ -81,10 +81,10 @@ Debug: Array access 'arr' has element type 'I'
 mangled name: swap
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: swap
-Debug: Child type: 'ARRAY_ACCESS'
+Debug: Child type: 'I'
 Debug: Processing child 1 of 'ARG_LIST'
 mangled name: swap@I
-Debug: Child type: 'ARRAY_ACCESS'
+Debug: Child type: 'I'
 Debug: Checking method 'swap' with signature 'swap@I@I' against 'swap@I@I' 0 0
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM_ARRAY' 'reverse'

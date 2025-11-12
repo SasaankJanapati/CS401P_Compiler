@@ -11,7 +11,7 @@ Debug: Building array type for base type 'C' and index node 'INDEX'
 mangled name: length
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: length
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'res' has element type 'C'
 Debug: Processing index node for array access on '[C'
@@ -66,7 +66,7 @@ Debug: Building array type for base type 'C' and index node 'INDEX'
 mangled name: length
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: length
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'str' has element type 'C'
 Debug: Processing index node for array access on '[C'
@@ -90,7 +90,7 @@ Debug: Building array type for base type 'C' and index node 'INDEX'
 mangled name: length
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: length
-Debug: Child type: 'IDEN'
+Debug: Child type: '[C'
 Debug: Processing index node for array access on '[C'
 Debug: Array access 'str' has element type 'C'
 Debug: Processing index node for array access on '[C'
@@ -121,7 +121,7 @@ Debug: Functionend 'isupper' with mangled name 'isupper@C' declared.
 mangled name: isupper
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: isupper
-Debug: Child type: 'IDEN'
+Debug: Child type: 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'tolower'
 Debug: Checking for override of method 'tolower' with signature 'tolower@C' in class 'StringHandler'
@@ -129,7 +129,7 @@ Debug: Functionend 'tolower' with mangled name 'tolower@C' declared.
 mangled name: islower
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: islower
-Debug: Child type: 'IDEN'
+Debug: Child type: 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'toupper'
 Debug: Checking for override of method 'toupper' with signature 'toupper@C' in class 'StringHandler'
@@ -137,11 +137,11 @@ Debug: Functionend 'toupper' with mangled name 'toupper@C' declared.
 mangled name: islower
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: islower
-Debug: Child type: 'IDEN'
+Debug: Child type: 'C'
 mangled name: isupper
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: isupper
-Debug: Child type: 'IDEN'
+Debug: Child type: 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'isalpha'
 Debug: Checking for override of method 'isalpha' with signature 'isalpha@C' in class 'StringHandler'
@@ -149,11 +149,11 @@ Debug: Functionend 'isalpha' with mangled name 'isalpha@C' declared.
 mangled name: isalpha
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: isalpha
-Debug: Child type: 'IDEN'
+Debug: Child type: 'C'
 mangled name: isnum
 Debug: Processing child 0 of 'ARG_LIST'
 mangled name: isnum
-Debug: Child type: 'IDEN'
+Debug: Child type: 'C'
 Debug: Processing child 0 of 'PARAM_LIST'
 Debug: Child type: 'PARAM' 'isalnum'
 Debug: Checking for override of method 'isalnum' with signature 'isalnum@C' in class 'StringHandler'
