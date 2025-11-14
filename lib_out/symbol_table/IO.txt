@@ -21,22 +21,22 @@ IOHandler            | constructor     | member_func  | public       | N/A      
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-c                    | [C              | variable     | public       | N/A             | 180          | 4
-ans                  | C               | variable     | public       | N/A             | 181          | 6
+c                    | [C              | variable     | public       | N/A             | 0            | 4
+ans                  | C               | variable     | public       | N/A             | 1            | 6
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-c                    | C               | parameter    | public       | N/A             | 182          | 12
-arr                  | [C              | variable     | public       | N/A             | 183          | 13
+c                    | C               | parameter    | public       | N/A             | 2            | 12
+arr                  | [C              | variable     | public       | N/A             | 3            | 13
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-arr                  | [C              | parameter    | public       | N/A             | 184          | 19
-size                 | I               | parameter    | public       | N/A             | 185          | 19
-i                    | I               | variable     | public       | N/A             | 186          | 20
-c                    | C               | variable     | public       | N/A             | 187          | 21
+arr                  | [C              | parameter    | public       | N/A             | 4            | 19
+size                 | I               | parameter    | public       | N/A             | 5            | 19
+i                    | I               | variable     | public       | N/A             | 6            | 20
+c                    | C               | variable     | public       | N/A             | 7            | 21
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -45,10 +45,10 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-arr                  | [C              | parameter    | public       | N/A             | 188          | 32
-i                    | I               | variable     | public       | N/A             | 189          | 33
-num                  | I               | variable     | public       | N/A             | 190          | 33
-sign                 | I               | variable     | public       | N/A             | 191          | 33
+arr                  | [C              | parameter    | public       | N/A             | 8            | 32
+i                    | I               | variable     | public       | N/A             | 9            | 33
+num                  | I               | variable     | public       | N/A             | 10           | 33
+sign                 | I               | variable     | public       | N/A             | 11           | 33
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -61,55 +61,16 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 4 (Parent Scope: 3) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-digit                | I               | variable     | public       | N/A             | 192          | 40
+digit                | I               | variable     | public       | N/A             | 12           | 40
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-x                    | I               | parameter    | public       | N/A             | 193          | 51
-arr                  | [C              | parameter    | public       | N/A             | 194          | 51
-i                    | I               | variable     | public       | N/A             | 195          | 52
-isNeg                | I               | variable     | public       | N/A             | 196          | 53
-j                    | I               | variable     | public       | N/A             | 197          | 72
-
---- Scope: 3 (Parent Scope: 2) ---
-Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
---------------------------------------------------------------------------------------------------------------------
-
---- Scope: 3 (Parent Scope: 2) ---
-Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
---------------------------------------------------------------------------------------------------------------------
-
---- Scope: 3 (Parent Scope: 2) ---
-Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
---------------------------------------------------------------------------------------------------------------------
-
---- Scope: 3 (Parent Scope: 2) ---
-Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
---------------------------------------------------------------------------------------------------------------------
-
---- Scope: 4 (Parent Scope: 3) ---
-Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
---------------------------------------------------------------------------------------------------------------------
-temp                 | C               | variable     | public       | N/A             | 198          | 73
-
---- Scope: 2 (Parent Scope: 1) ---
-Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
---------------------------------------------------------------------------------------------------------------------
-val                  | F               | parameter    | public       | N/A             | 199          | 80
-arr                  | [C              | parameter    | public       | N/A             | 200          | 80
-neg                  | I               | variable     | public       | N/A             | 201          | 81
-intPart              | I               | variable     | public       | N/A             | 202          | 88
-temp                 | F               | variable     | public       | N/A             | 203          | 89
-frac                 | F               | variable     | public       | N/A             | 204          | 96
-intBuf               | [C              | variable     | public       | N/A             | 205          | 98
-i                    | I               | variable     | public       | N/A             | 206          | 101
-j                    | I               | variable     | public       | N/A             | 207          | 101
-k                    | I               | variable     | public       | N/A             | 208          | 115
-
---- Scope: 3 (Parent Scope: 2) ---
-Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
---------------------------------------------------------------------------------------------------------------------
+x                    | I               | parameter    | public       | N/A             | 13           | 51
+arr                  | [C              | parameter    | public       | N/A             | 14           | 51
+i                    | I               | variable     | public       | N/A             | 15           | 52
+isNeg                | I               | variable     | public       | N/A             | 16           | 53
+j                    | I               | variable     | public       | N/A             | 17           | 72
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -130,7 +91,46 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 4 (Parent Scope: 3) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-digit                | I               | variable     | public       | N/A             | 209          | 119
+temp                 | C               | variable     | public       | N/A             | 18           | 73
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+val                  | F               | parameter    | public       | N/A             | 19           | 80
+arr                  | [C              | parameter    | public       | N/A             | 20           | 80
+neg                  | I               | variable     | public       | N/A             | 21           | 81
+intPart              | I               | variable     | public       | N/A             | 22           | 88
+temp                 | F               | variable     | public       | N/A             | 23           | 89
+frac                 | F               | variable     | public       | N/A             | 24           | 96
+intBuf               | [C              | variable     | public       | N/A             | 25           | 98
+i                    | I               | variable     | public       | N/A             | 26           | 101
+j                    | I               | variable     | public       | N/A             | 27           | 101
+k                    | I               | variable     | public       | N/A             | 28           | 115
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 3 (Parent Scope: 2) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 4 (Parent Scope: 3) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+digit                | I               | variable     | public       | N/A             | 29           | 119
 
 --- Scope: 5 (Parent Scope: 4) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -139,13 +139,13 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-buf                  | [C              | variable     | public       | N/A             | 210          | 134
+buf                  | [C              | variable     | public       | N/A             | 30           | 134
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-arr                  | [C              | parameter    | public       | N/A             | 211          | 140
-i                    | I               | variable     | public       | N/A             | 212          | 141
+arr                  | [C              | parameter    | public       | N/A             | 31           | 140
+i                    | I               | variable     | public       | N/A             | 32           | 141
 
 --- Scope: 3 (Parent Scope: 2) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
@@ -154,14 +154,14 @@ Name                 | Type            | Kind         | Access       | Class    
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-x                    | I               | parameter    | public       | N/A             | 213          | 149
-buf                  | [C              | variable     | public       | N/A             | 214          | 150
+x                    | I               | parameter    | public       | N/A             | 33           | 149
+buf                  | [C              | variable     | public       | N/A             | 34           | 150
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
 --------------------------------------------------------------------------------------------------------------------
-x                    | F               | parameter    | public       | N/A             | 215          | 156
-buf                  | [C              | variable     | public       | N/A             | 216          | 157
+x                    | F               | parameter    | public       | N/A             | 35           | 156
+buf                  | [C              | variable     | public       | N/A             | 36           | 157
 
 --- Scope: 2 (Parent Scope: 1) ---
 Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared

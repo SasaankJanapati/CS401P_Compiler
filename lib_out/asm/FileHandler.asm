@@ -37,45 +37,45 @@ RET
 
 .method FileHandler.fopen@[C@I
 .limit stack 4
-.limit locals 183
+.limit locals 68
 LOAD_ARG 1 ; Copy arg 'filename' to local
-STORE 180
+STORE 65
 LOAD_ARG 2 ; Copy arg 'mode' to local
-STORE 181
-LOAD 181  ; Load parameter 'mode'
+STORE 66
+LOAD 66  ; Load parameter 'mode'
 PUSH 0
 ICMP_EQ
 JNZ L0
 JMP L1
 L0:
 PUSH 114 ; Push ASCII for char 'r'
-STORE 182 ; Store to local 'flags'
+STORE 67 ; Store to local 'flags'
 JMP L2
 L1:
-LOAD 181  ; Load parameter 'mode'
+LOAD 66  ; Load parameter 'mode'
 PUSH 1
 ICMP_EQ
 JNZ L3
 JMP L4
 L3:
 PUSH 119 ; Push ASCII for char 'w'
-STORE 182 ; Store to local 'flags'
+STORE 67 ; Store to local 'flags'
 JMP L5
 L4:
-LOAD 181  ; Load parameter 'mode'
+LOAD 66  ; Load parameter 'mode'
 PUSH 2
 ICMP_EQ
 JNZ L6
 JMP L7
 L6:
 PUSH 97 ; Push ASCII for char 'a'
-STORE 182 ; Store to local 'flags'
+STORE 67 ; Store to local 'flags'
 L7:
 L5:
 L2:
 LOAD_ARG 0 ; 'this' for assignment to member 'fd'
-LOAD 180  ; Load parameter 'filename'
-LOAD 182  ; Load local var flags
+LOAD 65  ; Load parameter 'filename'
+LOAD 67  ; Load local var flags
 SYS_CALL OPEN ; open
 PUTFIELD 0
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
@@ -125,11 +125,11 @@ RET
 
 .method FileHandler.fread@[C@I
 .limit stack 4
-.limit locals 186
+.limit locals 71
 LOAD_ARG 1 ; Copy arg 'buffer' to local
-STORE 183
+STORE 68
 LOAD_ARG 2 ; Copy arg 'size' to local
-STORE 184
+STORE 69
 LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
 PUSH 0
@@ -141,23 +141,23 @@ PUSH 1
 INEG
 RET
 L13:
-PUSH 183 ; Push address of buffer variable 'buffer'
-LOAD 184  ; Load parameter 'size'
+PUSH 68 ; Push address of buffer variable 'buffer'
+LOAD 69  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
 SYS_CALL READ ; read
-STORE 185 ; Init bytesRead
-LOAD 185  ; Load local var bytesRead
+STORE 70 ; Init bytesRead
+LOAD 70  ; Load local var bytesRead
 RET
 .endmethod
 
 .method FileHandler.fwrite@[C@I
 .limit stack 4
-.limit locals 189
+.limit locals 74
 LOAD_ARG 1 ; Copy arg 'buffer' to local
-STORE 186
+STORE 71
 LOAD_ARG 2 ; Copy arg 'size' to local
-STORE 187
+STORE 72
 LOAD_ARG 0 ; Load 'this' to access member 'isOpen'
 GETFIELD 1
 PUSH 0
@@ -169,13 +169,13 @@ PUSH 1
 INEG
 RET
 L15:
-LOAD 186  ; Load parameter 'buffer'
-LOAD 187  ; Load parameter 'size'
+LOAD 71  ; Load parameter 'buffer'
+LOAD 72  ; Load parameter 'size'
 LOAD_ARG 0 ; Load 'this' to access member 'fd'
 GETFIELD 0
 SYS_CALL WRITE ; write
-STORE 188 ; Init bytesWritten
-LOAD 188  ; Load local var bytesWritten
+STORE 73 ; Init bytesWritten
+LOAD 73  ; Load local var bytesWritten
 RET
 .endmethod
 
