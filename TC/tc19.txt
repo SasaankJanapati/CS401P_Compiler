@@ -1,6 +1,99 @@
+class FileHandler
+{
+
+private
+    int fd; // file descriptor
+private
+    int isOpen; // flag to check if file is open
+
+public
+    FileHandler()
+    {
+        fd = -1;
+        isOpen = 0;
+    };
+
+public
+    int fopen(char filename[10000], char mode)
+    {
+
+        if (isOpen == 1)
+        {
+            sys_close(fd);
+        }
+        fd = sys_open(filename, mode); // using syscall
+        if (fd < 0)
+        {
+            isOpen = 0;
+            return -1; // error
+        }
+
+        isOpen = 1;
+        return 0; // success
+    }
+
+public
+    void fclose()
+    {
+        if (isOpen == 1)
+        {
+            sys_close(fd);
+            ;
+            fd = -1;
+            isOpen = 0;
+        }
+        //sys_write(1, "File closed.\n", 13);;
+        // else
+        // {
+        //     //sys_write(1, "File not open.\n", 15);;
+        // }
+        //return;
+    }
+
+public
+    int fread(char buffer[10000], int size)
+    {
+        if (isOpen == 0)
+        {
+            return -1;
+        }
+        int bytesRead = sys_read(fd, buffer, size);
+        sys_write(1, "Read data\n", 10);
+        sys_write(1, buffer, 10);
+        sys_write(1, "EOF\n", 4);
+        return bytesRead;
+    }
+
+public
+    int fwrite(char buffer[10000], int size)
+    {
+        if (isOpen == 0)
+        {
+            return -1;
+        }
+        sys_write(1, "Writing data...\n", 16);  
+        sys_write(1, buffer, size);
+        int bytesWritten = sys_write(fd, buffer, size);
+        sys_write(1, "\nWrote data.\n", 6);
+        sys_write(1, buffer, bytesWritten);
+        return bytesWritten;
+    }
+
+public
+    int is_open()
+    {
+        return isOpen;
+    }
+};
+
+
 int main() {
-    char buffer[14];
-    sys_read(0, buffer, 14);
-    sys_write(1, buffer, 14);
+    char buffer[10000];
+    FileHandler fh = new FileHandler();
+    fh.fopen("build_tests.sh", 'r');
+    fh.fread(buffer, 10);
+    fh.fclose();
+    sys_write(1,buffer,10);
+    sys_write(1,"don\n\n",5);
     return 0;
 }

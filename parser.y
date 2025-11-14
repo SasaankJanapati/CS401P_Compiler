@@ -1201,10 +1201,10 @@ SYSCALL: SYS_OPEN '(' EXPR ',' EXPR ')' {  // filename flags
             }
             $$->data_type = strdup("I");
          }
-        | SYS_CLOSE '(' EXPR ')' ';' {  // fd
+        | SYS_CLOSE '(' EXPR ')' {  // fd
             $$ = create_node("SYS_CALL", "close");
             add_child($$, $3);
-            $$->data_type = strdup("I");
+            $$->data_type = strdup("void");
          }
         | SYS_READ '(' EXPR ',' EXPR ',' EXPR ')' {  // fd buffer size
             $$ = create_node("SYS_CALL", "read");

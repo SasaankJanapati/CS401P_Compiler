@@ -1,334 +1,336 @@
 class IOHandler
 {
- // READ CHARACTER
+    // READ CHARACTER
 public
- char readChar()
- {
- char c[1];
- sys_read(0, c, 1);
- ; // fd = 0 for stdin
- char ans;
- ans = c[0];
- return ans;
- }
+    char readChar()
+    {
+        char c[1];
+        sys_read(0, c, 1);
+        ; // fd = 0 for stdin
+        char ans;
+        // printString("You entered: ");
+        // writeChar(c[0]); // echo back
+        ans = c[0];
+        return ans;
+    }
 
- // WRITE CHARACTER
+    // WRITE CHARACTER
 public
- void writeChar(char c)
- {
- char arr[1];
- arr[0] = c;
- sys_write(1, arr, 1);
- ; // fd = 1 for stdout
- }
+    void writeChar(char c)
+    {
+        char arr[1];
+        arr[0] = c;
+        sys_write(1, arr, 1);
+        ; // fd = 1 for stdout
+    }
 
- // READ STRING
+    // READ STRING
 public
- void readString(char arr[], int size)
- {
- int i = 0;
- char c;
- while (i < size - 1)
- {
- c = readChar();
- if (c == '\n' || c == '\r')
- break;
- arr[i] = c;
- i++;
- }
- arr[i] = '\0';
- }
+    void readString(char arr[], int size)
+    {
+        int i = 0;
+        char c;
+        while (i < size - 1)
+        {
+            c = readChar();
+            if (c == '\n' || c == '\r')
+                break;
+            arr[i] = c;
+            i++;
+        }
+        arr[i] = '\0';
+    }
 
- // STRING → INT
+    // STRING → INT
 public
- int stringToInt(char arr[])
- {
- int i = 0, num = 0, sign = 1;
- if (arr[0] == '-')
- {
- sign = -1;
- i++;
- }
- while (arr[i] != '\0')
- {
- if (arr[i] >= '0' && arr[i] <= '9')
- {
- num = num * 10 + (arr[i] - '0');
- }
- else
- break;
- i++;
- }
- return sign * num;
- }
+    int stringToInt(char arr[])
+    {
+        int i = 0, num = 0, sign = 1;
+        if (arr[0] == '-')
+        {
+            sign = -1;
+            i++;
+        }
+        while (arr[i] != '\0')
+        {
+            if (arr[i] >= '0' && arr[i] <= '9')
+            {
+                num = num * 10 + (arr[i] - '0');
+            }
+            else
+                break;
+            i++;
+        }
+        return sign * num;
+    }
 
- // INT → STRING
+    // INT → STRING
 public
- void intToString(int x, char arr[])
- {
- int i = 0;
- int isNeg = 0;
- if (x == 0)
- {
- arr[i++] = '0';
- arr[i] = '\0';
- return;
- }
- if (x < 0)
- {
- isNeg = 1;
- x = -x;
- }
+    void intToString(int x, char arr[])
+    {
+        int i = 0;
+        int isNeg = 0;
+        if (x == 0)
+        {
+            arr[i++] = '0';
+            arr[i] = '\0';
+            return;
+        }
+        if (x < 0)
+        {
+            isNeg = 1;
+            x = -x;
+        }
 
- while (x > 0)
- {
- arr[i++] = (x % 10) + '0';
- x = x/10;
- }
- if (isNeg == 1)
- arr[i++] = '-';
- arr[i] = '\0';
+        while (x > 0)
+        {
+            arr[i++] = (x % 10) + '0';
+            x = x / 10;
+        }
+        if (isNeg == 1)
+            arr[i++] = '-';
+        arr[i] = '\0';
 
- // Reverse array
- for (int j = 0; j < i / 2; j++)
- {
- char temp = arr[j];
- arr[j] = arr[i - j - 1];
- arr[i - j - 1] = temp;
- }
- }
+        // Reverse array
+        for (int j = 0; j < i / 2; j++)
+        {
+            char temp = arr[j];
+            arr[j] = arr[i - j - 1];
+            arr[i - j - 1] = temp;
+        }
+    }
 
- // DOUBLE → STRING
+    // DOUBLE → STRING
 public
- void doubleToString(double val, char arr[])
- {
- int neg = 0;
- if (val < 0)
- {
- neg = 1;
- val = -val;
- }
+    void doubleToString(double val, char arr[])
+    {
+        int neg = 0;
+        if (val < 0)
+        {
+            neg = 1;
+            val = -val;
+        }
 
- // Extract integer part manually
- int intPart = 0;
- double temp = val;
- while (temp >= 1.0)
- {
- temp = temp - 1.0;
- intPart = intPart + 1;
- }
+        // Extract integer part manually
+        int intPart = 0;
+        double temp = val;
+        while (temp >= 1.0)
+        {
+            temp = temp - 1.0;
+            intPart = intPart + 1;
+        }
 
- // Extract fractional part
- double frac = val - intPart;
+        // Extract fractional part
+        double frac = val - intPart;
 
- char intBuf[50];
- intToString(intPart, intBuf);
+        char intBuf[50];
+        intToString(intPart, intBuf);
 
- int i = 0, j = 0;
+        int i = 0, j = 0;
 
- if (neg == 1)
- {
- arr[i++] = '-';
- }
+        if (neg == 1)
+        {
+            arr[i++] = '-';
+        }
 
- // Copy integer part
- while (intBuf[j] != '\0')
- {
- arr[i++] = intBuf[j++];
- }
+        // Copy integer part
+        while (intBuf[j] != '\0')
+        {
+            arr[i++] = intBuf[j++];
+        }
 
- arr[i++] = '.';
+        arr[i++] = '.';
 
- // Handle fractional part up to 6 decimal digits
- for (int k = 0; k < 6; k++)
- {
- frac = frac * 10.0;
+        // Handle fractional part up to 6 decimal digits
+        for (int k = 0; k < 6; k++)
+        {
+            frac = frac * 10.0;
 
- // Extract one digit manually (again no casting)
- int digit = 0;
- while (frac >= 1.0)
- {
- frac = frac - 1.0;
- digit = digit + 1;
- }
+            // Extract one digit manually (again no casting)
+            int digit = 0;
+            while (frac >= 1.0)
+            {
+                frac = frac - 1.0;
+                digit = digit + 1;
+            }
 
- arr[i++] = '0' + digit;
- }
+            arr[i++] = '0' + digit;
+        }
 
- arr[i] = '\0';
- }
+        arr[i] = '\0';
+    }
 
- // READ INT
+    // READ INT
 public
- int readInt()
- {
- char buf[50];
- readString(buf, 50);
- return stringToInt(buf);
- }
+    int readInt()
+    {
+        char buf[50];
+        readString(buf, 50);
+        return stringToInt(buf);
+    }
 
- // PRINT STRING
+    // PRINT STRING
 public
- void printString(char arr[])
- {
- int i = 0;
- while (arr[i] != '\0')
- {
- writeChar(arr[i]);
- i++;
- }
- }
+    void printString(char arr[])
+    {
+        int i = 0;
+        while (arr[i] != '\0')
+        {
+            writeChar(arr[i]);
+            i++;
+        }
+    }
 
- // PRINT INT
+    // PRINT INT
 public
- void printInt(int x)
- {
- char buf[50];
- intToString(x, buf);
- printString(buf);
- }
+    void printInt(int x)
+    {
+        char buf[50];
+        intToString(x, buf);
+        printString(buf);
+    }
 
- // PRINT DOUBLE
+    // PRINT DOUBLE
 public
- void printDouble(double x)
- {
- char buf[100];
- doubleToString(x, buf);
- printString(buf);
- }
+    void printDouble(double x)
+    {
+        char buf[100];
+        doubleToString(x, buf);
+        printString(buf);
+    }
 };
 
 class StringHandler
 {
- // length
+    // length
 public
- int length(char str[])
- {
- int len = 0;
- while (str[len] != '\0')
- {
- len++;
- }
- return len;
- }
+    int length(char str[])
+    {
+        int len = 0;
+        while (str[len] != '\0')
+        {
+            len++;
+        }
+        return len;
+    }
 
- // substr
+    // substr
 public
- void substr(char str[10000], int start, int len, char res[10000])
- {
- int n = length(str);
- if (start < 0 || start >= n)
- {
- res[0] = '\0'; // invalid start
- return;
- }
- int i;
- for (i = 0; i < len && (start + i) < n; i++)
- {
- res[i] = str[start + i];
- }
- res[i] = '\0';
- }
+    void substr(char str[10000], int start, int len, char res[10000])
+    {
+        int n = length(str);
+        if (start < 0 || start >= n)
+        {
+            res[0] = '\0'; // invalid start
+            return;
+        }
+        int i;
+        for (i = 0; i < len && (start + i) < n; i++)
+        {
+            res[i] = str[start + i];
+        }
+        res[i] = '\0';
+    }
 
- // compare
+    // compare
 public
- int compare(char s1[10000], char s2[10000])
- {
- int i = 0;
- while (s1[i] != '\0' && s2[i] != '\0')
- {
- if (s1[i] != s2[i])
- {
- return (s1[i] - s2[i]);
- }
- i++;
- }
- return s1[i] - s2[i];
- }
+    int compare(char s1[10000], char s2[10000])
+    {
+        int i = 0;
+        while (s1[i] != '\0' && s2[i] != '\0')
+        {
+            if (s1[i] != s2[i])
+            {
+                return (s1[i] - s2[i]);
+            }
+            i++;
+        }
+        return s1[i] - s2[i];
+    }
 
 public
- void insert(char str[10000], int pos, char c)
- {
- int n = length(str);
- if (pos < 0)
- pos = 0;
- if (pos > n)
- pos = n;
+    void insert(char str[10000], int pos, char c)
+    {
+        int n = length(str);
+        if (pos < 0)
+            pos = 0;
+        if (pos > n)
+            pos = n;
 
- for (int i = n; i >= pos; i--)
- {
- str[i + 1] = str[i];
- }
- str[pos] = c;
- }
+        for (int i = n; i >= pos; i--)
+        {
+            str[i + 1] = str[i];
+        }
+        str[pos] = c;
+    }
 
- // erase
+    // erase
 public
- void erase(char str[10000], int pos, int len)
- {
- int n = length(str);
- if (pos < 0 || pos >= n)
- return;
+    void erase(char str[10000], int pos, int len)
+    {
+        int n = length(str);
+        if (pos < 0 || pos >= n)
+            return;
 
- for (int i = pos; i + len < n; i++)
- {
- str[i] = str[i + len];
- }
- str[n - len] = '\0';
- }
+        for (int i = pos; i + len < n; i++)
+        {
+            str[i] = str[i + len];
+        }
+        str[n - len] = '\0';
+    }
 
- // islower
+    // islower
 public
- bool islower(char c)
- {
- return (c >= 'a' && c <= 'z');
- }
+    bool islower(char c)
+    {
+        return (c >= 'a' && c <= 'z');
+    }
 
- // isupper
+    // isupper
 public
- bool isupper(char c)
- {
- return (c >= 'A' && c <= 'Z');
- }
+    bool isupper(char c)
+    {
+        return (c >= 'A' && c <= 'Z');
+    }
 
- // tolower
+    // tolower
 public
- char tolower(char c)
- {
- if (isupper(c) == 1)
- return c + ('a' - 'A');
- return c;
- }
+    char tolower(char c)
+    {
+        if (isupper(c) == 1)
+            return c + ('a' - 'A');
+        return c;
+    }
 
- // toupper
+    // toupper
 public
- char toupper(char c)
- {
- if (islower(c) == 1)
- return c - ('a' - 'A');
- return c;
- }
+    char toupper(char c)
+    {
+        if (islower(c) == 1)
+            return c - ('a' - 'A');
+        return c;
+    }
 
- // isalpha
+    // isalpha
 public
- bool isalpha(char c)
- {
- return (islower(c) == 1 || isupper(c) == 1);
- }
+    bool isalpha(char c)
+    {
+        return (islower(c) == 1 || isupper(c) == 1);
+    }
 
- // isalnum
+    // isalnum
 public
- bool isalnum(char c)
- {
- return (isalpha(c) == 1 || isnum(c) == 1);
- }
+    bool isalnum(char c)
+    {
+        return (isalpha(c) == 1 || isnum(c) == 1);
+    }
 
- // isnum (check digit)
+    // isnum (check digit)
 public
- bool isnum(char c)
- {
- return (c >= '0' && c <= '9');
- }
+    bool isnum(char c)
+    {
+        return (c >= '0' && c <= '9');
+    }
 };
 
 // define O_RDONLY 0 // open for reading olyy
@@ -341,88 +343,88 @@ class FileHandler
 {
 
 private
- int fd; // file descriptor
+    int fd; // file descriptor
 private
- int isOpen; // flag to check if file is open
+    int isOpen; // flag to check if file is open
 
 public
- FileHandler()
- {
- fd = -1;
- isOpen = 0;
- };
+    FileHandler()
+    {
+        fd = -1;
+        isOpen = 0;
+    };
 
 public
- int fopen(char filename[10000], int mode)
- {
- int flags = 0;
+    int fopen(char filename[10000], char mode)
+    {
 
- if (mode == 0)
- {
- flags = 0;
- } // read
- else if (mode == 1)
- {
- flags = 577;
- } // write (create/truncate)
- else if (mode == 2)
- {
- flags = 1089;
- } // append
+        if (isOpen == 1)
+        {
+            sys_close(fd);
+        }
+        fd = sys_open(filename, mode); // using syscall
+        if (fd < 0)
+        {
+            isOpen = 0;
+            return -1; // error
+        }
 
- fd = sys_open(filename,'w');
- ; // using syscall
- if (fd < 0)
- {
- isOpen = 0;
- return -1; // error
- }
-
- isOpen = 1;
- return 0; // success
- }
+        isOpen = 1;
+        return 0; // success
+    }
 
 public
- void fclose()
- {
- if (isOpen == 1)
- {
- sys_close(fd);
- ;
- fd = -1;
- isOpen = 0;
- }
- }
+    void fclose()
+    {
+        if (isOpen == 1)
+        {
+            sys_close(fd);
+            ;
+            fd = -1;
+            isOpen = 0;
+        }
+        //sys_write(1, "File closed.\n", 13);;
+        // else
+        // {
+        //     //sys_write(1, "File not open.\n", 15);;
+        // }
+        //return;
+    }
 
 public
- int fread(char buffer[10000], int size)
- {
- if (isOpen == 0)
- {
- return -1;
- }
- int bytesRead = sys_read(fd, buffer, size);
- ;
- return bytesRead;
- }
+    int fread(char buffer[10000], int size)
+    {
+        if (isOpen == 0)
+        {
+            return -1;
+        }
+        int bytesRead = sys_read(fd, buffer, size);
+        // sys_write(1, "Read data\n", 10);
+        // sys_write(1, buffer, 10);
+        // sys_write(1, "EOF\n", 1);
+        return bytesRead;
+    }
 
 public
- int fwrite(char buffer[10000], int size)
- {
- if (isOpen == 0)
- {
- return -1;
- }
- int bytesWritten = sys_write(fd, buffer, size);
- ;
- return bytesWritten;
- }
+    int fwrite(char buffer[10000], int size)
+    {
+        if (isOpen == 0)
+        {
+            return -1;
+        }
+        // sys_write(1, "Writing data...\n", 16);  
+        // sys_write(1, buffer, size);
+        int bytesWritten = sys_write(fd, buffer, size);
+        // sys_write(1, "\nWrote data.\n", 6);
+        // sys_write(1, buffer, bytesWritten);
+        return bytesWritten;
+    }
 
 public
- int is_open()
- {
- return isOpen;
- }
+    int is_open()
+    {
+        return isOpen;
+    }
 };
 
 // termios.gs — terminal control library (struct + raw mode)
@@ -431,59 +433,58 @@ class Termios
 {
 
 public
- int clflag;
+    int clflag;
 
 public
- Termios()
- {
- clflag = 0;
- };
+    Termios()
+    {
+        clflag = 0;
+    };
 
 public
- void copyFrom(Termios src)
- {
- clflag = src.clflag;
- }
+    void copyFrom(Termios src)
+    {
+        clflag = src.clflag;
+    }
 };
 
 class TerminalHandler
 {
 private
- Termios Eorigtermios;
+    Termios Eorigtermios;
 
 public
- void disableRawMode()
- {
- tcsetattr(0, 2, Eorigtermios); // STDINFILENO = 0, TCSAFLUSH = 2
- }
+    void disableRawMode()
+    {
+        tcsetattr(0, 2, Eorigtermios); // STDINFILENO = 0, TCSAFLUSH = 2
+    }
 
 public
- void enableRawMode()
- {
- tcgetattr(0, Eorigtermios);
- sys_write(1, "Raw mode enabled.\n", 18);
- ;
+    void enableRawMode()
+    {
+        tcgetattr(0, Eorigtermios);
+        sys_write(1, "Raw mode enabled.\n", 18);
+        ;
 
- Termios raw = new Termios();
- raw.copyFrom(Eorigtermios);
- raw.clflag = (raw.clflag / 4) * 4; // simulate ECHO | ICANON
- tcsetattr(0, 2, raw);
- }
-
-public
- void tcgetattr(int fd, Termios t)
- {
- // simulate system terminal state read
- t.clflag = 1;
- }
+        Termios raw = new Termios();
+        raw.copyFrom(Eorigtermios);
+        raw.clflag = (raw.clflag / 4) * 4; // simulate ECHO | ICANON
+        tcsetattr(0, 2, raw);
+    }
 
 public
- void tcsetattr(int fd, int flag, Termios t)
- {
- // simulate applying terminal attributes
- sys_write(1, "Termios attributes set.\n", 25);
- ;
- }
+    void tcgetattr(int fd, Termios t)
+    {
+        // simulate system terminal state read
+        t.clflag = 1;
+    }
+
+public
+    void tcsetattr(int fd, int flag, Termios t)
+    {
+        // simulate applying terminal attributes
+        sys_write(1, "Termios attributes set.\n", 25);
+    }
 };
 
 // Constants
@@ -494,452 +495,485 @@ public
 class Editor
 {
 public
- char rows[1024][1024]; // text rows
+    char rows[1024][1024]; // text rows
 public
- int rowCount;
+    int rowCount;
 public
- char filename[256];
+    char filename[256];
 public
- int cx;
+    int cx;
 public
- int cy;
+    int cy;
 public
- int insert_mode;
+    int insert_mode;
 public
- int command_mode;
+    int command_mode;
 public
- char command_buffer[256];
+    char command_buffer[256];
 public
- char status_msg[256];
+    char status_msg[256];
 
 public
- Editor()
- {
- rowCount = 0;
- cx = 0;
- cy = 0;
- insert_mode = 0;
- command_mode = 0;
- filename[0] = '\0';
- command_buffer[0] = '\0';
- status_msg[0] = 'h';
- status_msg[1] = 'e';
- status_msg[2] = 'l';
- status_msg[3] = 'l';
- status_msg[4] = 'o';
- status_msg[5] = '\0';
- };
+    Editor()
+    {
+        rowCount = 0;
+        cx = 0;
+        cy = 0;
+        insert_mode = 0;
+        command_mode = 0;
+        filename[0] = '\0';
+        command_buffer[0] = '\0';
+        status_msg[0] = 'h';
+        status_msg[1] = 'e';
+        status_msg[2] = 'l';
+        status_msg[3] = 'l';
+        status_msg[4] = 'o';
+        status_msg[5] = '\0';
+    };
 
- // Helper to get length of a row
+    // Helper to get length of a row
 public
- int getRowLength(int r) {
-     if (r >= rowCount) return 0;
-     int len = 0;
-     while (len < 1024 && rows[r][len] != '\0') {
-         len++;
-     }
-     return len;
- }
+    int getRowLength(int r)
+    {
+        if (r >= rowCount)
+            return 0;
+        int len = 0;
+        while (len < 1024 && rows[r][len] != '\0')
+        {
+            len++;
+        }
+        return len;
+    }
 
- // Helper to insert a character in a row
+    // Helper to insert a character in a row
 public
- void insertCharInRow(int r, int pos, char c) {
-     if (r >= rowCount) return;
-     int len = getRowLength(r);
-     if (pos < 0) pos = 0;
-     if (pos > len) pos = len;
-     if (len >= 1023) return; // Row is full
+    void insertCharInRow(int r, int pos, char c)
+    {
+        if (r >= rowCount)
+            return;
+        int len = getRowLength(r);
+        if (pos < 0)
+            pos = 0;
+        if (pos > len)
+            pos = len;
+        if (len >= 1023)
+            return; // Row is full
 
-     for (int i = len; i >= pos; i--) {
-         rows[r][i + 1] = rows[r][i];
-     }
-     rows[r][pos] = c;
- }
+        for (int i = len; i >= pos; i--)
+        {
+            rows[r][i + 1] = rows[r][i];
+        }
+        rows[r][pos] = c;
+    }
 
- // Helper to erase a character from a row
+    // Helper to erase a character from a row
 public
- void eraseCharFromRow(int r, int pos) {
-     if (r >= rowCount) return;
-     int len = getRowLength(r);
-     if (pos < 0 || pos >= len) return;
+    void eraseCharFromRow(int r, int pos)
+    {
+        if (r >= rowCount)
+            return;
+        int len = getRowLength(r);
+        if (pos < 0 || pos >= len)
+            return;
 
-     for (int i = pos; i < len; i++) {
-         rows[r][i] = rows[r][i + 1];
-     }
- }
+        for (int i = pos; i < len; i++)
+        {
+            rows[r][i] = rows[r][i + 1];
+        }
+    }
 
- // Helper to print a row character by character
+    // Helper to print a row character by character
 public
- void printRow(int r, IOHandler io) {
-     if (r >= rowCount) return;
-     int len = getRowLength(r);
-     for (int i = 0; i < len; i++) {
-         io.writeChar(rows[r][i]);
-     }
- }
+    void printRow(int r, IOHandler io)
+    {
+        if (r >= rowCount)
+            return;
+        int len = getRowLength(r);
+        for (int i = 0; i < len; i++)
+        {
+            io.writeChar(rows[r][i]);
+        }
+    }
 };
-
-
 
 // Terminal control
 void disableRawMode(TerminalHandler th)
 {
- th.disableRawMode();
+    th.disableRawMode();
 }
 
 void enableRawMode(TerminalHandler th)
 {
- th.enableRawMode();
+    th.enableRawMode();
 }
 
 // Key input
 int readKey(IOHandler io)
 {
- return io.readChar();
+    return io.readChar();
 }
 
 // Open file
-void openFile(char fname[], Editor E, StringHandler sh, FileHandler fh)
+void openFile(char fname[], Editor E, StringHandler sh, FileHandler fh, IOHandler io)
 {
- if (sh.length(fname) == 0)
- {
- E.rowCount = 1;
- E.rows[0][0] = '\0';
- sh.substr("new_file.txt", 0, 12, E.filename);
- return;
- }
+    if (sh.length(fname) == 0)
+    {
+        E.rowCount = 1;
+        E.rows[0][0] = '\0';
+        sh.substr("new_file.txt", 0, 12, E.filename);
+        return;
+    }
 
- if (fh.fopen(fname, 0) != 0)
- { // 0 = read
- E.rowCount = 1;
- E.rows[0][0] = '\0';
- return;
- }
+    if (fh.fopen(fname, 'r') != 0)
+    { // 0 = read
+        E.rowCount = 1;
+        E.rows[0][0] = '\0';
+        io.printString("Could not open file for reading.\n");
+        return;
+    }
 
- char buffer[1024 * 1024];
- int bytesRead = fh.fread(buffer, 1024 * 1024);
+    char buffer[1024 * 1024];
+    int bytesRead = fh.fread(buffer, 1024 * 1024);
+    // char c[1] = {'0'};
+    // c[0]= c[0]+bytesRead;
+    // sys_write(1, "Bytes read: ", 12);
+    // sys_write(1, c, 1);
+    // sys_write(1,buffer,bytesRead);
+    int start = 0;
+    E.rowCount = 0;
+    //sys_write(1, "Reading file...\n", 16);
+    for (int i = 0; i < bytesRead; i++)
+    {
+        if (buffer[i] == '\n')
+        {
+            int len = i - start;
+            if (len >= 1024)
+                len = 1024 - 1;
+            // Manual substr
+            for (int j = 0; j < len; j++)
+            {
+                E.rows[E.rowCount][j] = buffer[start + j];
+            }
+            E.rows[E.rowCount][len] = '\0';
+            E.rowCount++;
+            start = i + 1;
+        }
+    }
+    if (start < bytesRead)
+    {
+        int len = bytesRead - start;
+        if (len >= 1024)
+            len = 1024 - 1;
+        // Manual substr
+        for (int j = 0; j < len; j++)
+        {
+            E.rows[E.rowCount][j] = buffer[start + j];
+        }
+        E.rows[E.rowCount][len] = '\0';
+        E.rowCount++;
+    }
 
- int start = 0;
- E.rowCount = 0;
- for (int i = 0; i < bytesRead; i++)
- {
- if (buffer[i] == '\n')
- {
- int len = i - start;
- if (len >= 1024)
- len = 1024 - 1;
- // Manual substr
- for (int j = 0; j < len; j++) {
-     E.rows[E.rowCount][j] = buffer[start + j];
- }
- E.rows[E.rowCount][len] = '\0';
- E.rowCount++;
- start = i + 1;
- }
- }
- if (start < bytesRead)
- {
- int len = bytesRead - start;
- if (len >= 1024)
- len = 1024 - 1;
- // Manual substr
- for (int j = 0; j < len; j++) {
-     E.rows[E.rowCount][j] = buffer[start + j];
- }
- E.rows[E.rowCount][len] = '\0';
- E.rowCount++;
- }
-
- fh.fclose();
- sh.substr(fname, 0, sh.length(fname), E.filename);
+    fh.fclose();
+    sh.substr(fname, 0, sh.length(fname), E.filename);
 }
 
 // Save file
 void saveFile(Editor E, StringHandler sh, FileHandler fh)
 {
- if (sh.length(E.filename) == 0)
- return;
+    if (sh.length(E.filename) == 0)
+        return;
 
- if (fh.fopen(E.filename, 1) != 0)
- { // 1 = write
- sh.substr("Error saving file", 0, 17, E.status_msg);
- return;
- }
+    if (fh.fopen(E.filename, 'w') != 0)
+    { // 1 = write
+        sh.substr("Error saving file", 0, 17, E.status_msg);
+        return;
+    }
 
- for (int i = 0; i < E.rowCount; i++)
- {
- int len = E.getRowLength(i);
- fh.fwrite(E.rows[i], len);
- if (i + 1 < E.rowCount)
- {
- char nl[2] = {'\n', '\0'};
- fh.fwrite(nl, 1);
- }
- }
-
- fh.fclose();
- char msg[256];
- int len = sh.length(E.filename);
- sh.substr(E.filename, 0, len, msg);
- sh.insert(msg, 0, '"');
- sh.insert(msg, sh.length(msg), '"');
- sh.substr(" written", 0, 8, E.status_msg);
+    for (int i = 0; i < E.rowCount; i++)
+    {
+        int len = E.getRowLength(i);
+        char to_write[1024];
+        for (int j = 0; j < len; j++)
+        {
+            // fh.fwrite(E.rows[i][j], 1);
+            to_write[j] = E.rows[i][j];
+        }
+        fh.fwrite(to_write, len);
+        if (i + 1 < E.rowCount)
+        {
+            char nl[2] = {'\n', '\0'};
+            fh.fwrite(nl, 1);
+        }
+    }
+    sh.substr(" No Error saving file", 0, 22, E.status_msg);
+    fh.fclose();
+    char msg[256];
+    int len = sh.length(E.filename);
+    sh.substr(E.filename, 0, len, msg);
+    sh.insert(msg, 0, '"');
+    sh.insert(msg, sh.length(msg), '"');
+    // sh.substr(" written", 0, 8, E.status_msg);
 }
 
 // Draw screen
 void drawRows(Editor E, IOHandler io)
 {
- io.printString("\x1b[2J");
- io.printString("\x1b[H");
+    // io.printString("\x1b[2J");
+    // io.printString("\x1b[H");
+    sys_write(1,"animating...\n",13);
+    for (int i = 0; i < E.rowCount; i++)
+    {
+        //sys_write(1,"Drawing row...\n",15);
+        E.printRow(i, io);
+        io.printString("\n");
+    }
 
- for (int i = 0; i < E.rowCount; i++)
- {
- E.printRow(i, io);
- io.printString("\r\n");
- }
+    // io.printString("\x1b[7m");
+    io.printString("FILE: ");
+    io.printString(E.filename);
+    io.printString(" | MODE: ");
+    if (E.insert_mode == 1)
+    {
+        io.printString("INSERT");
+    }
+    else if (E.command_mode == 1)
+    {
+        io.printString("COMMAND");
+    }
+    else
+    {
+        io.printString("NORMAL");
+    }
+    // io.printString("\x1b[m\r\n");
 
- io.printString("\x1b[7m");
- io.printString("FILE: ");
- io.printString(E.filename);
- io.printString(" | MODE: ");
- if (E.insert_mode == 1)
- {
- io.printString("INSERT");
- }
- else if (E.command_mode == 1)
- {
- io.printString("COMMAND");
- }
- else
- {
- io.printString("NORMAL");
- }
- io.printString("\x1b[m\r\n");
-
- if (E.command_mode == 1)
- {
- io.printString(":");
- io.printString(E.command_buffer);
- }
- else
- {
- io.printString(E.status_msg);
- }
- io.printString("\x1b[H");
- if (E.cy < E.rowCount)
- {
-  char buf[20];
-  io.intToString(E.cy + 1, buf);
-  io.printString("\x1b[");
-  io.printString(buf);
-  io.printString(";");
-  io.intToString(E.cx + 1, buf);
-  io.printString(buf);
-  io.printString("H");
- }
+    if (E.command_mode == 1)
+    {
+        io.printString(":");
+        io.printString(E.command_buffer);
+    }
+    else
+    {
+        io.printString(E.status_msg);
+    }
+    // io.printString("\x1b[H");
+    if (E.cy < E.rowCount)
+    {
+        char buf[20];
+        // io.intToString(E.cy + 1, buf);
+        // io.printString("\x1b[");
+        // io.printString(buf);
+        // io.printString(";");
+        // io.intToString(E.cx + 1, buf);
+        // io.printString(buf);
+        // io.printString("H");
+    }
 }
 
 // Cursor movement
 void moveCursor(char key, Editor E, StringHandler sh)
 {
- if (key == 'h')
- {
- if (E.cx > 0)
- E.cx--;
- }
- else if (key == 'l')
- {
- if (E.cx < E.getRowLength(E.cy))
- E.cx++;
- }
- else if (key == 'k')
- {
- if (E.cy > 0)
- {
- E.cy--;
- if (E.cx > E.getRowLength(E.cy))
- E.cx = E.getRowLength(E.cy);
- }
- }
- else if (key == 'j')
- {
- if (E.cy + 1 < E.rowCount)
- {
- E.cy++;
- if (E.cx > E.getRowLength(E.cy))
- E.cx = E.getRowLength(E.cy);
- }
- }
+    if (key == 'h')
+    {
+        if (E.cx > 0)
+            E.cx--;
+    }
+    else if (key == 'l')
+    {
+        if (E.cx < E.getRowLength(E.cy))
+            E.cx++;
+    }
+    else if (key == 'k')
+    {
+        if (E.cy > 0)
+        {
+            E.cy--;
+            if (E.cx > E.getRowLength(E.cy))
+                E.cx = E.getRowLength(E.cy);
+        }
+    }
+    else if (key == 'j')
+    {
+        if (E.cy + 1 < E.rowCount)
+        {
+            E.cy++;
+            if (E.cx > E.getRowLength(E.cy))
+                E.cx = E.getRowLength(E.cy);
+        }
+    }
 }
 
 // Insert/delete character
 void insertChar(char c, Editor E, StringHandler sh)
 {
- E.insertCharInRow(E.cy, E.cx, c);
- E.cx++;
+    E.insertCharInRow(E.cy, E.cx, c);
+    E.cx++;
 }
 
 void deleteChar(Editor E, StringHandler sh)
 {
- if (E.cx < E.getRowLength(E.cy))
- {
- E.eraseCharFromRow(E.cy, E.cx);
- }
+    if (E.cx < E.getRowLength(E.cy))
+    {
+        E.eraseCharFromRow(E.cy, E.cx);
+    }
 }
 
 // Command processing
 void processCommand(Editor E, StringHandler sh, FileHandler fh)
 {
- if (sh.length(E.command_buffer) == 0)
- return;
+    if (sh.length(E.command_buffer) == 0)
+        return;
 
- if (sh.compare(E.command_buffer, "q") == 0)
- sys_exit(0);
- else if (sh.compare(E.command_buffer, "w") == 0)
- saveFile(E, sh, fh);
- else if (sh.compare(E.command_buffer, "wq") == 0)
- {
- saveFile(E, sh, fh);
- sys_exit(0);
- }
- else
- {
- sh.substr("Not an editor command: ", 0, 23, E.status_msg);
- // append command
- }
+    if (sh.compare(E.command_buffer, "q") == 0)
+        sys_exit(0);
+    else if (sh.compare(E.command_buffer, "w") == 0)
+        saveFile(E, sh, fh);
+    else if (sh.compare(E.command_buffer, "wq") == 0)
+    {
+        saveFile(E, sh, fh);
+        sys_exit(0);
+    }
+    else
+    {
+        sh.substr("Not an editor command: ", 0, 23, E.status_msg);
+        // append command
+    }
 
- E.command_buffer[0] = '\0';
- E.command_mode = 0;
+    E.command_buffer[0] = '\0';
+    E.command_mode = 0;
 }
 
 // Keypress handling
 void processKeypress(Editor E, IOHandler io, StringHandler sh, FileHandler fh)
 {
- char c = io.readChar();
- io.printString("I got char: \n");
- io.writeChar(c);
- io.printString("\n\n");
+    char c = io.readChar();
+    // io.printString("I got char: \n");
+    // io.writeChar(c);
+    // io.printString("\n\n");
 
- if (E.command_mode == 1)
- {
- if (c == '\r' || c == '\n')
- {
-    processCommand(E, sh, fh);
- }
- else if (c == 127 || c == '\b')
- {
- int len = sh.length(E.command_buffer);
- if (len > 0)
- E.command_buffer[len - 1] = '\0';
- }
- else if (c == 27)
- {
- E.command_mode = 0;
- E.command_buffer[0] = '\0';
- }
- else
- {
- sh.insert(E.command_buffer, sh.length(E.command_buffer), c);
- }
- return;
- }
+    if (E.command_mode == 1)
+    {
+        if (c == '\r' || c == '\n')
+        {
+            processCommand(E, sh, fh);
+        }
+        else if (c == 127 || c == '\b')
+        {
+            int len = sh.length(E.command_buffer);
+            if (len > 0)
+                E.command_buffer[len - 1] = '\0';
+        }
+        else if (c == 27)
+        {
+            E.command_mode = 0;
+            E.command_buffer[0] = '\0';
+        }
+        else
+        {
+            sh.insert(E.command_buffer, sh.length(E.command_buffer), c);
+        }
+        return;
+    }
 
- if (E.insert_mode == 0)
- {
-    io.writeChar(c);
-    io.printString("I got char2: \n");
-    io.printString("\n\n");
- if (c == 'i')
- E.insert_mode = 1;
- else if (c == 'q')
- sys_exit(0);
- else if (c == 's')
- saveFile(E, sh, fh);
- else if (c == 'x')
- deleteChar(E, sh);
- else if (c == 'o')
- {
- for (int i = E.rowCount; i > E.cy + 1; i--)
- {
- // Manual copy of row
- int len = E.getRowLength(i - 1);
- for (int j = 0; j <= len; j++) { // include null terminator
-     E.rows[i][j] = E.rows[i-1][j];
- }
- }
- E.rows[E.cy + 1][0] = '\0';
- E.rowCount++;
- E.cy++;
- E.cx = 0;
- E.insert_mode = 1;
- }
- else if (c == ':')
- E.command_mode = 1;
- else
- moveCursor(c, E, sh);
- }
- else
- {
- if (c == 27)
- E.insert_mode = 0;
- else if (c == 127 || c == '\b')
- {
- if (E.cx > 0)
- {
- E.eraseCharFromRow(E.cy, E.cx - 1);
- E.cx--;
- }
- }
- else if (c == '\r')
- {
- int current_len = E.getRowLength(E.cy);
- char newLine[1024];
- int split_len = current_len - E.cx;
- // Manual copy of split part
- for (int i = 0; i < split_len; i++) {
-     newLine[i] = E.rows[E.cy][E.cx + i];
- }
- newLine[split_len] = '\0';
+    if (E.insert_mode == 0)
+    {
+        // io.writeChar(c);
+        // io.printString("I got char2: \n");
+        // io.printString("\n\n");
+        if (c == 'i')
+            E.insert_mode = 1;
+        else if (c == 'q')
+            sys_exit(0);
+        else if (c == 's')
+            saveFile(E, sh, fh);
+        else if (c == 'x')
+            deleteChar(E, sh);
+        else if (c == 'o')
+        {
+            for (int i = E.rowCount; i > E.cy + 1; i--)
+            {
+                // Manual copy of row
+                int len = E.getRowLength(i - 1);
+                for (int j = 0; j <= len; j++)
+                { // include null terminator
+                    E.rows[i][j] = E.rows[i - 1][j];
+                }
+            }
+            E.rows[E.cy + 1][0] = '\0';
+            E.rowCount++;
+            E.cy++;
+            E.cx = 0;
+            E.insert_mode = 1;
+        }
+        else if (c == ':')
+            E.command_mode = 1;
+        else
+            moveCursor(c, E, sh);
+    }
+    else
+    {
+        if (c == 27)
+            E.insert_mode = 0;
+        else if (c == 127 || c == '\b')
+        {
+            if (E.cx > 0)
+            {
+                E.eraseCharFromRow(E.cy, E.cx - 1);
+                E.cx--;
+            }
+        }
+        else if (c == '\r')
+        {
+            int current_len = E.getRowLength(E.cy);
+            char newLine[1024];
+            int split_len = current_len - E.cx;
+            // Manual copy of split part
+            for (int i = 0; i < split_len; i++)
+            {
+                newLine[i] = E.rows[E.cy][E.cx + i];
+            }
+            newLine[split_len] = '\0';
 
- E.rows[E.cy][E.cx] = '\0';
- for (int i11 = E.rowCount; i11 > E.cy + 1; i11--)
- {
- // Manual copy of row
- int len = E.getRowLength(i11 - 1);
- for (int j = 0; j <= len; j++) { // include null terminator
-     E.rows[i11][j] = E.rows[i11-1][j];
- }
- }
- // Manual copy of newLine to the new row
- for (int i1 = 0; i1 <= split_len; i1++) { // include null terminator
-     E.rows[E.cy + 1][i1] = newLine[i1];
- }
- E.rowCount++;
- E.cy++;
- E.cx = 0;
- }
- else
- insertChar(c, E, sh);
- }
+            E.rows[E.cy][E.cx] = '\0';
+            for (int i11 = E.rowCount; i11 > E.cy + 1; i11--)
+            {
+                // Manual copy of row
+                int len = E.getRowLength(i11 - 1);
+                for (int j = 0; j <= len; j++)
+                { // include null terminator
+                    E.rows[i11][j] = E.rows[i11 - 1][j];
+                }
+            }
+            // Manual copy of newLine to the new row
+            for (int i1 = 0; i1 <= split_len; i1++)
+            { // include null terminator
+                E.rows[E.cy + 1][i1] = newLine[i1];
+            }
+            E.rowCount++;
+            E.cy++;
+            E.cx = 0;
+        }
+        else
+            insertChar(c, E, sh);
+    }
 }
 
 // Main
 int main()
 {
- // Instances
- Editor E = new Editor();
- TerminalHandler th = new TerminalHandler();
- IOHandler io = new IOHandler();
- StringHandler sh = new StringHandler();
- FileHandler fh = new FileHandler();
+    // Instances
+    Editor E = new Editor();
+    TerminalHandler th = new TerminalHandler();
+    IOHandler io = new IOHandler();
+    StringHandler sh = new StringHandler();
+    FileHandler fh = new FileHandler();
 
- enableRawMode(th);
- openFile("", E, sh, fh); // default empty file
- while (true)
- {
- drawRows(E, io);
- processKeypress(E, io, sh, fh);
- }
- disableRawMode(th);
- return 0;
+    // enableRawMode(th);
+    openFile("", E, sh, fh, io); // default empty file
+    while (true)
+    {
+        drawRows(E, io);
+        processKeypress(E, io, sh, fh);
+    }
+    // disableRawMode(th);
+    return 0;
 }

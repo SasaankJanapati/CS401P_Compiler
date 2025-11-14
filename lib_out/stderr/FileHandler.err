@@ -124,6 +124,8 @@ Gen ASM for: PROGRAM () Scope: 0
                     Gen STMT for: EXPR_STMT () Scope: 3
                       Gen EXPR for: SYS_CALL (close)
                         Gen EXPR for: IDEN (fd)
+                  Gen ASM for: EMPTY_STMT () Scope: 3
+                    Gen STMT for: EMPTY_STMT () Scope: 3
                   Gen ASM for: ASSIGN () Scope: 3
                     Gen STMT for: ASSIGN () Scope: 3
                       Gen EXPR for: UN_OP (-)

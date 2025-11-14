@@ -1,0 +1,56 @@
+
+--- Scope: 0 (Parent Scope: -1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 1 (Parent Scope: 0) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+clflag               | I               | member_var   | public       | Termios         | -1           | 5
+Termios              | constructor     | member_func  | public       | N/A             | -1           | 9
+copyFrom@Termios     | void            | member_func  | public       | N/A             | -1           | 13
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+src                  | Termios         | parameter    | public       | N/A             | 180          | 11
+
+--- Scope: 1 (Parent Scope: 0) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+Eorigtermios         | Termios         | member_obj   | private      | TerminalHandler | -1           | 19
+disableRawMode       | void            | member_func  | public       | N/A             | -1           | 24
+enableRawMode        | void            | member_func  | public       | N/A             | -1           | 34
+tcgetattr@I@Termios  | void            | member_func  | public       | N/A             | -1           | 39
+tcsetattr@I@I@Termios | void            | member_func  | public       | N/A             | -1           | 44
+TerminalHandler      | constructor     | member_func  | public       | N/A             | -1           | 45
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+raw                  | Termios         | object       | public       | N/A             | 181          | 30
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+fd                   | I               | parameter    | public       | N/A             | 182          | 36
+t                    | Termios         | parameter    | public       | N/A             | 183          | 36
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
+fd                   | I               | parameter    | public       | N/A             | 184          | 41
+flag                 | I               | parameter    | public       | N/A             | 185          | 41
+t                    | Termios         | parameter    | public       | N/A             | 186          | 41
+
+--- Scope: 2 (Parent Scope: 1) ---
+Name                 | Type            | Kind         | Access       | Class          | Line address | Line Declared
+--------------------------------------------------------------------------------------------------------------------
